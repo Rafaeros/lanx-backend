@@ -1,0 +1,9 @@
+services:
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      - 'POSTGRES_DB=lanx'
+      - 'POSTGRES_PASSWORD=lanx'
+      - 'POSTGRES_USER=lanx'
+    ports:
+      - '5432'
