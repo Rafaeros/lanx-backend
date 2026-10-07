@@ -18,11 +18,6 @@ class SpringSecurityCurrentUser implements CurrentUser {
         return get().username();
     }
 
-    @Override
-    public boolean hasPermission(String p) {
-        return get().hasPermission(p);
-    }
-
     private AuthenticatedUser get() {
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getPrincipal() instanceof AuthenticatedUser user) {

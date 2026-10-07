@@ -50,6 +50,10 @@ spring:
     time-zone: America/Sao_Paulo
 
 app:
+  bootstrap:
+    admin:
+      username: ${ADMIN_USERNAME:admin}
+      password: ${ADMIN_PASSWORD:} # vazio = não cria o administrador
   security:
     token:
       secret: ${JWT_SECRET} # Base64, mínimo 32 bytes: openssl rand -base64 32

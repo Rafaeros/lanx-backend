@@ -6,5 +6,4 @@ import java.util.UUID;
 public interface CurrentUser {
     UUID id();
     String username();
-    boolean hasPermission(String permission);
 }

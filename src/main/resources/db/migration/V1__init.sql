@@ -19,9 +19,48 @@ CREATE TABLE auth.user_roles (
 );
 CREATE INDEX idx_user_roles_role ON auth.user_roles(role_id);
 
+-- Permissão CRUD da role por funcionalidade (bitmask). A chave é um caminho
+-- ("compras.analise"): o catálogo de funcionalidades vive no código, não no banco.
 CREATE TABLE auth.role_permissions (
-    role_id UUID        NOT NULL REFERENCES auth.roles(id) ON DELETE CASCADE,
-    feature VARCHAR(30) NOT NULL,
-    mask    INTEGER     NOT NULL CHECK (mask >= 0),
+    role_id UUID         NOT NULL REFERENCES auth.roles(id) ON DELETE CASCADE,
+    feature VARCHAR(100) NOT NULL,
+    mask    INTEGER      NOT NULL CHECK (mask >= 0),
     PRIMARY KEY (role_id, feature)
+);
+
+-- Ações extras nomeadas da role ("compras.analise" + "aprovar")
+CREATE TABLE auth.role_actions (
+    role_id UUID         NOT NULL REFERENCES auth.roles(id) ON DELETE CASCADE,
+    feature VARCHAR(100) NOT NULL,
+    action  VARCHAR(50)  NOT NULL,
+    PRIMARY KEY (role_id, feature, action)
+);
+
+-- Exceções individuais do usuário: grants somam à role, denies subtraem (deny vence)
+CREATE TABLE auth.user_grants (
+    user_id UUID         NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    feature VARCHAR(100) NOT NULL,
+    mask    INTEGER      NOT NULL CHECK (mask >= 0),
+    PRIMARY KEY (user_id, feature)
+);
+
+CREATE TABLE auth.user_denies (
+    user_id UUID         NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    feature VARCHAR(100) NOT NULL,
+    mask    INTEGER      NOT NULL CHECK (mask >= 0),
+    PRIMARY KEY (user_id, feature)
+);
+
+CREATE TABLE auth.user_grant_actions (
+    user_id UUID         NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    feature VARCHAR(100) NOT NULL,
+    action  VARCHAR(50)  NOT NULL,
+    PRIMARY KEY (user_id, feature, action)
+);
+
+CREATE TABLE auth.user_deny_actions (
+    user_id UUID         NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    feature VARCHAR(100) NOT NULL,
+    action  VARCHAR(50)  NOT NULL,
+    PRIMARY KEY (user_id, feature, action)
 );
