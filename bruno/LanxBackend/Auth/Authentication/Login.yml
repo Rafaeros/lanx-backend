@@ -1,0 +1,40 @@
+info:
+  name: Login
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/login"
+  body:
+    type: json
+    data: |-
+      {
+        "username": "{{adminUsername}}",
+        "password": "{{adminPassword}}"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  ###  **Auth / Authentication**
+
+  **🔹 Login**
+
+  - **Rota:** `POST /auth/login`
+  - **Segurança:** Pública (Não exige token)
+    - **Body (JSON):**<br/>
+      `{`
+      "userrname": "username",
+      "password": "password"
+      `}`
+
+  <br/>
+
+  <br/><br/><br/>

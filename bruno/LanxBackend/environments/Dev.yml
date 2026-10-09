@@ -1,0 +1,12 @@
+name: Dev
+variables:
+  - name: baseUrl
+    value: http://localhost:8080/api/v1
+    description: URL base da Aplicação
+  - name: adminUsername
+    value: admin
+    description: Usuario Admin criado na inicialização se houver chave no .env
+  - name: adminPassword
+    value: ""
+    description: Senha (Preencha na aba "Secrets" do Bruno!)
+    secret: true

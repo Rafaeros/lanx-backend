@@ -1,0 +1,27 @@
+info:
+  name: Get All Features
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/auth/features"
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsYW54LWJhY2tlbmQiLCJzdWIiOiIwMWExMjBhOS1mOWQ5LTdmN2ItYTYzMS1kMGRiNjhhOGJjMjMiLCJleHAiOjE3OTE1Nzk1NDEsImlhdCI6MTc5MTU1MDc0MSwidXNlcm5hbWUiOiJhZG1pbiJ9.SwKEeJnT3SJ8dBdsyQZkiEqzTiNSqx0cY6Gx4XSUPnI
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  ### **Auth / Authorization (Catálogo)**
+
+  **🔹 Listar o Catálogo Completo de Funcionalidades**
+
+  - **Rota:** `GET /auth/features`
+  - **Segurança:** Exige Token + Permissão `administracao.permissoes` (READ)
+  - **Para que serve:** Alimenta os *checkboxes* da tela de Criação de Perfil.

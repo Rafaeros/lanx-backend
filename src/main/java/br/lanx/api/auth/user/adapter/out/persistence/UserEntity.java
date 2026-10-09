@@ -2,12 +2,17 @@ package br.lanx.api.auth.user.adapter.out.persistence;
 
 import br.lanx.api.auth.permission.adapter.out.persistence.FeatureActionEmbeddable;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.domain.Persistable;
 
 import jakarta.persistence.CollectionTable;
@@ -24,6 +29,8 @@ import jakarta.persistence.Transient;
 
 @Entity
 @Table(schema = "auth", name = "users")
+@SQLDelete(sql = "UPDATE auth.users SET active = false, deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class UserEntity implements Persistable<UUID> {
 
     @Id
@@ -38,13 +45,15 @@ public class UserEntity implements Persistable<UUID> {
     @Column(nullable = false)
     private boolean active;
 
-    // referência por id: a role é outro agregado (módulo role); a chave estrangeira fica no SQL
+    // referência por id: a role é outro agregado (módulo role); a chave estrangeira
+    // fica no SQL
     @ElementCollection
     @CollectionTable(schema = "auth", name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role_id", nullable = false)
     private Set<UUID> roleIds = new HashSet<>();
 
-    // ---------- exceções individuais: grants somam à role, denies subtraem ----------
+    // ---------- exceções individuais: grants somam à role, denies subtraem
+    // ----------
 
     @ElementCollection
     @CollectionTable(schema = "auth", name = "user_grants", joinColumns = @JoinColumn(name = "user_id"))
@@ -68,6 +77,17 @@ public class UserEntity implements Persistable<UUID> {
 
     @Transient
     private boolean isNew = false;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreationTimestamp
+    private Instant createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    @UpdateTimestamp
+    private Instant updatedAt;
+
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
 
     protected UserEntity() {
     } // usado pelo Hibernate ao carregar

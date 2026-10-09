@@ -1,0 +1,18 @@
+info:
+  name: Get Role By Id
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/auth/roles/01a120a9-f91c-7e10-a2a5-d5740ad1f032"
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsYW54LWJhY2tlbmQiLCJzdWIiOiIwMWExMjBhOS1mOWQ5LTdmN2ItYTYzMS1kMGRiNjhhOGJjMjMiLCJleHAiOjE3OTE1Nzk1NDEsImlhdCI6MTc5MTU1MDc0MSwidXNlcm5hbWUiOiJhZG1pbiJ9.SwKEeJnT3SJ8dBdsyQZkiEqzTiNSqx0cY6Gx4XSUPnI
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

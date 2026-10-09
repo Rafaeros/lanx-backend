@@ -1,0 +1,29 @@
+info:
+  name: Update Role
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/auth/roles/01a120da-748f-7d1c-ade0-5b4b32acb316"
+  body:
+    type: json
+    data: |
+      {
+        "name": "Gerente_Cadastros",
+        "permissions": {
+          "crud": {
+            "cadastros.unidade-medida": ["READ", "CREATE", "UPDATE", "DELETE"]
+          }
+        }
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsYW54LWJhY2tlbmQiLCJzdWIiOiIwMWExMjBhOS1mOWQ5LTdmN2ItYTYzMS1kMGRiNjhhOGJjMjMiLCJleHAiOjE3OTE1Nzk1NDEsImlhdCI6MTc5MTU1MDc0MSwidXNlcm5hbWUiOiJhZG1pbiJ9.SwKEeJnT3SJ8dBdsyQZkiEqzTiNSqx0cY6Gx4XSUPnI
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

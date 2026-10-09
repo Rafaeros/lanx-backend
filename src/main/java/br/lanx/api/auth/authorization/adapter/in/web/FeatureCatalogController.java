@@ -13,13 +13,19 @@ import br.lanx.api.auth.permission.domain.Action;
 import br.lanx.api.shared.authorization.RequiresFeature;
 import br.lanx.api.shared.web.ApiResponse;
 
-/** Alimenta o painel de administração: o que existe para ser permitido ou negado. */
+/**
+ * Alimenta o painel de administração: o que existe para ser permitido ou
+ * negado.
+ */
 @RestController
 @RequestMapping("/auth/features")
 @RequiresFeature("administracao.permissoes")
 public class FeatureCatalogController {
 
-    /** crud = ações que toda funcionalidade tem; features = a árvore, com as ações extras de cada nó. */
+    /**
+     * crud = ações que toda funcionalidade tem; features = a árvore, com as ações
+     * extras de cada nó.
+     */
     record CatalogResponse(List<String> crud, List<FeatureNode> features) {
     }
 

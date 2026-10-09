@@ -2,6 +2,7 @@ package br.lanx.api.auth.role.adapter.out.persistence;
 
 import br.lanx.api.auth.permission.adapter.out.persistence.FeatureActionEmbeddable;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -20,10 +21,16 @@ import jakarta.persistence.PostPersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.domain.Persistable;
 
 @Entity
 @Table(schema = "auth", name = "roles")
+@SQLDelete(sql = "UPDATE auth.roles SET deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class RoleEntity implements Persistable<UUID> {
 
     @Id
@@ -44,6 +51,17 @@ public class RoleEntity implements Persistable<UUID> {
 
     @Transient
     private boolean isNew = false;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreationTimestamp
+    private Instant createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    @UpdateTimestamp
+    private Instant updatedAt;
+
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
 
     protected RoleEntity() {
     }

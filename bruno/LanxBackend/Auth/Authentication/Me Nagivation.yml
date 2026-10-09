@@ -1,0 +1,27 @@
+info:
+  name: Me Nagivation
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/auth/me/navigation"
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsYW54LWJhY2tlbmQiLCJzdWIiOiIwMWExMjBhOS1mOWQ5LTdmN2ItYTYzMS1kMGRiNjhhOGJjMjMiLCJleHAiOjE3OTE1Nzk1NDEsImlhdCI6MTc5MTU1MDc0MSwidXNlcm5hbWUiOiJhZG1pbiJ9.SwKEeJnT3SJ8dBdsyQZkiEqzTiNSqx0cY6Gx4XSUPnI
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  ### **Auth / Me (Navegação Pessoal)**
+
+  **🔹 Árvore de Navegação**
+
+  - **Rota:** `GET /auth/me/navigation`
+  - **Segurança:** Exige Token
+  - **Para que serve:** O front-end chama isso logo após o login para saber quais menus desenhar na tela (baseado no que o usuário pode acessar).

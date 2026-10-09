@@ -1,0 +1,46 @@
+info:
+  name: User
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit
+
+docs:
+  content: |-
+    ### **5. Auth / Users**
+
+    As rotas de Usuários exigem Token + Permissão `administracao.usuarios`.
+
+    **🔹 Buscar Usuário Específico**
+
+    - **Rota:** `GET /auth/users/{id}`
+
+    **🔹 Criar Usuário**
+
+    - **Rota:** `POST /auth/users`
+    - **Body (JSON):**
+
+    ```
+    json
+    ```
+
+    <span>{</span>
+
+    <span>"username": "joao.silva",</span>
+
+    <span>"password": "senha_segura",</span>
+
+    <span>"roleIds": \["&lt;UUID_DA_ROLE&gt;"\],</span>
+
+    <span>"grants": {}, </span>
+
+    <span>"denies": {} </span>
+
+    <span>}</span>
+
+    **🔹 Atualizar Usuário**
+
+    - **Rota:** `PUT /auth/users/{id}`
+    - **Body (JSON):** *(Mesmo payload acima, acrescido de* `active: true/false`*)*
+  type: text/markdown
