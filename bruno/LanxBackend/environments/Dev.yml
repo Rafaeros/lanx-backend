@@ -6,7 +6,6 @@ variables:
   - name: adminUsername
     value: admin
     description: Usuario Admin criado na inicialização se houver chave no .env
-  - name: adminPassword
-    value: ""
+  - secret: true
+    name: adminPassword
     description: Senha (Preencha na aba "Secrets" do Bruno!)
-    secret: true
