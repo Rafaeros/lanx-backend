@@ -1,0 +1,28 @@
+info:
+  name: Search
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/unidade-medida?busca=Qu&page=0&size=20"
+  params:
+    - name: busca
+      value: Qu
+      type: query
+    - name: page
+      value: "0"
+      type: query
+    - name: size
+      value: "20"
+      type: query
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsYW54LWJhY2tlbmQiLCJzdWIiOiIwMWExMjBhOS1mOWQ5LTdmN2ItYTYzMS1kMGRiNjhhOGJjMjMiLCJleHAiOjE3OTE1NzgzMDgsImlhdCI6MTc5MTU0OTUwOCwidXNlcm5hbWUiOiJhZG1pbiJ9.6VtVCHfyzC0gLkBhG0xwDLmEqGN0wtEGQ8M2xfTZ-1k
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

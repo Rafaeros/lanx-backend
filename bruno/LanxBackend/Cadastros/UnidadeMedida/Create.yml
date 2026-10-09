@@ -10,8 +10,8 @@ http:
     type: json
     data: |-
       {
-        "nome": "Unidade",
-        "sigla": "Un",
+        "nome": "Quilo",
+        "sigla": "Kg",
         "fatorConversao": 1
       }
   auth:

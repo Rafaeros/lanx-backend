@@ -1,0 +1,18 @@
+info:
+  name: Delete
+  type: http
+  seq: 4
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/unidade-medida/01a121c6-9fe6-755f-a90d-2b409edba985"
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsYW54LWJhY2tlbmQiLCJzdWIiOiIwMWExMjBhOS1mOWQ5LTdmN2ItYTYzMS1kMGRiNjhhOGJjMjMiLCJleHAiOjE3OTE1NzgzMDgsImlhdCI6MTc5MTU0OTUwOCwidXNlcm5hbWUiOiJhZG1pbiJ9.6VtVCHfyzC0gLkBhG0xwDLmEqGN0wtEGQ8M2xfTZ-1k
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

@@ -1,0 +1,26 @@
+info:
+  name: Update
+  type: http
+  seq: 3
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/unidade-medida/0192534a-1b5e-7c9b-9c65-0a8b945d8b7a"
+  body:
+    type: json
+    data: |-
+      {
+        "nome": "Quilograma",
+        "sigla": "KG",
+        "fatorConversao": 1000
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsYW54LWJhY2tlbmQiLCJzdWIiOiIwMWExMjBhOS1mOWQ5LTdmN2ItYTYzMS1kMGRiNjhhOGJjMjMiLCJleHAiOjE3OTE1NzgzMDgsImlhdCI6MTc5MTU0OTUwOCwidXNlcm5hbWUiOiJhZG1pbiJ9.6VtVCHfyzC0gLkBhG0xwDLmEqGN0wtEGQ8M2xfTZ-1k
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

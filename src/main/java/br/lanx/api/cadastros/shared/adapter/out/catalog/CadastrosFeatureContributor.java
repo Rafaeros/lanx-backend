@@ -1,4 +1,4 @@
-package br.lanx.api.shared.cadastros.adapter.out.catalog;
+package br.lanx.api.cadastros.shared.adapter.out.catalog;
 
 import java.util.List;
 
