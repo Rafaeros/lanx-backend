@@ -1,0 +1,26 @@
+info:
+  name: Create
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:8090/ap1/v1/materiais
+  body:
+    type: json
+    data: |-
+      {
+        "codigo": "CNFAT04CZ",
+        "descricao": "CONECTOR 4 VIAS",
+        "uniadeMedidaId": ""
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsYW54LWJhY2tlbmQiLCJzdWIiOiIwMWExMzZjNi01MjFjLTc0NGQtOTBhZC0xMjBjNzE1MjhmNjciLCJleHAiOjE3OTE5NDkzODUsImlhdCI6MTc5MTkyMDU4NSwidXNlcm5hbWUiOiJhZG1pbiJ9.s1pPzGryHC8o9IQs4B_ii1F7jfSn6AsRgJSe1lVYm6w
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

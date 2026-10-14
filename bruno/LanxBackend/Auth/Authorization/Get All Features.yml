@@ -8,7 +8,7 @@ http:
   url: "{{baseUrl}}/auth/features"
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsYW54LWJhY2tlbmQiLCJzdWIiOiIwMWExMjBhOS1mOWQ5LTdmN2ItYTYzMS1kMGRiNjhhOGJjMjMiLCJleHAiOjE3OTE1Nzk1NDEsImlhdCI6MTc5MTU1MDc0MSwidXNlcm5hbWUiOiJhZG1pbiJ9.SwKEeJnT3SJ8dBdsyQZkiEqzTiNSqx0cY6Gx4XSUPnI
+    token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsYW54LWJhY2tlbmQiLCJzdWIiOiIwMWExMjBhOS1mOWQ5LTdmN2ItYTYzMS1kMGRiNjhhOGJjMjMiLCJleHAiOjE3OTE5MTk1ODMsImlhdCI6MTc5MTg5MDc4MywidXNlcm5hbWUiOiJhZG1pbiJ9.ANpKc96_OWMSInX8ShXRLr7mGtq1MU0GHJcj3JxhhRU
 
 settings:
   encodeUrl: true

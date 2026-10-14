@@ -25,7 +25,7 @@ public class CreateUnidadeMedidaService implements CreateUnidadeMedidaUseCase {
             throw new UnidadeMedidaAlreadyExistsException("Já existe uma unidade de medida com essa Sigla");
         }
 
-        UnidadeMedida unidade = UnidadeMedida.create(cmd.nome(), cmd.sigla(), cmd.fatorConversao());
+        UnidadeMedida unidade = UnidadeMedida.create(cmd.nome(), cmd.sigla());
         return new CreatedResult(unidades.save(unidade).id());
     }
 

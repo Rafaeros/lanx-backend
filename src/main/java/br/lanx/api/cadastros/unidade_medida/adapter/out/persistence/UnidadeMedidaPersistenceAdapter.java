@@ -1,6 +1,5 @@
 package br.lanx.api.cadastros.unidade_medida.adapter.out.persistence;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,14 +32,7 @@ class UnidadeMedidaPersistenceAdapter implements UnidadeMedidaRepository {
         PageRequest pageRequest = PageRequest.of(query.page(), query.size(), Sort.by("nome"));
         Page<UnidadeMedidaEntity> page = jpa.search(filtro, pageRequest);
 
-        List<UnidadeMedida> items = page.getContent().stream().map(UnidadeMedidaMapper::toDomain).toList();
-
-        return new PageResult<>(
-                items,
-                page.getNumber(),
-                page.getSize(),
-                page.getTotalElements(),
-                page.getTotalPages());
+        return PageResult.from(page, UnidadeMedidaMapper::toDomain);
     }
 
     @Override

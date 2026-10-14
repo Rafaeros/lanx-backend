@@ -6,8 +6,8 @@ CREATE TABLE
         username VARCHAR(100) NOT NULL UNIQUE,
         password_hash VARCHAR(255) NOT NULL,
         active BOOLEAN NOT NULL DEFAULT TRUE,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
         deleted_at TIMESTAMPTZ
     );
 
@@ -15,8 +15,8 @@ CREATE TABLE
     auth.roles (
         id UUID PRIMARY KEY DEFAULT uuidv7 (),
         name VARCHAR(50) NOT NULL UNIQUE,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
         deleted_at TIMESTAMPTZ
     );
 
@@ -88,8 +88,25 @@ CREATE TABLE
         id UUID PRIMARY KEY DEFAULT uuidv7 (),
         nome VARCHAR(100) NOT NULL,
         sigla VARCHAR(10) NOT NULL UNIQUE,
-        fator_conversao DECIMAL(19,4) NOT NULL DEFAULT 1,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
         deleted_at TIMESTAMPTZ
     );
+
+CREATE TABLE
+    cadastros.materiais (
+        id UUID PRIMARY KEY DEFAULT uuidv7 (),
+        codigo VARCHAR(100) NOT NULL UNIQUE,
+        descricao VARCHAR(500) NOT NULL,
+        unidade_medida_id UUID,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
+        deleted_at TIMESTAMPTZ,
+        CONSTRAINT fk_materiais_unidade_medida FOREIGN KEY (unidade_medida_id) REFERENCES cadastros.unidades_medida (id) ON DELETE RESTRICT
+    );
+
+CREATE INDEX idx_materiais_unidade_medida_id ON cadastros.materiais (unidade_medida_id);
+
+CREATE INDEX idx_materiais_ativos ON cadastros.materiais (id)
+WHERE
+    deleted_at IS NULL;

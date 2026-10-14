@@ -1,11 +1,10 @@
 package br.lanx.api.cadastros.unidade_medida.application.port.in;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 public interface UpdateUnidadeMedidaUseCase {
     void update(UpdateUnidadeMedidaCommand command);
 
-    record UpdateUnidadeMedidaCommand(UUID id, String novoNome, String novaSigla, BigDecimal novoFatorConversao) {
+    record UpdateUnidadeMedidaCommand(UUID id, String novoNome, String novaSigla) {
     }
 }

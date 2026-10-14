@@ -18,7 +18,7 @@ public record PermissionsView(Map<String, List<String>> crud, Map<String, List<S
         Map<String, List<String>> crud = new TreeMap<>();
         set.masks().forEach((feature, mask) -> crud.put(feature.value(), Arrays.stream(Action.values())
                 .filter(a -> a.isIn(mask))
-                .map(Action::name)
+                .map(a -> a.name())
                 .toList()));
 
         Map<String, List<String>> actions = new TreeMap<>();

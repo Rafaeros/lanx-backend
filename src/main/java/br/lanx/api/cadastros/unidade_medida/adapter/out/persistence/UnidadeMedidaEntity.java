@@ -19,7 +19,6 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE cadastros.unidades_medida SET deleted_at = NOW() WHERE id = ?")
 @SQLRestriction("deleted_at IS NULL")
 public class UnidadeMedidaEntity {
-
     @Id
     private UUID id;
 
@@ -28,9 +27,6 @@ public class UnidadeMedidaEntity {
 
     @Column(name = "sigla", unique = true, nullable = false, length = 10)
     private String sigla;
-
-    @Column(name = "fator_conversao", nullable = false)
-    private BigDecimal fatorConversao;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
@@ -46,19 +42,14 @@ public class UnidadeMedidaEntity {
     protected UnidadeMedidaEntity() {
     }
 
-    UnidadeMedidaEntity(UUID id, String nome, String sigla, BigDecimal fatorConversao) {
+    UnidadeMedidaEntity(UUID id, String nome, String sigla) {
         this.id = id;
         this.nome = nome;
         this.sigla = sigla;
-        this.fatorConversao = fatorConversao;
     }
 
     public UUID getId() {
         return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
     }
 
     public String getNome() {
@@ -77,12 +68,28 @@ public class UnidadeMedidaEntity {
         this.sigla = sigla;
     }
 
-    public BigDecimal getFatorConversao() {
-        return fatorConversao;
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 
-    public void setFatorConversao(BigDecimal fatorConversao) {
-        this.fatorConversao = fatorConversao;
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Instant getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(Instant deletedAt) {
+        this.deletedAt = deletedAt;
     }
 
 }

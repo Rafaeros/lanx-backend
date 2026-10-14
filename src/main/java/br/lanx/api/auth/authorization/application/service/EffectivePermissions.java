@@ -9,7 +9,6 @@ import br.lanx.api.auth.permission.application.port.out.PermissionCache;
 import br.lanx.api.auth.permission.domain.PermissionSet;
 import br.lanx.api.auth.role.application.port.in.FindRolesUseCase;
 import br.lanx.api.auth.user.application.port.in.FindUserUseCase;
-import br.lanx.api.auth.user.domain.User;
 
 /**
  * Resolve as permissões efetivas de um usuário, usando o cache. É aqui que o
@@ -34,7 +33,7 @@ class EffectivePermissions {
         return cache.get(userId).orElseGet(() -> {
             // usuário inexistente ou inativo não tem nenhuma permissão
             PermissionSet permissions = users.findById(userId)
-                    .filter(User::active)
+                    .filter(u -> u.active())
                     .map(user -> user.effectivePermissions(roles.findByIds(user.roleIds())))
                     .orElse(PermissionSet.EMPTY);
             cache.put(userId, permissions);

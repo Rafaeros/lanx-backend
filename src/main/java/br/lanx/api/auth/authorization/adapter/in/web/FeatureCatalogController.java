@@ -31,13 +31,13 @@ public class FeatureCatalogController {
 
     private final GetFeatureCatalogUseCase catalog;
 
-    FeatureCatalogController(GetFeatureCatalogUseCase catalog) {
+    public FeatureCatalogController(GetFeatureCatalogUseCase catalog) {
         this.catalog = catalog;
     }
 
     @GetMapping
     ApiResponse<CatalogResponse> list() {
-        var crud = Arrays.stream(Action.values()).map(Action::name).toList();
+        var crud = Arrays.stream(Action.values()).map(a -> a.name()).toList();
         return ApiResponse.ok("Catálogo de funcionalidades", new CatalogResponse(crud, catalog.featureTree()));
     }
 }

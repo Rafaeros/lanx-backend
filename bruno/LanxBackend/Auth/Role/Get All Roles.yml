@@ -8,7 +8,7 @@ http:
   url: "{{baseUrl}}/auth/roles"
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsYW54LWJhY2tlbmQiLCJzdWIiOiIwMWExMjBhOS1mOWQ5LTdmN2ItYTYzMS1kMGRiNjhhOGJjMjMiLCJleHAiOjE3OTE1Nzg2OTQsImlhdCI6MTc5MTU0OTg5NCwidXNlcm5hbWUiOiJhZG1pbiJ9.YVGxwdzc77lqR4loRImtuoWrSRVUq2vWjX_8OmubuG4
+    token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsYW54LWJhY2tlbmQiLCJzdWIiOiIwMWExMjBhOS1mOWQ5LTdmN2ItYTYzMS1kMGRiNjhhOGJjMjMiLCJleHAiOjE3OTE5MjEzODEsImlhdCI6MTc5MTg5MjU4MSwidXNlcm5hbWUiOiJhZG1pbiJ9.hS1yufVC7-YToaA-jyx0cdajXZico059QOOJJxSU5nY
 
 settings:
   encodeUrl: true

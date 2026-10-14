@@ -1,7 +1,6 @@
 package br.lanx.api.auth.role.adapter.in.web;
 
 import br.lanx.api.auth.permission.adapter.in.web.PermissionsRequest;
-import br.lanx.api.auth.role.domain.Role;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +25,10 @@ import br.lanx.api.shared.authorization.RequiresFeature;
 import br.lanx.api.shared.web.ApiResponse;
 import jakarta.validation.Valid;
 
-/** GET exige READ, POST exige CREATE e PUT exige UPDATE em "administracao.permissoes". */
+/**
+ * GET exige READ, POST exige CREATE e PUT exige UPDATE em
+ * "administracao.permissoes".
+ */
 @RestController
 @RequestMapping("/auth/roles")
 @RequiresFeature("administracao.permissoes")

@@ -11,16 +11,14 @@ public class UnidadeMedidaMapper {
         return new UnidadeMedida(
                 e.getId(),
                 e.getNome(),
-                e.getSigla(),
-                e.getFatorConversao());
+                e.getSigla());
     }
 
     static UnidadeMedidaEntity toEntity(UnidadeMedida u) {
         return new UnidadeMedidaEntity(
                 u.id(),
                 u.nome(),
-                u.sigla(),
-                u.fatorConversao());
+                u.sigla());
     }
 
 }

@@ -39,7 +39,7 @@ public class UserQueryService implements GetUserUseCase, FindUserUseCase {
                 user.username(),
                 user.active(),
                 userRoles.stream()
-                        .sorted(Comparator.comparing(Role::name))
+                        .sorted(Comparator.comparing(r -> r.name()))
                         .map(r -> new RoleSummary(r.id(), r.name()))
                         .toList(),
                 PermissionsView.from(user.grants()),

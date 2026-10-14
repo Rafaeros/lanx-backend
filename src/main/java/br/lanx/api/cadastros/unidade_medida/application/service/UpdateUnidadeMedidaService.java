@@ -25,8 +25,7 @@ public class UpdateUnidadeMedidaService implements UpdateUnidadeMedidaUseCase {
 
         UnidadeMedida unidadeAtualiada = unidade.update(
                 cmd.novoNome(),
-                cmd.novaSigla(),
-                cmd.novoFatorConversao());
+                cmd.novaSigla());
 
         unidades.save(unidadeAtualiada);
     }

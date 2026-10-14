@@ -11,8 +11,7 @@ http:
     data: |-
       {
         "nome": "Quilo",
-        "sigla": "Kg",
-        "fatorConversao": 1
+        "sigla": "Kg"
       }
   auth:
     type: bearer

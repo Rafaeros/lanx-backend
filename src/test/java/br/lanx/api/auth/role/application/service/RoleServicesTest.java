@@ -1,7 +1,5 @@
 package br.lanx.api.auth.role.application.service;
 
-import br.lanx.api.auth.permission.domain.PermissionSet;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

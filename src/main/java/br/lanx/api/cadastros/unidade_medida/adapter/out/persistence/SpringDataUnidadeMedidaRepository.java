@@ -12,24 +12,24 @@ import org.springframework.data.repository.query.Param;
 
 interface SpringDataUnidadeMedidaRepository extends JpaRepository<UnidadeMedidaEntity, UUID> {
 
-    @Query("SELECT u FROM UnidadeMedidaEntity u WHERE "
-            + "(:filtro is NULL OR LOWER(u.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))) "
-            + "OR LOWER(u.sigla) LIKE LOWER(CONCAT('%', :filtro, '%'))")
-    Page<UnidadeMedidaEntity> search(@Param("filtro") String filtro, Pageable pageable);
+        @Query("SELECT u FROM UnidadeMedidaEntity u WHERE "
+                        + "(:filtro is NULL OR LOWER(u.nome) LIKE LOWER(CONCAT('%', :filtro, '%'))) "
+                        + "OR LOWER(u.sigla) LIKE LOWER(CONCAT('%', :filtro, '%'))")
+        Page<UnidadeMedidaEntity> search(@Param("filtro") String filtro, Pageable pageable);
 
-    boolean existsById(UUID id);
+        boolean existsById(UUID id);
 
-    boolean existsByNome(String nome);
+        boolean existsByNome(String nome);
 
-    boolean existsBySigla(String sigla);
+        boolean existsBySigla(String sigla);
 
-    Optional<UnidadeMedidaEntity> findById(UUID id);
+        Optional<UnidadeMedidaEntity> findById(UUID id);
 
-    Optional<UnidadeMedidaEntity> findByNome(String nome);
+        Optional<UnidadeMedidaEntity> findByNome(String nome);
 
-    Optional<UnidadeMedidaEntity> findBySigla(String sigla);
+        Optional<UnidadeMedidaEntity> findBySigla(String sigla);
 
-    @Query("UPDATE UnidadeMedidaEntity u SET u.nome = :nome, u.sigla = :sigla, u.fatorConversao = :fatorConversao WHERE u.id = :id")
-    Optional<UnidadeMedidaEntity> update(@Param("id") UUID id, @Param("nome") String nome,
-            @Param("sigla") String sigla, @Param("fator_conversao") BigDecimal fatorConversao);
+        @Query("UPDATE UnidadeMedidaEntity u SET u.nome = :nome, u.sigla = :sigla WHERE u.id = :id")
+        Optional<UnidadeMedidaEntity> update(@Param("id") UUID id, @Param("nome") String nome,
+                        @Param("sigla") String sigla);
 }

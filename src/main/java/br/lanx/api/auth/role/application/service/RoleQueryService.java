@@ -28,7 +28,7 @@ public class RoleQueryService implements GetRolesUseCase, FindRolesUseCase {
     @Transactional(readOnly = true)
     public List<RoleView> roles() {
         return roles.findAll().stream()
-                .sorted(Comparator.comparing(Role::name))
+                .sorted(Comparator.comparing(r -> r.name()))
                 .map(RoleQueryService::view)
                 .toList();
     }

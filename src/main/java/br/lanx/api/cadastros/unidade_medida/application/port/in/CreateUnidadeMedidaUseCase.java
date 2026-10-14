@@ -1,7 +1,5 @@
 package br.lanx.api.cadastros.unidade_medida.application.port.in;
 
-import java.math.BigDecimal;
-
 import br.lanx.api.shared.application.CreatedResult;
 
 public interface CreateUnidadeMedidaUseCase {
@@ -9,8 +7,7 @@ public interface CreateUnidadeMedidaUseCase {
 
     record CreateUnidadeMedidaCommand(
             String nome,
-            String sigla,
-            BigDecimal fatorConversao) {
+            String sigla) {
     }
 
 }

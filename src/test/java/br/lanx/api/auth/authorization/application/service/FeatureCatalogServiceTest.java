@@ -23,7 +23,7 @@ class FeatureCatalogServiceTest {
 
         List<FeatureNode> tree = service.featureTree();
 
-        assertThat(tree).extracting(FeatureNode::key).containsExactly("compras", "estoque");
+        assertThat(tree).extracting(f -> f.key()).containsExactly("compras", "estoque");
         FeatureNode analise = tree.get(0).children().get(0);
         assertThat(analise.key()).isEqualTo("compras.analise");
         assertThat(analise.label()).isEqualTo("Análise");

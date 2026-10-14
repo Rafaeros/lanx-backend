@@ -29,7 +29,7 @@ final class UserRoles {
         if (found.size() != ids.size()) {
             Set<UUID> missing = new HashSet<>(ids);
             found.forEach(r -> missing.remove(r.id()));
-            throw new RoleNotFoundException(missing.stream().map(UUID::toString).collect(Collectors.joining(", ")));
+            throw new RoleNotFoundException(missing.stream().map(u -> u.toString()).collect(Collectors.joining(", ")));
         }
         return Set.copyOf(ids);
     }

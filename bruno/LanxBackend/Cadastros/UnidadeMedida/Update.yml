@@ -11,8 +11,7 @@ http:
     data: |-
       {
         "nome": "Quilograma",
-        "sigla": "KG",
-        "fatorConversao": 1000
+        "sigla": "KG"
       }
   auth:
     type: bearer

@@ -42,7 +42,7 @@ public class NavigationService implements GetNavigationUseCase {
     private NavigationNode node(FeatureDefinition def, PermissionSet permissions) {
         List<String> crud = Arrays.stream(Action.values())
                 .filter(a -> permissions.can(def.key(), a))
-                .map(Action::name)
+                .map(a -> a.name())
                 .toList();
         List<String> extras = def.extraActions().stream()
                 .filter(a -> permissions.canDo(def.key(), a))

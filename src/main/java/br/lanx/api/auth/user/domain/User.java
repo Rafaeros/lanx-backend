@@ -71,8 +71,8 @@ public record User(UUID id, String username, String passwordHash, boolean active
     public PermissionSet effectivePermissions(Collection<Role> loadedRoles) {
         PermissionSet fromRoles = loadedRoles.stream()
                 .filter(role -> roleIds.contains(role.id()))
-                .map(Role::permissions)
-                .reduce(PermissionSet.EMPTY, PermissionSet::union);
+                .map(r -> r.permissions())
+                .reduce(PermissionSet.EMPTY, (acc, permissions) -> acc.union(permissions));
         return fromRoles.union(grants).minus(denies);
     }
 

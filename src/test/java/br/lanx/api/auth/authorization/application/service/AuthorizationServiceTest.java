@@ -121,7 +121,7 @@ class AuthorizationServiceTest {
 
         List<NavigationNode> tree = navigation.navigationFor(joao.id());
 
-        assertThat(tree).extracting(NavigationNode::key).containsExactly("compras");
+        assertThat(tree).extracting(n -> n.key()).containsExactly("compras");
         NavigationNode compras = tree.get(0);
         assertThat(compras.permissions()).isEmpty();
         assertThat(compras.children()).hasSize(1);
