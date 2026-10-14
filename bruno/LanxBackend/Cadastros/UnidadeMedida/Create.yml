@@ -13,9 +13,7 @@ http:
         "nome": "Quilo",
         "sigla": "Kg"
       }
-  auth:
-    type: bearer
-    token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsYW54LWJhY2tlbmQiLCJzdWIiOiIwMWExMjBhOS1mOWQ5LTdmN2ItYTYzMS1kMGRiNjhhOGJjMjMiLCJleHAiOjE3OTE1NzgzMDgsImlhdCI6MTc5MTU0OTUwOCwidXNlcm5hbWUiOiJhZG1pbiJ9.6VtVCHfyzC0gLkBhG0xwDLmEqGN0wtEGQ8M2xfTZ-1k
+  auth: inherit
 
 settings:
   encodeUrl: true
@@ -23,3 +21,12 @@ settings:
   followRedirects: true
   maxRedirects: 5
   forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Criar unidade de medida**
+
+  - **Rota:** `POST /unidade-medida`
+  - **Segurança:** token + `cadastros.unidade-medida:create`
+  - **Body:** `nome` e `sigla` obrigatórios (sigla única).
+  - **Resposta 201:** `{ "message": "Unidade de medida criada!", "data": { "id": "..." } }` (o status HTTP também é 201)
+  - **Erros:** `400` campo vazio · `401` sem token · `403` sem a permissão · `409` sigla já existe

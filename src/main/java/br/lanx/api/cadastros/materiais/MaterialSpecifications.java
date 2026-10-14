@@ -18,9 +18,14 @@ public final class MaterialSpecifications {
                 .and(hasDescricao(filter));
     }
 
+    /** Filtro ausente = não restringe nada. O Spring Data JPA 4 não aceita Specification nula em and(). */
+    private static Specification<Material> matchAll() {
+        return (root, query, cb) -> cb.conjunction();
+    }
+
     private static Specification<Material> hasCodigo(MaterialFilter filter) {
         if (filter.codigo() == null || filter.codigo().isBlank()) {
-            return null;
+            return matchAll();
         }
         return (root, query, cb) -> cb.equal(
                 cb.lower(root.get("codigo")),
@@ -29,7 +34,7 @@ public final class MaterialSpecifications {
 
     private static Specification<Material> hasDescricao(MaterialFilter filter) {
         if (filter.descricao() == null || filter.descricao().isBlank()) {
-            return null;
+            return matchAll();
         }
         return (root, query, cb) -> cb.like(
                 cb.lower(root.get("descricao")),

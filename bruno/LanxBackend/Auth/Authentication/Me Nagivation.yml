@@ -1,14 +1,12 @@
 info:
-  name: Me Nagivation
+  name: Me Navigation
   type: http
   seq: 2
 
 http:
   method: GET
   url: "{{baseUrl}}/auth/me/navigation"
-  auth:
-    type: bearer
-    token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsYW54LWJhY2tlbmQiLCJzdWIiOiIwMWExMjBhOS1mOWQ5LTdmN2ItYTYzMS1kMGRiNjhhOGJjMjMiLCJleHAiOjE3OTE1Nzk1NDEsImlhdCI6MTc5MTU1MDc0MSwidXNlcm5hbWUiOiJhZG1pbiJ9.SwKEeJnT3SJ8dBdsyQZkiEqzTiNSqx0cY6Gx4XSUPnI
+  auth: inherit
 
 settings:
   encodeUrl: true
@@ -18,10 +16,30 @@ settings:
   forwardAuthorizationHeader: false
 
 docs: |-
-  ### **Auth / Me (Navegação Pessoal)**
+  ### **Auth / Me (Navegação pessoal)**
 
-  **🔹 Árvore de Navegação**
+  **🔹 Árvore de navegação**
 
   - **Rota:** `GET /auth/me/navigation`
-  - **Segurança:** Exige Token
-  - **Para que serve:** O front-end chama isso logo após o login para saber quais menus desenhar na tela (baseado no que o usuário pode acessar).
+  - **Segurança:** exige token. Não exige permissão específica (qualquer usuário autenticado).
+  - **Para que serve:** o front chama logo após o login para desenhar menus e esconder botões. Só voltam as funcionalidades em que o usuário tem ao menos uma ação.
+  - **Resposta 200:**
+
+  ```json
+  {
+    "status": 200,
+    "message": "Navegação carregada",
+    "data": [
+      {
+        "key": "cadastros",
+        "label": "Cadastros",
+        "actions": [],
+        "children": [
+          { "key": "cadastros.materiais", "label": "Materiais", "actions": ["read", "create"], "children": [] }
+        ]
+      }
+    ]
+  }
+  ```
+
+  - **Erros:** `401` sem token ou token inválido/expirado

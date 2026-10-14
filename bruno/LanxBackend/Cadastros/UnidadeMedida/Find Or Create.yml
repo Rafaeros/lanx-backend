@@ -1,0 +1,35 @@
+info:
+  name: Find Or Create
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{baseUrl}}/unidade-medida/find-or-create"
+  body:
+    type: json
+    data: |-
+      {
+        "nome": "Quilo",
+        "sigla": "Kg"
+      }
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Buscar por nome ou criar**
+
+  - **Rota:** `POST /unidade-medida/find-or-create`
+  - **Segurança:** token + `cadastros.unidade-medida:create` (pode criar, por isso exige CREATE)
+  - **Para que serve:** cadastros e importações que citam a unidade pelo nome. Evita duplicar "Quilo" / "quilo".
+  - **Regra:** procura pelo `nome` sem diferenciar maiúsculas. Se achar, devolve a existente e **ignora** a `sigla` enviada. Se não achar, cria com a `sigla`.
+  - **Resposta:** `201` se criou · `200` se já existia. Em ambos `data` é `{ "id", "nome", "sigla" }`.
+  - **Erros:** `400` campo vazio · `401` sem token · `403` sem a permissão · `409` nome novo, mas a sigla já pertence a outra unidade

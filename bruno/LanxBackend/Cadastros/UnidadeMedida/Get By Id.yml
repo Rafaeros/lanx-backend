@@ -1,0 +1,27 @@
+info:
+  name: Get By Id
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/unidade-medida/{{unidadeMedidaId}}"
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Buscar unidade de medida por id**
+
+  - **Rota:** `GET /unidade-medida/{id}`
+  - **Segurança:** token + `cadastros.unidade-medida:read`
+  - **Variável:** `unidadeMedidaId` (ambiente)
+  - **Resposta 200:** `{ "data": { "id": "...", "nome": "Quilo", "sigla": "Kg" } }`
+  - **Erros:** `401` sem token · `403` sem a permissão · `404` não encontrada

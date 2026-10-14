@@ -5,18 +5,18 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl/auth/users"
+  url: "{{baseUrl}}/auth/users"
   body:
     type: json
     data: |-
       {
         "username": "joao.silva",
-        "password": "senha_segura",
-        "roleIds": ["<UUID_DA_ROLE>"],
-        "grants": {}, 
-        "denies": {} 
+        "password": "Senha12345",
+        "roleIds": ["{{roleId}}"]
       }
-  auth: inherit
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
 
 settings:
   encodeUrl: true
@@ -24,3 +24,15 @@ settings:
   followRedirects: true
   maxRedirects: 5
   forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Criar usuário**
+
+  - **Rota:** `POST /auth/users`
+  - **Segurança:** token + `administracao.usuarios:create`
+  - **Body:**
+    - `username`: 3 a 50 caracteres; minúsculas, números, `.` `_` `-` (é normalizado para minúsculas).
+    - `password`: 8 a 150 caracteres, com letras e números.
+    - `roleIds`: ao menos uma role existente.
+  - **Resposta 201:** `{ "data": { "id": "..." } }`
+  - **Erros:** `400` validação ou senha fraca · `401` sem token · `403` sem a permissão · `404` alguma role não existe · `409` username já existe

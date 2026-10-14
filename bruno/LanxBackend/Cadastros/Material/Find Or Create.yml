@@ -1,0 +1,35 @@
+info:
+  name: Find Or Create
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{baseUrl}}/materiais/find-or-create"
+  body:
+    type: json
+    data: |-
+      {
+        "codigo": "CNFAT04CZ",
+        "descricao": "CONECTOR 4 VIAS",
+        "unidadeMedidaId": "{{unidadeMedidaId}}"
+      }
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Buscar por código ou criar**
+
+  - **Rota:** `POST /materiais/find-or-create`
+  - **Segurança:** token + `cadastros.materiais:create` (pode criar, por isso exige CREATE)
+  - **Regra:** procura pelo `codigo`. Se achar, devolve o existente e **não atualiza nada** (descrição e unidade enviadas são ignoradas). Se não achar, cria com os dados do body.
+  - **Resposta:** `201` se criou · `200` se já existia. Em ambos `data` é o material.
+  - **Erros:** `400` campo obrigatório ausente · `401` sem token · `403` sem a permissão · `404` unidade de medida não encontrada (ao criar)

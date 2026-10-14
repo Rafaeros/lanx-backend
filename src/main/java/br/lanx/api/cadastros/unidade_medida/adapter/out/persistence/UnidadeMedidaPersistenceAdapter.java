@@ -42,7 +42,7 @@ class UnidadeMedidaPersistenceAdapter implements UnidadeMedidaRepository {
 
     @Override
     public Optional<UnidadeMedida> findByNome(String nome) {
-        return jpa.findByNome(nome).map(UnidadeMedidaMapper::toDomain);
+        return jpa.findFirstByNomeIgnoreCase(nome).map(UnidadeMedidaMapper::toDomain);
     }
 
     @Override

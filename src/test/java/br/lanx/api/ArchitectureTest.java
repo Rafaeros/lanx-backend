@@ -1,95 +1,93 @@
 package br.lanx.api;
 
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 
-import java.util.List;
-import java.util.stream.Stream;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
-import com.tngtech.archunit.junit.ArchTests;
 import com.tngtech.archunit.lang.ArchRule;
 
-/** Regras do hexagonal e dos submódulos de auth: se alguém violar, o build quebra. */
+import br.lanx.api.auth.authentication.AuthController;
+import br.lanx.api.auth.authorization.MeController;
+
+/** Regras de arquitetura: se alguém violar, o build quebra. */
 @AnalyzeClasses(packages = "br.lanx.api", importOptions = ImportOption.DoNotIncludeTests.class)
 class ArchitectureTest {
 
-    // ---------- hexagonal (vale para todos os módulos) ----------
+        // ---------- hexagonal (cadastros/unidade_medida) ----------
 
-    @ArchTest
-    static final ArchRule dominioPuro = noClasses()
-            .that().resideInAPackage("..domain..")
-            .should().dependOnClassesThat().resideInAnyPackage(
-                    "org.springframework..", "jakarta.persistence..", "io.jsonwebtoken..",
-                    "..adapter..", "..application..");
-
-    @ArchTest
-    static final ArchRule applicationNaoConheceAdapter = noClasses()
-            .that().resideInAPackage("..application..")
-            .should().dependOnClassesThat().resideInAPackage("..adapter..");
-
-    @ArchTest
-    static final ArchRule adapterInUsaSoPortasDeEntrada = noClasses()
-            .that().resideInAPackage("..adapter.in..")
-            .should().dependOnClassesThat().resideInAnyPackage(
-                    "..application.service..", "..application.port.out..", "..adapter.out..");
-
-    @ArchTest
-    static final ArchRule adapterOutNaoConheceAdapterIn = noClasses()
-            .that().resideInAPackage("..adapter.out..")
-            .should().dependOnClassesThat().resideInAPackage("..adapter.in..");
-
-    // ---------- submódulos de auth ----------
-
-    /** permission, role, user, authentication, authorization. */
-    private static final List<String> MODULES = List.of("role", "user", "authentication", "authorization");
-
-    @ArchTest
-    static final ArchRule semCiclosEntreModulos = slices()
-            .matching("br.lanx.api.auth.(*)..")
-            .should().beFreeOfCycles();
-
-    /** permission é a base: todos dependem dela, ela não depende de nenhum. */
-    @ArchTest
-    static final ArchRule permissionNaoDependeDeNinguem = noClasses()
-            .that().resideInAPackage("..auth.permission..")
-            .should().dependOnClassesThat().resideInAnyPackage(
-                    MODULES.stream().map(m -> "..auth." + m + "..").toArray(String[]::new));
-
-    /**
-     * Um módulo só enxerga de outro o domínio e as portas de entrada
-     * (application.port.in). Services, portas de saída e adapters são privados.
-     */
-    @ArchTest
-    static final ArchTests modulosSoSeFalamPorPortasDeEntrada = ArchTests.in(ModuleBoundaries.class);
-
-    static class ModuleBoundaries {
         @ArchTest
-        static final ArchRule role = boundaryOf("role");
-        @ArchTest
-        static final ArchRule user = boundaryOf("user");
-        @ArchTest
-        static final ArchRule authentication = boundaryOf("authentication");
-        @ArchTest
-        static final ArchRule authorization = boundaryOf("authorization");
-    }
+        static final ArchRule dominioPuro = noClasses()
+                        .that().resideInAPackage("..domain..")
+                        .should().dependOnClassesThat().resideInAnyPackage(
+                                        "org.springframework..", "jakarta.persistence..", "io.jsonwebtoken..",
+                                        "..adapter..", "..application..");
 
-    private static ArchRule boundaryOf(String module) {
-        String[] forbidden = MODULES.stream()
-                .filter(other -> !other.equals(module))
-                .flatMap(other -> Stream.of(
-                        "..auth." + other + ".application.service..",
-                        "..auth." + other + ".application.port.out..",
-                        "..auth." + other + ".adapter.in.web..",
-                        "..auth." + other + ".adapter.in.bootstrap..",
-                        "..auth." + other + ".adapter.in.security..",
-                        "..auth." + other + ".adapter.out.."))
-                .toArray(String[]::new);
-        return noClasses()
-                .that().resideInAPackage("..auth." + module + "..")
-                .should().dependOnClassesThat().resideInAnyPackage(forbidden)
-                .as("o módulo " + module + " só usa o domínio e as portas de entrada dos outros módulos");
-    }
+        @ArchTest
+        static final ArchRule applicationNaoConheceAdapter = noClasses()
+                        .that().resideInAPackage("..application..")
+                        .should().dependOnClassesThat().resideInAPackage("..adapter..");
+
+        @ArchTest
+        static final ArchRule adapterInUsaSoPortasDeEntrada = noClasses()
+                        .that().resideInAPackage("..adapter.in..")
+                        .should().dependOnClassesThat().resideInAnyPackage(
+                                        "..application.service..", "..application.port.out..", "..adapter.out..");
+
+        @ArchTest
+        static final ArchRule adapterOutNaoConheceAdapterIn = noClasses()
+                        .that().resideInAPackage("..adapter.out..")
+                        .should().dependOnClassesThat().resideInAPackage("..adapter.in..");
+
+        // ---------- auth em camadas: controller -> service -> repository ----------
+
+        @ArchTest
+        static final ArchRule controllerNaoAcessaRepository = noClasses()
+                        .that().haveSimpleNameEndingWith("Controller")
+                        .should().dependOnClassesThat().haveSimpleNameEndingWith("Repository")
+                        .as("controller fala com o service, nunca direto com o repository");
+
+        @ArchTest
+        static final ArchRule serviceNaoConheceController = noClasses()
+                        .that().haveSimpleNameEndingWith("Service")
+                        .should().dependOnClassesThat().haveSimpleNameEndingWith("Controller");
+
+        @ArchTest
+        static final ArchRule semCiclosEntreSubmodulosDeAuth = slices()
+                        .matching("br.lanx.api.auth.(*)..")
+                        .should().beFreeOfCycles();
+
+        @ArchTest
+        static final ArchRule sharedNaoDependeDeModulos = noClasses()
+                        .that().resideInAPackage("br.lanx.api.shared..")
+                        .should().dependOnClassesThat()
+                        .resideInAnyPackage("br.lanx.api.auth..", "br.lanx.api.cadastros..");
+
+        // ---------- segurança: nenhuma rota fica aberta por esquecimento ----------
+
+        /**
+         * Substitui o antigo SkipPermission: toda rota precisa declarar @PreAuthorize.
+         * As únicas exceções são as rotas que exigem apenas autenticação (/auth/me)
+         * ou nem isso (/auth/login, liberada no SecurityConfig).
+         */
+        @ArchTest
+        static final ArchRule todaRotaDeclaraPreAuthorize = methods()
+                        .that().areAnnotatedWith(GetMapping.class)
+                        .or().areAnnotatedWith(PostMapping.class)
+                        .or().areAnnotatedWith(PutMapping.class)
+                        .or().areAnnotatedWith(PatchMapping.class)
+                        .or().areAnnotatedWith(DeleteMapping.class)
+                        .and().areNotDeclaredIn(AuthController.class)
+                        .and().areNotDeclaredIn(MeController.class)
+                        .should().beAnnotatedWith(PreAuthorize.class)
+                        .as("toda rota precisa de @PreAuthorize (exceto login e /auth/me)");
 }

@@ -5,21 +5,22 @@ info:
 
 http:
   method: PUT
-  url: "{{baseUrl}}/auth/roles/01a120da-748f-7d1c-ade0-5b4b32acb316"
+  url: "{{baseUrl}}/auth/roles/{{roleId}}"
   body:
     type: json
-    data: |
+    data: |-
       {
-        "name": "Gerente_Cadastros",
-        "permissions": {
-          "crud": {
-            "cadastros.unidade-medida": ["READ", "CREATE", "UPDATE", "DELETE"]
-          }
-        }
+        "name": "GERENTE_CADASTROS",
+        "description": "Gerencia unidades de medida e materiais",
+        "permissions": [
+          "cadastros.unidade-medida:read",
+          "cadastros.materiais:read",
+          "cadastros.materiais:create"
+        ]
       }
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsYW54LWJhY2tlbmQiLCJzdWIiOiIwMWExMjBhOS1mOWQ5LTdmN2ItYTYzMS1kMGRiNjhhOGJjMjMiLCJleHAiOjE3OTE5MjEzODEsImlhdCI6MTc5MTg5MjU4MSwidXNlcm5hbWUiOiJhZG1pbiJ9.hS1yufVC7-YToaA-jyx0cdajXZico059QOOJJxSU5nY
+    token: "{{accessToken}}"
 
 settings:
   encodeUrl: true
@@ -27,3 +28,14 @@ settings:
   followRedirects: true
   maxRedirects: 5
   forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Atualizar role**
+
+  - **Rota:** `PUT /auth/roles/{id}`
+  - **Segurança:** token + `administracao.permissoes:update`
+  - **Variável:** `roleId` (ambiente)
+  - **Body:** mesmo da criação. As permissões enviadas **substituem** as atuais (mande a lista completa).
+  - **Efeito imediato:** quem tem essa role passa a ter as novas permissões na próxima requisição, sem novo login.
+  - **Resposta 200:** `{ "message": "Role atualizada" }`
+  - **Erros:** `400` validação ou permissão desconhecida · `401` sem token · `403` sem a permissão · `404` role não encontrada · `409` nome já em uso

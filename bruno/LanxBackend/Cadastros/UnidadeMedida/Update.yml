@@ -5,7 +5,7 @@ info:
 
 http:
   method: PUT
-  url: "{{baseUrl}}/unidade-medida/0192534a-1b5e-7c9b-9c65-0a8b945d8b7a"
+  url: "{{baseUrl}}/unidade-medida/{{unidadeMedidaId}}"
   body:
     type: json
     data: |-
@@ -13,9 +13,7 @@ http:
         "nome": "Quilograma",
         "sigla": "KG"
       }
-  auth:
-    type: bearer
-    token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsYW54LWJhY2tlbmQiLCJzdWIiOiIwMWExMjBhOS1mOWQ5LTdmN2ItYTYzMS1kMGRiNjhhOGJjMjMiLCJleHAiOjE3OTE1NzgzMDgsImlhdCI6MTc5MTU0OTUwOCwidXNlcm5hbWUiOiJhZG1pbiJ9.6VtVCHfyzC0gLkBhG0xwDLmEqGN0wtEGQ8M2xfTZ-1k
+  auth: inherit
 
 settings:
   encodeUrl: true
@@ -23,3 +21,13 @@ settings:
   followRedirects: true
   maxRedirects: 5
   forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Atualizar unidade de medida**
+
+  - **Rota:** `PUT /unidade-medida/{id}`
+  - **Segurança:** token + `cadastros.unidade-medida:update`
+  - **Variável:** `unidadeMedidaId` (ambiente)
+  - **Body:** `nome` e `sigla`. Campo vazio ou ausente mantém o valor atual.
+  - **Resposta 200:** `{ "message": "Unidade de medida atualizada com sucesso!" }`
+  - **Erros:** `401` sem token · `403` sem a permissão. `404` unidade não encontrada · `409` sigla já usada por outra unidade.

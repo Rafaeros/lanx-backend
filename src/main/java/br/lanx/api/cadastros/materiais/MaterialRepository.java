@@ -16,9 +16,16 @@ public interface MaterialRepository extends JpaRepository<Material, UUID>, JpaSp
     @EntityGraph(attributePaths = { "unidadeMedida" })
     Page<Material> findAll(Specification<Material> spec, Pageable pageable);
 
+    @Override
+    @EntityGraph(attributePaths = { "unidadeMedida" })
+    Optional<Material> findById(UUID id);
+
     @EntityGraph(attributePaths = { "unidadeMedida" })
     Optional<Material> findByCodigo(String codigo);
 
     boolean existsByCodigo(String codigo);
 
+    boolean existsByCodigoAndIdNot(String codigo, UUID id);
+
+    boolean existsByUnidadeMedidaId(UUID unidadeMedidaId);
 }

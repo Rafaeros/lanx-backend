@@ -11,10 +11,12 @@ CREATE TABLE
         deleted_at TIMESTAMPTZ
     );
 
+-- name é o identificador funcional da role: MAIÚSCULO com "_" (ADMIN, GERENTE_COMPRAS)
 CREATE TABLE
     auth.roles (
         id UUID PRIMARY KEY DEFAULT uuidv7 (),
         name VARCHAR(50) NOT NULL UNIQUE,
+        description VARCHAR(255),
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
         deleted_at TIMESTAMPTZ
@@ -29,57 +31,26 @@ CREATE TABLE
 
 CREATE INDEX idx_user_roles_role ON auth.user_roles (role_id);
 
--- Permissão CRUD da role por funcionalidade (bitmask). A chave é um caminho
--- ("compras.analise"): o catálogo de funcionalidades vive no código, não no banco.
+-- Espelho do catálogo declarado no código ("compras.analise:read"); sincronizado
+-- na subida da aplicação. É daqui que o painel monta a tela de permissões.
+CREATE TABLE
+    auth.permissions (
+        id UUID PRIMARY KEY DEFAULT uuidv7 (),
+        code VARCHAR(150) NOT NULL UNIQUE,
+        feature_key VARCHAR(100) NOT NULL,
+        action VARCHAR(50) NOT NULL,
+        description VARCHAR(255) NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW ()
+    );
+
 CREATE TABLE
     auth.role_permissions (
         role_id UUID NOT NULL REFERENCES auth.roles (id) ON DELETE CASCADE,
-        feature VARCHAR(100) NOT NULL,
-        mask INTEGER NOT NULL CHECK (mask >= 0),
-        PRIMARY KEY (role_id, feature)
+        permission_id UUID NOT NULL REFERENCES auth.permissions (id) ON DELETE CASCADE,
+        PRIMARY KEY (role_id, permission_id)
     );
 
--- Ações extras nomeadas da role ("compras.analise" + "aprovar")
-CREATE TABLE
-    auth.role_actions (
-        role_id UUID NOT NULL REFERENCES auth.roles (id) ON DELETE CASCADE,
-        feature VARCHAR(100) NOT NULL,
-        action VARCHAR(50) NOT NULL,
-        PRIMARY KEY (role_id, feature, action)
-    );
-
--- Exceções individuais do usuário: grants somam à role, denies subtraem (deny vence)
-CREATE TABLE
-    auth.user_grants (
-        user_id UUID NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
-        feature VARCHAR(100) NOT NULL,
-        mask INTEGER NOT NULL CHECK (mask >= 0),
-        PRIMARY KEY (user_id, feature)
-    );
-
-CREATE TABLE
-    auth.user_denies (
-        user_id UUID NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
-        feature VARCHAR(100) NOT NULL,
-        mask INTEGER NOT NULL CHECK (mask >= 0),
-        PRIMARY KEY (user_id, feature)
-    );
-
-CREATE TABLE
-    auth.user_grant_actions (
-        user_id UUID NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
-        feature VARCHAR(100) NOT NULL,
-        action VARCHAR(50) NOT NULL,
-        PRIMARY KEY (user_id, feature, action)
-    );
-
-CREATE TABLE
-    auth.user_deny_actions (
-        user_id UUID NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
-        feature VARCHAR(100) NOT NULL,
-        action VARCHAR(50) NOT NULL,
-        PRIMARY KEY (user_id, feature, action)
-    );
+CREATE INDEX idx_role_permissions_permission ON auth.role_permissions (permission_id);
 
 CREATE SCHEMA IF NOT EXISTS cadastros;
 

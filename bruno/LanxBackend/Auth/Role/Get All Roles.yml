@@ -6,9 +6,7 @@ info:
 http:
   method: GET
   url: "{{baseUrl}}/auth/roles"
-  auth:
-    type: bearer
-    token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsYW54LWJhY2tlbmQiLCJzdWIiOiIwMWExMjBhOS1mOWQ5LTdmN2ItYTYzMS1kMGRiNjhhOGJjMjMiLCJleHAiOjE3OTE5MjEzODEsImlhdCI6MTc5MTg5MjU4MSwidXNlcm5hbWUiOiJhZG1pbiJ9.hS1yufVC7-YToaA-jyx0cdajXZico059QOOJJxSU5nY
+  auth: inherit
 
 settings:
   encodeUrl: true
@@ -17,4 +15,26 @@ settings:
   maxRedirects: 5
   forwardAuthorizationHeader: false
 
-docs: <br/>
+docs: |-
+  **🔹 Listar roles**
+
+  - **Rota:** `GET /auth/roles`
+  - **Segurança:** token + `administracao.permissoes:read`
+  - **Resposta 200:** lista ordenada por nome. `permissions` são os códigos concedidos à role.
+
+  ```json
+  {
+    "status": 200,
+    "message": "Roles carregadas",
+    "data": [
+      {
+        "id": "01a120a9-f91c-7e10-a2a5-d5740ad1f032",
+        "name": "ADMIN",
+        "description": "Acesso total ao sistema",
+        "permissions": ["administracao.usuarios:read", "cadastros.materiais:read"]
+      }
+    ]
+  }
+  ```
+
+  - **Erros:** `401` sem token ou token expirado · `403` sem a permissão

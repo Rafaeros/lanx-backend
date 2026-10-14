@@ -5,3 +5,10 @@ info:
 
 request:
   auth: inherit
+
+docs:
+  content: |-
+    ### **Auth / Authorization**
+
+    Catálogo das permissões que existem no sistema. O catálogo vem do código (cada módulo declara as suas funcionalidades) e é sincronizado com a tabela `auth.permissions` na subida da aplicação. Uma permissão é `feature:action`, por exemplo `cadastros.materiais:read`. Ações padrão: `read`, `create`, `update`, `delete`.
+  type: text/markdown

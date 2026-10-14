@@ -6,9 +6,7 @@ info:
 http:
   method: GET
   url: "{{baseUrl}}/auth/features"
-  auth:
-    type: bearer
-    token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsYW54LWJhY2tlbmQiLCJzdWIiOiIwMWExMjBhOS1mOWQ5LTdmN2ItYTYzMS1kMGRiNjhhOGJjMjMiLCJleHAiOjE3OTE5MTk1ODMsImlhdCI6MTc5MTg5MDc4MywidXNlcm5hbWUiOiJhZG1pbiJ9.ANpKc96_OWMSInX8ShXRLr7mGtq1MU0GHJcj3JxhhRU
+  auth: inherit
 
 settings:
   encodeUrl: true
@@ -20,8 +18,31 @@ settings:
 docs: |-
   ### **Auth / Authorization (Catálogo)**
 
-  **🔹 Listar o Catálogo Completo de Funcionalidades**
+  **🔹 Catálogo de funcionalidades e permissões**
 
   - **Rota:** `GET /auth/features`
-  - **Segurança:** Exige Token + Permissão `administracao.permissoes` (READ)
-  - **Para que serve:** Alimenta os *checkboxes* da tela de Criação de Perfil.
+  - **Segurança:** token + `administracao.permissoes:read`
+  - **Para que serve:** alimenta os checkboxes da tela de perfis. Cada permissão tem um `code` (`feature:action`), que é exatamente o valor enviado em `permissions` ao criar ou editar uma role.
+  - **Resposta 200:**
+
+  ```json
+  {
+    "status": 200,
+    "message": "Catálogo de funcionalidades",
+    "data": [
+      {
+        "key": "cadastros",
+        "label": "Cadastros",
+        "permissions": [
+          { "code": "cadastros:read", "action": "read" },
+          { "code": "cadastros:create", "action": "create" }
+        ],
+        "children": [
+          { "key": "cadastros.materiais", "label": "Materiais", "permissions": [ ... ], "children": [] }
+        ]
+      }
+    ]
+  }
+  ```
+
+  - **Erros:** `401` sem token · `403` sem a permissão

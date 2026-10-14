@@ -5,8 +5,17 @@ info:
 
 http:
   method: PUT
-  url: "{[baseUrl}}/auth/users/id"
-  auth: inherit
+  url: "{{baseUrl}}/auth/users/{{userId}}"
+  body:
+    type: json
+    data: |-
+      {
+        "roleIds": ["{{roleId}}"],
+        "active": true
+      }
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
 
 settings:
   encodeUrl: true
@@ -14,3 +23,14 @@ settings:
   followRedirects: true
   maxRedirects: 5
   forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Atualizar usuário**
+
+  - **Rota:** `PUT /auth/users/{id}`
+  - **Segurança:** token + `administracao.usuarios:update`
+  - **Variáveis:** `userId`, `roleId` (ambiente)
+  - **Body:** `roleIds` substitui as roles atuais (ao menos uma); `active` ativa ou inativa o usuário. Username e senha não mudam por aqui.
+  - **Efeito imediato:** o próximo request do usuário já usa as novas permissões. Usuário inativo fica sem permissão alguma e não consegue logar.
+  - **Resposta 200:** `{ "message": "Usuário atualizado" }`
+  - **Erros:** `400` validação · `401` sem token · `403` sem a permissão · `404` usuário ou role não encontrados

@@ -5,10 +5,10 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/auth/roles/01a120a9-f91c-7e10-a2a5-d5740ad1f032"
+  url: "{{baseUrl}}/auth/roles/{{roleId}}"
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsYW54LWJhY2tlbmQiLCJzdWIiOiIwMWExMjBhOS1mOWQ5LTdmN2ItYTYzMS1kMGRiNjhhOGJjMjMiLCJleHAiOjE3OTE5MjEzODEsImlhdCI6MTc5MTg5MjU4MSwidXNlcm5hbWUiOiJhZG1pbiJ9.hS1yufVC7-YToaA-jyx0cdajXZico059QOOJJxSU5nY
+    token: "{{accessToken}}"
 
 settings:
   encodeUrl: true
@@ -16,3 +16,12 @@ settings:
   followRedirects: true
   maxRedirects: 5
   forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Buscar role por id**
+
+  - **Rota:** `GET /auth/roles/{id}`
+  - **Segurança:** token + `administracao.permissoes:read`
+  - **Variável:** `roleId` (ambiente)
+  - **Resposta 200:** mesmo formato de um item de `GET /auth/roles`.
+  - **Erros:** `401` sem token ou token expirado · `403` sem a permissão · `404` role não encontrada

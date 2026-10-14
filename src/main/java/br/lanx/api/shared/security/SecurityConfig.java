@@ -6,9 +6,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy;
 import org.springframework.web.cors.CorsConfiguration;
@@ -17,6 +20,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
         private static final String[] PUBLIC_ENDPOINTS = {
@@ -26,7 +30,8 @@ public class SecurityConfig {
         };
 
         @Bean
-        SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthoritiesConverter jwtConverter)
+                        throws Exception {
                 var problems = new SecurityProblemHandler();
 
                 http
@@ -48,14 +53,18 @@ public class SecurityConfig {
                                                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                                                 .anyRequest().authenticated())
                                 .oauth2ResourceServer(oauth -> oauth
-                                                .jwt(jwt -> jwt.jwtAuthenticationConverter(
-                                                                new AuthenticatedUserConverter()))
+                                                .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter))
                                                 .authenticationEntryPoint(problems)
                                                 .accessDeniedHandler(problems))
                                 .exceptionHandling(e -> e
                                                 .authenticationEntryPoint(problems)
                                                 .accessDeniedHandler(problems));
                 return http.build();
+        }
+
+        @Bean
+        PasswordEncoder passwordEncoder() {
+                return PasswordEncoderFactories.createDelegatingPasswordEncoder();
         }
 
         @Bean

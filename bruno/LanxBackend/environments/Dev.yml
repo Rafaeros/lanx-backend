@@ -5,7 +5,22 @@ variables:
     description: URL base da Aplicação
   - name: adminUsername
     value: admin
-    description: Usuario Admin criado na inicialização se houver chave no .env
+    description: Usuario Admin criado na inicialização se houver ADMIN_PASSWORD no .env
+  - name: roleId
+    value: 01a13a83-680e-7a4f-acac-6494fe6d48ea
+    description: Id de uma role (devolvido por POST /auth/roles ou GET /auth/roles)
+  - name: userId
+    value: ""
+    description: Id de um usuário (devolvido por POST /auth/users)
+  - name: materialId
+    value: ""
+    description: Id de um material (devolvido por POST /materiais)
+  - name: unidadeMedidaId
+    value: 01a13a8e-f6c6-7bc8-8d41-e20291df8bc2
+    description: Id de uma unidade de medida (devolvido por POST /unidade-medida)
   - secret: true
     name: adminPassword
     description: Senha (Preencha na aba "Secrets" do Bruno!)
+  - secret: true
+    name: accessToken
+    description: Token devolvido por POST /auth/login (cole aqui na aba "Secrets")

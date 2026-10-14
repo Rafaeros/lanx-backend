@@ -25,7 +25,7 @@ interface SpringDataUnidadeMedidaRepository extends JpaRepository<UnidadeMedidaE
 
         Optional<UnidadeMedidaEntity> findById(UUID id);
 
-        Optional<UnidadeMedidaEntity> findByNome(String nome);
+        Optional<UnidadeMedidaEntity> findFirstByNomeIgnoreCase(String nome);
 
         Optional<UnidadeMedidaEntity> findBySigla(String sigla);
 

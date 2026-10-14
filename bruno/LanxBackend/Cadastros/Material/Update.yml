@@ -1,0 +1,36 @@
+info:
+  name: Update
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/materiais/{{materialId}}"
+  body:
+    type: json
+    data: |-
+      {
+        "codigo": "CNFAT04CZ",
+        "descricao": "CONECTOR 4 VIAS CINZA",
+        "unidadeMedidaId": "{{unidadeMedidaId}}"
+      }
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Atualizar material**
+
+  - **Rota:** `PUT /materiais/{id}`
+  - **Segurança:** token + `cadastros.materiais:update`
+  - **Variáveis:** `materialId`, `unidadeMedidaId` (ambiente)
+  - **Body:** os três campos são obrigatórios e **substituem** os atuais.
+  - **Resposta 200:** o material atualizado (mesmo formato do Create).
+  - **Erros:** `400` campo obrigatório ausente · `401` sem token · `403` sem a permissão · `404` material ou unidade de medida não encontrados · `409` código já usado por outro material

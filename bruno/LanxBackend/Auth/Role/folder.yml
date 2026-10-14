@@ -8,45 +8,16 @@ request:
 
 docs:
   content: |-
-    ### **4. Auth / Roles (Perfis)**
+    ### **Auth / Roles (Perfis)**
 
-    As rotas de Roles exigem Token + Permissão `administracao.permissoes`.
+    Uma role é um conjunto de permissões (`feature:action`). O usuário recebe a união das permissões de todas as suas roles.
 
-    **🔹 Listar Roles**
+    | Rota | Permissão exigida |
+    |---|---|
+    | `GET /auth/roles` | `administracao.permissoes:read` |
+    | `GET /auth/roles/{id}` | `administracao.permissoes:read` |
+    | `POST /auth/roles` | `administracao.permissoes:create` |
+    | `PUT /auth/roles/{id}` | `administracao.permissoes:update` |
 
-    - **Rota:** `GET /auth/roles`
-
-    **🔹 Buscar Role Específica**
-
-    - **Rota:** `GET /auth/roles/{id}`
-
-    **🔹 Criar Role**
-
-    - **Rota:** `POST /auth/roles`
-    - **Body (JSON):** *(Exemplo de como o payload de permissão deve ser)*
-
-    ```
-    json
-    ```
-
-    <span>{</span>
-
-    <span>"name": "Gerente de Cadastros",</span>
-
-    <span>"permissions": {</span>
-
-    <span>"cadastros.unidade-medida": {</span>
-
-    <span>"crud": \["READ", "CREATE", "UPDATE", "DELETE"\]</span>
-
-    <span>    }</span>
-
-    <span>  }</span>
-
-    <span>}</span>
-
-    **🔹 Atualizar Role**
-
-    - **Rota:** `PUT /auth/roles/{id}`
-    - **Body (JSON):** *(Mesmo formato da criação)*
+    A role `ADMIN` é criada e mantida na subida da aplicação, sempre com todas as permissões do catálogo.
   type: text/markdown

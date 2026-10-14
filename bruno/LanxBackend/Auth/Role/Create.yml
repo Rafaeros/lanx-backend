@@ -8,18 +8,22 @@ http:
   url: "{{baseUrl}}/auth/roles"
   body:
     type: json
-    data: |
+    data: |-
       {
-        "name": "GerenteCadastros",
-        "permissions": {
-          "crud": {
-            "cadastros.unidade-medida": ["READ", "CREATE", "UPDATE", "DELETE"]
-          }
-        }
+        "name": "GERENTE_CADASTROS",
+        "description": "Gerencia unidades de medida e materiais",
+        "permissions": [
+          "cadastros.unidade-medida:read",
+          "cadastros.unidade-medida:create",
+          "cadastros.unidade-medida:update",
+          "cadastros.unidade-medida:delete",
+          "cadastros.materiais:read",
+          "cadastros.materiais:create"
+        ]
       }
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsYW54LWJhY2tlbmQiLCJzdWIiOiIwMWExMjBhOS1mOWQ5LTdmN2ItYTYzMS1kMGRiNjhhOGJjMjMiLCJleHAiOjE3OTE5MjEzODEsImlhdCI6MTc5MTg5MjU4MSwidXNlcm5hbWUiOiJhZG1pbiJ9.hS1yufVC7-YToaA-jyx0cdajXZico059QOOJJxSU5nY
+    token: "{{accessToken}}"
 
 settings:
   encodeUrl: true
@@ -27,3 +31,15 @@ settings:
   followRedirects: true
   maxRedirects: 5
   forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Criar role**
+
+  - **Rota:** `POST /auth/roles`
+  - **Segurança:** token + `administracao.permissoes:create`
+  - **Body:**
+    - `name`: obrigatório, único, 3 a 50 caracteres em MAIÚSCULAS, números ou `_` (ex.: `GERENTE_CADASTROS`). Texto em minúsculas é convertido.
+    - `description`: opcional, até 255 caracteres.
+    - `permissions`: obrigatório, ao menos uma. Use os `code` de `GET /auth/features`.
+  - **Resposta 201:** `{ "data": { "id": "..." } }`
+  - **Erros:** `400` nome inválido, lista vazia ou permissão desconhecida · `401` sem token · `403` sem a permissão · `409` já existe role com esse nome

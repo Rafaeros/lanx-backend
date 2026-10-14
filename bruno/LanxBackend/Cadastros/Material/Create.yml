@@ -5,18 +5,18 @@ info:
 
 http:
   method: POST
-  url: http://localhost:8090/ap1/v1/materiais
+  url: "{{baseUrl}}/materiais"
   body:
     type: json
     data: |-
       {
         "codigo": "CNFAT04CZ",
         "descricao": "CONECTOR 4 VIAS",
-        "uniadeMedidaId": ""
+        "unidadeMedidaId": "{{unidadeMedidaId}}"
       }
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsYW54LWJhY2tlbmQiLCJzdWIiOiIwMWExMzZjNi01MjFjLTc0NGQtOTBhZC0xMjBjNzE1MjhmNjciLCJleHAiOjE3OTE5NDkzODUsImlhdCI6MTc5MTkyMDU4NSwidXNlcm5hbWUiOiJhZG1pbiJ9.s1pPzGryHC8o9IQs4B_ii1F7jfSn6AsRgJSe1lVYm6w
+    token: "{{accessToken}}"
 
 settings:
   encodeUrl: true
@@ -24,3 +24,27 @@ settings:
   followRedirects: true
   maxRedirects: 5
   forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Cadastrar material**
+
+  - **Rota:** `POST /materiais`
+  - **Segurança:** token + `cadastros.materiais:create`
+  - **Variável:** `unidadeMedidaId` (ambiente)
+  - **Body:** `codigo` (único), `descricao` e `unidadeMedidaId` são obrigatórios.
+  - **Resposta 201:**
+
+  ```json
+  {
+    "status": 201,
+    "message": "Material cadastrado com sucesso!",
+    "data": {
+      "id": "...",
+      "codigo": "CNFAT04CZ",
+      "descricao": "CONECTOR 4 VIAS",
+      "unidadeMedida": { "id": "...", "nome": "Quilo", "sigla": "Kg" }
+    }
+  }
+  ```
+
+  - **Erros:** `400` campo obrigatório ausente · `401` sem token · `403` sem a permissão · `404` unidade de medida não encontrada · `409` código já cadastrado

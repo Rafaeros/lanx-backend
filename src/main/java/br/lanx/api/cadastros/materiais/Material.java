@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import br.lanx.api.cadastros.unidade_medida.adapter.out.persistence.UnidadeMedidaEntity;
@@ -20,6 +22,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(schema = "cadastros", name = "materiais")
+@SQLDelete(sql = "UPDATE cadastros.materiais SET deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class Material {
     @Id
     @Column(nullable = false, updatable = false)
@@ -50,6 +54,12 @@ public class Material {
     }
 
     public Material(String codigo, String descricao, UnidadeMedidaEntity unidadeMedida) {
+        this.codigo = codigo;
+        this.descricao = descricao;
+        this.unidadeMedida = unidadeMedida;
+    }
+
+    public void update(String codigo, String descricao, UnidadeMedidaEntity unidadeMedida) {
         this.codigo = codigo;
         this.descricao = descricao;
         this.unidadeMedida = unidadeMedida;

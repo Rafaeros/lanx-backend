@@ -1,7 +1,7 @@
 info:
   name: Login
   type: http
-  seq: 2
+  seq: 1
 
 http:
   method: POST
@@ -23,18 +23,30 @@ settings:
   forwardAuthorizationHeader: false
 
 docs: |-
-  ###  **Auth / Authentication**
+  ### **Auth / Authentication**
 
   **🔹 Login**
 
   - **Rota:** `POST /auth/login`
-  - **Segurança:** Pública (Não exige token)
-    - **Body (JSON):**<br/>
-      `{`
-      "userrname": "username",
-      "password": "password"
-      `}`
+  - **Segurança:** Pública (não exige token)
+  - **Body (JSON):**
 
-  <br/>
+  ```json
+  {
+    "username": "admin",
+    "password": "Admin12345"
+  }
+  ```
 
-  <br/><br/><br/>
+  - **Resposta 200:** copie o `accessToken` para a variável `accessToken` do ambiente (aba Secrets). Todas as outras rotas usam `Authorization: Bearer {{accessToken}}`.
+
+  ```json
+  {
+    "status": 200,
+    "message": "Login realizado com sucesso",
+    "data": { "accessToken": "eyJ...", "tokenType": "Bearer", "expiresAt": "2026-10-14T20:00:00Z" }
+  }
+  ```
+
+  - **Erros:** `400` campo vazio · `401` usuário ou senha inválidos · `403` usuário inativo
+  - **Observação:** o token carrega só a identidade. As permissões são resolvidas no servidor a cada requisição, então mudar uma role vale na hora, sem novo login.

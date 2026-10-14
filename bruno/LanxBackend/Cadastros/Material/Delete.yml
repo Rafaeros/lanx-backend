@@ -1,0 +1,28 @@
+info:
+  name: Delete
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/materiais/{{materialId}}"
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Excluir material**
+
+  - **Rota:** `DELETE /materiais/{id}`
+  - **Segurança:** token + `cadastros.materiais:delete`
+  - **Variável:** `materialId` (ambiente)
+  - **Efeito:** exclusão lógica (some das consultas; a linha continua no banco).
+  - **Resposta 200:** `{ "message": "Material excluído com sucesso!" }`
+  - **Erros:** `401` sem token · `403` sem a permissão · `404` não encontrado
