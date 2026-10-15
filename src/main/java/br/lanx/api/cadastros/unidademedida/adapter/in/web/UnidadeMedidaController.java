@@ -91,10 +91,10 @@ public class UnidadeMedidaController {
     @GetMapping
     @PreAuthorize("hasAuthority('" + UNIDADE_MEDIDA_READ + "')")
     public ApiResponse<PageResult<SearchUnidadeMedidaResponse>> search(
-            @RequestParam(required = false) String busca,
+            @RequestParam(required = false, defaultValue = "") String busca,
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
         PageQuery pageQuery = new PageQuery(page, size);
-        SearchUnidadeMedidaQuery query = new SearchUnidadeMedidaQuery(busca, pageQuery);
+        SearchUnidadeMedidaQuery query = new SearchUnidadeMedidaQuery(busca != null ? busca : "", pageQuery);
         var result = searchUseCase.search(query);
         var responseResult = result.map(SearchUnidadeMedidaResponse::from);
         return ApiResponse.ok("Unidades de medidas encontradas", responseResult);
