@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
-import br.lanx.api.cadastros.unidade_medida.application.port.out.UnidadeMedidaUsageCheck;
+import br.lanx.api.cadastros.unidademedida.application.port.out.UnidadeMedidaUsageCheck;
 
 /** Materiais vetam a exclusão de uma unidade de medida que ainda usam. */
 @Component

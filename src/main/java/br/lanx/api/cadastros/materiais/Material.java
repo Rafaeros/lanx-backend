@@ -8,8 +8,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import br.lanx.api.cadastros.unidade_medida.adapter.out.persistence.UnidadeMedidaEntity;
-import br.lanx.api.cadastros.unidade_medida.domain.UnidadeMedida;
+import br.lanx.api.cadastros.unidademedida.adapter.out.persistence.UnidadeMedidaEntity;
 import br.lanx.api.shared.domain.Ids;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

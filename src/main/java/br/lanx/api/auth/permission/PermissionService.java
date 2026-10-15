@@ -35,7 +35,7 @@ public class PermissionService {
     @Transactional
     public void sync() {
         Map<String, Permission> existing = permissions.findAll().stream()
-                .collect(Collectors.toMap(Permission::getCode, Function.identity()));
+                .collect(Collectors.toMap(p -> p.getCode(), Function.identity()));
 
         Set<String> wanted = new HashSet<>();
         for (FeatureDefinition def : catalog.all()) {

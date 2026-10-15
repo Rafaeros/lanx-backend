@@ -13,7 +13,6 @@ http:
         "username": "{{adminUsername}}",
         "password": "{{adminPassword}}"
       }
-  auth: inherit
 
 settings:
   encodeUrl: true

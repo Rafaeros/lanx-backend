@@ -1,31 +1,29 @@
 package br.lanx.api.compras.relatorios.analisepedidos.adapter.out.client;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.annotation.JsonNaming;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record RawItemPedido (
+public record RawItemPedido(
     String requisicaoDeCompra,
     String solicitante,
-    LocalDate dataEmissaoRc,
-    LocalDate dataPrevisaoEntregaRc,
+    String dataEmissaoRc,
+    String dataPrevisaoEntregaRc,
     String pedidoDeCompra,
     String comprador,
-    LocalDate dataEmissaoPc,
-    LocalDate dataPrevisaoEntregaPc,
-    LocalDate dataEntregaPc,
+    String dataEmissaoPc,
+    String dataPrevisaoEntregaPc,
+    String dataEntregaPc,
     String fornecedor,
     String pais,
     String codigoItem,
     String descricaoItem,
     String unidadeMedida,
-    BigDecimal  quantidadeSolicitada,
+    String quantidadeSolicitada,
     String quantidadeAtendida,
-    BigDecimal saldo,
+    String saldo,
     String local,
     String valorUnitario,
     String valorFrete,
@@ -39,6 +37,6 @@ public record RawItemPedido (
     String rateio,
     String referencia,
     String invoice,
-    String responsavelCompras
-    String observação,
-){}
+    String responsavelCompras,
+    String observacao
+) {}

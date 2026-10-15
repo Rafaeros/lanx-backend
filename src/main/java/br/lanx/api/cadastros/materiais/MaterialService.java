@@ -13,8 +13,8 @@ import br.lanx.api.cadastros.materiais.dtos.UpdateMaterialRequest;
 import br.lanx.api.cadastros.materiais.exceptions.MaterialAlreadyExistsException;
 import br.lanx.api.cadastros.materiais.exceptions.MaterialNotFoundException;
 import br.lanx.api.cadastros.materiais.exceptions.MaterialUnidadeMedidaNaoEncontradaException;
-import br.lanx.api.cadastros.unidade_medida.adapter.out.persistence.UnidadeMedidaEntity;
-import br.lanx.api.cadastros.unidade_medida.application.port.in.ExistsUnidadeMedidaUseCase;
+import br.lanx.api.cadastros.unidademedida.adapter.out.persistence.UnidadeMedidaEntity;
+import br.lanx.api.cadastros.unidademedida.application.port.in.ExistsUnidadeMedidaUseCase;
 import br.lanx.api.shared.pagination.PageResult;
 import jakarta.persistence.EntityManager;
 

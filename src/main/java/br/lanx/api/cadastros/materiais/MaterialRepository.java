@@ -19,9 +19,12 @@ public interface MaterialRepository extends JpaRepository<Material, UUID>, JpaSp
     @Override
     @EntityGraph(attributePaths = { "unidadeMedida" })
     Optional<Material> findById(UUID id);
+    
+    UUID findIdByCodigo(String codigo);
 
     @EntityGraph(attributePaths = { "unidadeMedida" })
     Optional<Material> findByCodigo(String codigo);
+
 
     boolean existsByCodigo(String codigo);
 

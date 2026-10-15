@@ -36,7 +36,7 @@ public class RoleService {
     @Transactional(readOnly = true)
     public List<RoleResponse> list() {
         return roles.findAll().stream()
-                .sorted(Comparator.comparing(Role::getName))
+                .sorted(Comparator.comparing(r -> r.getName()))
                 .map(RoleResponse::from)
                 .toList();
     }
@@ -84,7 +84,7 @@ public class RoleService {
             Set<UUID> missing = new HashSet<>(requested);
             found.forEach(r -> missing.remove(r.getId()));
             throw new RoleNotFoundException(
-                    missing.stream().map(UUID::toString).collect(Collectors.joining(", ")));
+                    missing.stream().map(u -> u.toString()).collect(Collectors.joining(", ")));
         }
         return Set.copyOf(found);
     }

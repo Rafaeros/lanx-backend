@@ -1,7 +1,7 @@
 name: Dev
 variables:
   - name: baseUrl
-    value: http://localhost:8080/api/v1
+    value: http://localhost:8090/api/v1
     description: URL base da Aplicação
   - name: adminUsername
     value: admin
