@@ -1,5 +1,6 @@
 package br.lanx.api.auth.user;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -19,6 +20,10 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByUsername(String username);
 
     boolean existsByUsername(String username);
+
+    /** Todos os usuários para o painel de administração, já com roles e permissões carregadas. */
+    @EntityGraph(attributePaths = { "roles", "roles.permissions" })
+    List<User> findAllByOrderByUsernameAsc();
 
     /**
      * Códigos de permissão do usuário ATIVO, em uma consulta só (usuário → roles →

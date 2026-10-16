@@ -70,7 +70,7 @@ class ArchitectureTest {
         static final ArchRule sharedNaoDependeDeModulos = noClasses()
                         .that().resideInAPackage("br.lanx.api.shared..")
                         .should().dependOnClassesThat()
-                        .resideInAnyPackage("br.lanx.api.auth..", "br.lanx.api.cadastros..");
+                        .resideInAnyPackage("br.lanx.api.auth..", "br.lanx.api.cadastros..", "br.lanx.api.compras..");
 
         // ---------- segurança: nenhuma rota fica aberta por esquecimento ----------
 

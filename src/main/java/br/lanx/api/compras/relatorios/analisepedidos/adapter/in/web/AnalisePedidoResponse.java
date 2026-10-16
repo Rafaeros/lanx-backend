@@ -23,6 +23,8 @@ public record AnalisePedidoResponse(
         BigDecimal saldo,
         Long leadTimeDias,
         boolean atendimentoParcial,
+        /** PENDENTE, PARCIAL ou ATENDIDO (domain.Situacao). */
+        String situacao,
         String local,
         BigDecimal valorUnitario,
         BigDecimal valorFrete,

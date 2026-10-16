@@ -1,5 +1,6 @@
 package br.lanx.api.auth.user;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -33,6 +34,11 @@ public class UserService {
         this.roles = roles;
         this.passwordEncoder = passwordEncoder;
         this.events = events;
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserResponse> list() {
+        return users.findAllByOrderByUsernameAsc().stream().map(UserResponse::from).toList();
     }
 
     @Transactional(readOnly = true)

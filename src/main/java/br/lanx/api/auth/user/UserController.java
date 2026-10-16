@@ -4,6 +4,7 @@ import static br.lanx.api.auth.permission.AuthPermissions.USUARIOS_CREATE;
 import static br.lanx.api.auth.permission.AuthPermissions.USUARIOS_READ;
 import static br.lanx.api.auth.permission.AuthPermissions.USUARIOS_UPDATE;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,12 @@ public class UserController {
 
     UserController(UserService service) {
         this.service = service;
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAuthority('" + USUARIOS_READ + "')")
+    ApiResponse<List<UserResponse>> list() {
+        return ApiResponse.ok("Usuários carregados", service.list());
     }
 
     @GetMapping("/{id}")

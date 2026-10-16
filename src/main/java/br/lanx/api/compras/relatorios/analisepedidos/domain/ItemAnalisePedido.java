@@ -60,6 +60,14 @@ public record ItemAnalisePedido(
                 quantidadeRecebimentos, rateio, referencia, invoice, responsavelCompras, observacao);
     }
 
+    public Situacao situacao() {
+        return Situacao.de(quantidadeAtendida, saldo);
+    }
+
+    public Long leadTimeDias() {
+        return LeadTime.emDias(dataEmissaoPc, dataEntregaPc);
+    }
+
     public ItemAnalisePedido withMaterialId(UUID materialId) {
         return new ItemAnalisePedido(
                 this.id, materialId, this.unidadeMedidaId,

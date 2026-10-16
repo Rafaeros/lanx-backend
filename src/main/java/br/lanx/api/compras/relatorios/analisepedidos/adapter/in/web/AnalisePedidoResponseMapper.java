@@ -1,6 +1,7 @@
 package br.lanx.api.compras.relatorios.analisepedidos.adapter.in.web;
 
 import br.lanx.api.compras.relatorios.analisepedidos.domain.ItemAnalisePedido;
+import br.lanx.api.compras.relatorios.analisepedidos.domain.Situacao;
 
 public class AnalisePedidoResponseMapper {
 
@@ -26,8 +27,9 @@ public class AnalisePedidoResponseMapper {
                 item.quantidadeSolicitada(),
                 item.quantidadeAtendida(),
                 item.saldo(),
-                null, // leadTimeDias: calcular se quiser
-                false, // atendimentoParcial: calcular se quiser
+                item.leadTimeDias(),
+                item.situacao() == Situacao.PARCIAL,
+                item.situacao().name(),
                 item.local(),
                 item.valorUnitario(),
                 item.valorFrete(),

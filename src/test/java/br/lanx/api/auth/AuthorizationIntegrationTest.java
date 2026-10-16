@@ -47,6 +47,7 @@ class AuthorizationIntegrationTest {
 
         assertThat(send("GET", "/auth/roles", admin, null).statusCode()).isEqualTo(200);
         assertThat(send("GET", "/auth/features", admin, null).statusCode()).isEqualTo(200);
+        assertThat(send("GET", "/auth/users", admin, null).statusCode()).isEqualTo(200);
     }
 
     @Test
@@ -62,6 +63,7 @@ class AuthorizationIntegrationTest {
 
         assertThat(send("GET", "/unidade-medida", maria, null).statusCode()).isEqualTo(200);
         assertThat(send("GET", "/auth/roles", maria, null).statusCode()).isEqualTo(403);
+        assertThat(send("GET", "/auth/users", maria, null).statusCode()).isEqualTo(403);
         assertThat(send("GET", "/auth/me/navigation", maria, null).statusCode()).isEqualTo(200);
 
         // admin passa a conceder leitura de perfis: o MESMO token da maria já enxerga
@@ -78,6 +80,34 @@ class AuthorizationIntegrationTest {
         var response = send("POST", "/auth/roles", admin, """
                 {"name":"INVENTADA","permissions":["modulo.que.nao.existe:read"]}""");
         assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    @Test
+    void analiseDePedidosExigePermissaoDeCompras() throws Exception {
+        String admin = login("admin", "Admin12345");
+
+        // o catálogo de compras chega na navegação do admin, com a ação extra "importar"
+        String navigation = send("GET", "/auth/me/navigation", admin, null).body();
+        assertThat(navigation).contains("\"compras.analise-pedidos\"").contains("\"importar\"");
+
+        // role que só lê a análise, sem poder importar do ERP
+        String roleId = id(send("POST", "/auth/roles", admin, """
+                {"name":"SO_LEITURA_COMPRAS","description":"teste","permissions":["compras.analise-pedidos:read"]}"""));
+        send("POST", "/auth/users", admin, """
+                {"username":"joao","password":"Senha12345","roleIds":["%s"]}""".formatted(roleId));
+        String joao = login("joao", "Senha12345");
+
+        assertThat(send("POST", "/compras/relatorios/analise-pedidos/importar?dataInicio=2026-10-01&dataFim=2026-10-31",
+                joao, null).statusCode()).isEqualTo(403);
+
+        // sem nenhuma permissão de compras, nem a consulta é liberada
+        String semCompras = id(send("POST", "/auth/roles", admin, """
+                {"name":"SEM_COMPRAS","description":"teste","permissions":["cadastros.materiais:read"]}"""));
+        send("POST", "/auth/users", admin, """
+                {"username":"ana","password":"Senha12345","roleIds":["%s"]}""".formatted(semCompras));
+        String ana = login("ana", "Senha12345");
+
+        assertThat(send("GET", "/compras/relatorios/analise-pedidos", ana, null).statusCode()).isEqualTo(403);
     }
 
     // ---------- helpers ----------

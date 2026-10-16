@@ -1,14 +1,15 @@
 package br.lanx.api.compras.relatorios.analisepedidos.application.service;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.lanx.api.compras.relatorios.analisepedidos.application.port.in.ConsultarAnalisePedidosUseCase;
 import br.lanx.api.compras.relatorios.analisepedidos.application.port.out.ConsultarAnalisePedidosPort;
-import br.lanx.api.compras.relatorios.analisepedidos.domain.FiltroPedidos;
+import br.lanx.api.compras.relatorios.analisepedidos.domain.ConsultaAnalisePedidos;
 import br.lanx.api.compras.relatorios.analisepedidos.domain.ItemAnalisePedido;
+import br.lanx.api.compras.relatorios.analisepedidos.domain.ResumoAnalisePedidos;
+import br.lanx.api.shared.pagination.PageQuery;
+import br.lanx.api.shared.pagination.PageResult;
 
 @Service
 public class ConsultarAnalisePedidosService implements ConsultarAnalisePedidosUseCase {
@@ -21,8 +22,13 @@ public class ConsultarAnalisePedidosService implements ConsultarAnalisePedidosUs
 
     @Override
     @Transactional(readOnly = true)
-    public List<ItemAnalisePedido> consultar(FiltroPedidos filtro) {
-        return consultarAnalisePedidosPort.buscarPorPeriodo(filtro);
+    public PageResult<ItemAnalisePedido> consultar(ConsultaAnalisePedidos consulta, PageQuery pagina) {
+        return consultarAnalisePedidosPort.buscar(consulta, pagina);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public ResumoAnalisePedidos resumir(ConsultaAnalisePedidos consulta) {
+        return ResumoAnalisePedidos.de(consultarAnalisePedidosPort.buscarIndicadores(consulta));
+    }
 }
