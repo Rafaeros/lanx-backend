@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import br.lanx.api.cadastros.unidademedida.application.port.in.FindOrCreateUnidadeMedidaUseCase;
 import br.lanx.api.cadastros.unidademedida.application.port.out.UnidadeMedidaRepository;
 import br.lanx.api.cadastros.unidademedida.domain.UnidadeMedida;
-import br.lanx.api.cadastros.unidademedida.domain.exceptions.UnidadeMedidaAlreadyExistsException;
 
 @Service
 public class FindOrCreateUnidadeMedidaService implements FindOrCreateUnidadeMedidaUseCase {

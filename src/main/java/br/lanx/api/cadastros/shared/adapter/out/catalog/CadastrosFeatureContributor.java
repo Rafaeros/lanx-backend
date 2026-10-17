@@ -16,6 +16,8 @@ public class CadastrosFeatureContributor implements FeatureCatalogContributor {
         return List.of(
                 FeatureDefinition.of(CadastrosPermissions.CADASTROS, "Cadastros"),
                 FeatureDefinition.of(CadastrosPermissions.UNIDADE_MEDIDA, "Unidades de Medida"),
-                FeatureDefinition.of(CadastrosPermissions.MATERIAIS, "Materiais"));
+                FeatureDefinition.of(CadastrosPermissions.MATERIAIS, "Materiais"),
+                FeatureDefinition.of(CadastrosPermissions.FORNECEDOR, "Fornecedores"),
+                FeatureDefinition.of(CadastrosPermissions.PAIS, "Países"));
     }
 }

@@ -20,7 +20,7 @@ public record ResumoAnalisePedidos(
 
     public static ResumoAnalisePedidos de(List<IndicadoresItem> itens) {
         BigDecimal valor = itens.stream()
-                .map(IndicadoresItem::valorTotal)
+                .map(i -> i.valorTotal())
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -36,7 +36,7 @@ public record ResumoAnalisePedidos(
         var leadTimes = itens.stream()
                 .map(i -> LeadTime.emDias(i.dataEmissaoPc(), i.dataEntregaPc()))
                 .filter(Objects::nonNull)
-                .mapToLong(Long::longValue)
+                .mapToLong(l -> l.longValue())
                 .summaryStatistics();
         Long leadTimeMedio = leadTimes.getCount() == 0 ? null : Math.round(leadTimes.getAverage());
 

@@ -1,4 +1,4 @@
-package br.lanx.api.compras.relatorios.analisepedidos.adapter;
+package br.lanx.api.compras.relatorios.analisepedidos.adapter.out.cadastros;
 
 import java.util.UUID;
 import br.lanx.api.cadastros.materiais.dtos.CreateMaterialRequest;

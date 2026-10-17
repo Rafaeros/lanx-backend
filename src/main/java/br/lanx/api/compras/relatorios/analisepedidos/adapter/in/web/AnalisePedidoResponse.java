@@ -2,8 +2,10 @@ package br.lanx.api.compras.relatorios.analisepedidos.adapter.in.web;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
 public record AnalisePedidoResponse(
+        UUID id,
         String requisicaoDeCompra,
         String solicitante,
         LocalDate dataEmissaoRc,
@@ -13,11 +15,10 @@ public record AnalisePedidoResponse(
         LocalDate dataEmissaoPc,
         LocalDate dataPrevisaoEntregaPc,
         LocalDate dataEntregaPc,
-        String fornecedor,
-        String pais,
-        String codigoItem,
-        String descricaoItem,
-        String unidadeMedida,
+        /** Null quando o item veio do ERP sem fornecedor. */
+        FornecedorResumo fornecedor,
+        MaterialResumo material,
+        UnidadeMedidaResumo unidadeMedida,
         BigDecimal quantidadeSolicitada,
         BigDecimal quantidadeAtendida,
         BigDecimal saldo,
@@ -40,4 +41,13 @@ public record AnalisePedidoResponse(
         String invoice,
         String responsavelCompras,
         String observacao) {
+
+    public record FornecedorResumo(UUID id, String nome, String pais) {
+    }
+
+    public record MaterialResumo(UUID id, String codigo, String descricao) {
+    }
+
+    public record UnidadeMedidaResumo(UUID id, String sigla) {
+    }
 }

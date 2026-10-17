@@ -1,35 +1,43 @@
 package br.lanx.api.compras.relatorios.analisepedidos.adapter.out.persistence;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
+
+import br.lanx.api.cadastros.fornecedores.Fornecedor;
+import br.lanx.api.cadastros.materiais.Material;
+import br.lanx.api.cadastros.unidademedida.adapter.out.persistence.UnidadeMedidaEntity;
+import br.lanx.api.shared.domain.Ids;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+
 @Entity
-@Table(schema = "compras", name = "analise_pedido_item")
-@SQLDelete(sql = "UPDATE compras.analise_pedido_item SET deleted_at = NOW() WHERE id = ?")
-@SQLRestriction("deleted_at IS NULL")
+@Table(schema = "compras", name = "analise_pedidos_itens")
 public class AnalisePedidoEntity {
 
     @Id
-    @Column(nullable = false, updatable = false)
     private UUID id;
 
-    @Column(name = "material_id", nullable = false)
-    private UUID materialId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "material_id", nullable = false)
+    private Material material;
 
-    @Column(name = "unidade_medida_id", nullable = false)
-    private UUID unidadeMedidaId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "unidade_medida_id", nullable = false)
+    private UnidadeMedidaEntity unidadeMedida;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fornecedor_id")
+    private Fornecedor fornecedor;
 
     @Column(name = "requisicao_de_compra")
     private String requisicaoDeCompra;
@@ -43,7 +51,7 @@ public class AnalisePedidoEntity {
     @Column(name = "data_previsao_entrega_rc")
     private LocalDate dataPrevisaoEntregaRc;
 
-    @Column(name = "pedido_de_compra", nullable = false)
+    @Column(name = "pedido_de_compra")
     private String pedidoDeCompra;
 
     @Column(name = "comprador")
@@ -58,43 +66,28 @@ public class AnalisePedidoEntity {
     @Column(name = "data_entrega_pc")
     private LocalDate dataEntregaPc;
 
-    @Column(name = "fornecedor")
-    private String fornecedor;
-
-    @Column(name = "pais")
-    private String pais;
-
-    @Column(name = "codigo_item")
-    private String codigoItem;
-
-    @Column(name = "descricao_item")
-    private String descricaoItem;
-
-    @Column(name = "unidade_medida")
-    private String unidadeMedida;
-
-    @Column(name = "quantidade_solicitada", precision = 19, scale = 4)
+    @Column(name = "quantidade_solicitada")
     private BigDecimal quantidadeSolicitada;
 
-    @Column(name = "quantidade_atendida", precision = 19, scale = 4)
+    @Column(name = "quantidade_atendida")
     private BigDecimal quantidadeAtendida;
 
-    @Column(name = "saldo", precision = 19, scale = 4)
+    @Column(name = "saldo")
     private BigDecimal saldo;
 
-    @Column(name = "local")
+    @Column(name = "local_")
     private String local;
 
-    @Column(name = "valor_unitario", precision = 19, scale = 4)
+    @Column(name = "valor_unitario")
     private BigDecimal valorUnitario;
 
-    @Column(name = "valor_frete", precision = 19, scale = 4)
+    @Column(name = "valor_frete")
     private BigDecimal valorFrete;
 
-    @Column(name = "ipi", precision = 19, scale = 4)
+    @Column(name = "ipi")
     private BigDecimal ipi;
 
-    @Column(name = "valor_total", precision = 19, scale = 4)
+    @Column(name = "valor_total")
     private BigDecimal valorTotal;
 
     @Column(name = "condicao_pagamento")
@@ -131,24 +124,16 @@ public class AnalisePedidoEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
-
-    @Column(name = "deleted_at")
-    private Instant deletedAt;
-
     protected AnalisePedidoEntity() {
     }
 
     @PrePersist
     private void generateId() {
         if (id == null) {
-            id = br.lanx.api.shared.domain.Ids.newId();
+            id = Ids.newId();
         }
     }
 
-    // Getters e Setters
     public UUID getId() {
         return id;
     }
@@ -157,20 +142,28 @@ public class AnalisePedidoEntity {
         this.id = id;
     }
 
-    public UUID getMaterialId() {
-        return materialId;
+    public Material getMaterial() {
+        return material;
     }
 
-    public void setMaterialId(UUID materialId) {
-        this.materialId = materialId;
+    public void setMaterial(Material material) {
+        this.material = material;
     }
 
-    public UUID getUnidadeMedidaId() {
-        return unidadeMedidaId;
+    public UnidadeMedidaEntity getUnidadeMedida() {
+        return unidadeMedida;
     }
 
-    public void setUnidadeMedidaId(UUID unidadeMedidaId) {
-        this.unidadeMedidaId = unidadeMedidaId;
+    public void setUnidadeMedida(UnidadeMedidaEntity unidadeMedida) {
+        this.unidadeMedida = unidadeMedida;
+    }
+
+    public Fornecedor getFornecedor() {
+        return fornecedor;
+    }
+
+    public void setFornecedor(Fornecedor fornecedor) {
+        this.fornecedor = fornecedor;
     }
 
     public String getRequisicaoDeCompra() {
@@ -243,46 +236,6 @@ public class AnalisePedidoEntity {
 
     public void setDataEntregaPc(LocalDate dataEntregaPc) {
         this.dataEntregaPc = dataEntregaPc;
-    }
-
-    public String getFornecedor() {
-        return fornecedor;
-    }
-
-    public void setFornecedor(String fornecedor) {
-        this.fornecedor = fornecedor;
-    }
-
-    public String getPais() {
-        return pais;
-    }
-
-    public void setPais(String pais) {
-        this.pais = pais;
-    }
-
-    public String getCodigoItem() {
-        return codigoItem;
-    }
-
-    public void setCodigoItem(String codigoItem) {
-        this.codigoItem = codigoItem;
-    }
-
-    public String getDescricaoItem() {
-        return descricaoItem;
-    }
-
-    public void setDescricaoItem(String descricaoItem) {
-        this.descricaoItem = descricaoItem;
-    }
-
-    public String getUnidadeMedida() {
-        return unidadeMedida;
-    }
-
-    public void setUnidadeMedida(String unidadeMedida) {
-        this.unidadeMedida = unidadeMedida;
     }
 
     public BigDecimal getQuantidadeSolicitada() {
@@ -437,19 +390,4 @@ public class AnalisePedidoEntity {
         this.createdAt = createdAt;
     }
 
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Instant getDeletedAt() {
-        return deletedAt;
-    }
-
-    public void setDeletedAt(Instant deletedAt) {
-        this.deletedAt = deletedAt;
-    }
 }

@@ -10,6 +10,7 @@ public class AnalisePedidoResponseMapper {
 
     public static AnalisePedidoResponse from(ItemAnalisePedido item) {
         return new AnalisePedidoResponse(
+                item.id(),
                 item.requisicaoDeCompra(),
                 item.solicitante(),
                 item.dataEmissaoRc(),
@@ -19,11 +20,11 @@ public class AnalisePedidoResponseMapper {
                 item.dataEmissaoPc(),
                 item.dataPrevisaoEntregaPc(),
                 item.dataEntregaPc(),
-                item.fornecedor(),
-                item.pais(),
-                item.codigoItem(),
-                item.descricaoItem(),
-                item.unidadeMedida(),
+                item.fornecedorId() == null ? null
+                        : new AnalisePedidoResponse.FornecedorResumo(item.fornecedorId(), item.fornecedor(),
+                                item.pais()),
+                new AnalisePedidoResponse.MaterialResumo(item.materialId(), item.codigoItem(), item.descricaoItem()),
+                new AnalisePedidoResponse.UnidadeMedidaResumo(item.unidadeMedidaId(), item.unidadeMedida()),
                 item.quantidadeSolicitada(),
                 item.quantidadeAtendida(),
                 item.saldo(),

@@ -1,6 +1,7 @@
 package br.lanx.api.compras.relatorios.analisepedidos.application.service;
 
 import br.lanx.api.compras.relatorios.analisepedidos.application.port.in.ImportarAnalisePedidosUseCase;
+import br.lanx.api.compras.relatorios.analisepedidos.application.port.out.NormalizeFornecedorPort;
 import br.lanx.api.compras.relatorios.analisepedidos.application.port.out.NormalizeMaterialPort;
 import br.lanx.api.compras.relatorios.analisepedidos.application.port.out.NormalizeUnidadeMedidaPort;
 import br.lanx.api.compras.relatorios.analisepedidos.application.port.out.ObterPedidosExternosPort;
@@ -19,14 +20,16 @@ public class ImportarAnalisePedidosService implements ImportarAnalisePedidosUseC
     private final ObterPedidosExternosPort obterPedidosExternosPort;
     private final NormalizeUnidadeMedidaPort normalizarUnidadeMedidaPort;
     private final NormalizeMaterialPort normalizarMaterialPort;
+    private final NormalizeFornecedorPort normalizarFornecedorPort;
     private final SalvarAnalisePedidosPort salvarAnalisePedidosPort;
 
     public ImportarAnalisePedidosService(ObterPedidosExternosPort obterPedidosExternosPort,
             NormalizeUnidadeMedidaPort normalizarUnidadeMedidaPort, NormalizeMaterialPort normalizarMaterialPort,
-            SalvarAnalisePedidosPort salvarAnalisePedidosPort) {
+            NormalizeFornecedorPort normalizarFornecedorPort, SalvarAnalisePedidosPort salvarAnalisePedidosPort) {
         this.obterPedidosExternosPort = obterPedidosExternosPort;
         this.normalizarUnidadeMedidaPort = normalizarUnidadeMedidaPort;
         this.normalizarMaterialPort = normalizarMaterialPort;
+        this.normalizarFornecedorPort = normalizarFornecedorPort;
         this.salvarAnalisePedidosPort = salvarAnalisePedidosPort;
     }
 
@@ -44,7 +47,6 @@ public class ImportarAnalisePedidosService implements ImportarAnalisePedidosUseC
     }
 
     private ItemAnalisePedido normalizar(ItemAnalisePedido item) {
-
         UUID unidadeMedidaId = normalizarUnidadeMedidaPort.obterOuCriar(
                 item.unidadeMedida(),
                 item.unidadeMedida());
@@ -54,8 +56,12 @@ public class ImportarAnalisePedidosService implements ImportarAnalisePedidosUseC
                 item.descricaoItem(),
                 unidadeMedidaId);
 
+        // Fornecedor é opcional: itens sem fornecedor ficam com fornecedorId nulo
+        UUID fornecedorId = normalizarFornecedorPort.obterOuCriar(item.fornecedor(), item.pais());
+
         return item
                 .withUnidadeMedidaId(unidadeMedidaId)
-                .withMaterialId(materialId);
+                .withMaterialId(materialId)
+                .withFornecedorId(fornecedorId);
     }
 }

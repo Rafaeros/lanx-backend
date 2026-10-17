@@ -9,7 +9,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +21,9 @@ import org.springframework.test.context.ActiveProfiles;
 
 import br.lanx.api.compras.relatorios.analisepedidos.adapter.out.persistence.AnalisePedidoPersistenceAdapter;
 import br.lanx.api.compras.relatorios.analisepedidos.adapter.out.persistence.AnalisePedidoRepository;
+import br.lanx.api.compras.relatorios.analisepedidos.application.port.out.NormalizeFornecedorPort;
+import br.lanx.api.compras.relatorios.analisepedidos.application.port.out.NormalizeMaterialPort;
+import br.lanx.api.compras.relatorios.analisepedidos.application.port.out.NormalizeUnidadeMedidaPort;
 import br.lanx.api.compras.relatorios.analisepedidos.domain.ItemAnalisePedido;
 
 /** Consulta paginada, filtros e resumo da análise de pedidos, pela API de verdade. */
@@ -46,6 +48,15 @@ class AnalisePedidosConsultaIntegrationTest {
     @Autowired
     AnalisePedidoRepository repository;
 
+    @Autowired
+    NormalizeUnidadeMedidaPort unidades;
+
+    @Autowired
+    NormalizeMaterialPort materiais;
+
+    @Autowired
+    NormalizeFornecedorPort fornecedores;
+
     private final HttpClient http = HttpClient.newHttpClient();
     private String admin;
 
@@ -53,11 +64,11 @@ class AnalisePedidosConsultaIntegrationTest {
     void setUp() throws Exception {
         repository.deleteAll();
         persistence.salvar(List.of(
-                item("PC-100", "Aço Tubos SA", "MAT-1", LocalDate.of(2026, 10, 2), null, "10", "0", "10", "100"),
-                item("PC-101", "Valvtech Ltda", "MAT-2", LocalDate.of(2026, 10, 5), LocalDate.of(2026, 10, 15), "10", "4", "6", "200"),
-                item("PC-102", "Valvtech Ltda", "MAT-3", LocalDate.of(2026, 10, 8), LocalDate.of(2026, 10, 29), "5", "5", "0", "300"),
+                item("PC-100", "Aço Tubos SA", "AP-MAT-1", LocalDate.of(2026, 10, 2), null, "10", "0", "10", "100"),
+                item("PC-101", "Valvtech Ltda", "AP-MAT-2", LocalDate.of(2026, 10, 5), LocalDate.of(2026, 10, 15), "10", "4", "6", "200"),
+                item("PC-102", "Valvtech Ltda", "AP-MAT-3", LocalDate.of(2026, 10, 8), LocalDate.of(2026, 10, 29), "5", "5", "0", "300"),
                 // fora do período
-                item("PC-090", "Aço Tubos SA", "MAT-1", LocalDate.of(2026, 9, 20), null, "1", "0", "1", "999")));
+                item("PC-090", "Aço Tubos SA", "AP-MAT-1", LocalDate.of(2026, 9, 20), null, "1", "0", "1", "999")));
         admin = login();
     }
 
@@ -67,6 +78,8 @@ class AnalisePedidosConsultaIntegrationTest {
         assertThat(body).contains("\"totalElements\":3").contains("\"totalPages\":2").contains("\"size\":2");
         assertThat(body.indexOf("PC-100")).isLessThan(body.indexOf("PC-101"));
         assertThat(body).doesNotContain("PC-102").doesNotContain("PC-090");
+        assertThat(body).contains("\"fornecedor\":{").contains("\"nome\":\"Aço Tubos SA\"")
+                .contains("\"pais\":\"Brasil\"").contains("\"codigo\":\"AP-MAT-1\"").contains("\"sigla\":\"UN\"");
 
         assertThat(get(BASE + "?" + OUTUBRO + "&page=1&size=2")).contains("PC-102");
     }
@@ -74,7 +87,7 @@ class AnalisePedidosConsultaIntegrationTest {
     @Test
     void filtraPorBuscaESituacao() throws Exception {
         assertThat(get(BASE + "?" + OUTUBRO + "&busca=valvtech")).contains("\"totalElements\":2");
-        assertThat(get(BASE + "?" + OUTUBRO + "&busca=mat-3")).contains("\"totalElements\":1").contains("PC-102");
+        assertThat(get(BASE + "?" + OUTUBRO + "&busca=ap-mat-3")).contains("\"totalElements\":1").contains("PC-102");
 
         var parciais = get(BASE + "?" + OUTUBRO + "&situacao=PARCIAL");
         assertThat(parciais).contains("\"totalElements\":1").contains("PC-101")
@@ -101,15 +114,18 @@ class AnalisePedidosConsultaIntegrationTest {
 
     // ---------- helpers ----------
 
-    private static ItemAnalisePedido item(String pedido, String fornecedor, String codigo, LocalDate emissao,
+    private ItemAnalisePedido item(String pedido, String fornecedor, String codigo, LocalDate emissao,
             LocalDate entrega, String solicitada, String atendida, String saldo, String valor) {
-        return new ItemAnalisePedido("RC-" + pedido, "Solicitante", emissao, null, pedido, "Comprador", emissao,
+        var base = new ItemAnalisePedido("RC-" + pedido, "Solicitante", emissao, null, pedido, "Comprador", emissao,
                 null, entrega, fornecedor, "Brasil", codigo, "Descrição " + codigo, "UN", new BigDecimal(solicitada),
                 new BigDecimal(atendida), new BigDecimal(saldo), "Almoxarifado", BigDecimal.ONE, BigDecimal.ZERO,
                 BigDecimal.ZERO, new BigDecimal(valor), "30 dias", null, null, null, null, null, null, null,
-                null, null)
-                .withMaterialId(UUID.randomUUID())
-                .withUnidadeMedidaId(UUID.randomUUID());
+                null, null);
+        var unidadeId = unidades.obterOuCriar("UN", "UN");
+        return base
+                .withUnidadeMedidaId(unidadeId)
+                .withMaterialId(materiais.obterOuCriar(codigo, "Descrição " + codigo, unidadeId))
+                .withFornecedorId(fornecedores.obterOuCriar(fornecedor, "Brasil"));
     }
 
     private String get(String path) throws Exception {
