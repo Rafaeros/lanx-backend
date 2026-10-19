@@ -1,5 +1,6 @@
 package br.lanx.api.compras.relatorios.analisepedidos.adapter.in.web;
 
+import static br.lanx.api.compras.shared.ComprasPermissions.ANALISE_PEDIDOS_EXPORTAR;
 import static br.lanx.api.compras.shared.ComprasPermissions.ANALISE_PEDIDOS_IMPORTAR;
 import static br.lanx.api.compras.shared.ComprasPermissions.ANALISE_PEDIDOS_READ;
 
@@ -9,6 +10,7 @@ import br.lanx.api.compras.relatorios.analisepedidos.domain.FiltroPedidos;
 import br.lanx.api.shared.pagination.PageQuery;
 import br.lanx.api.shared.pagination.PageResult;
 import br.lanx.api.shared.web.ApiResponse;
+import br.lanx.api.shared.web.planilha.Planilha;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +50,16 @@ public class AnalisePedidoComprasController {
     public ApiResponse<ResumoAnalisePedidosResponse> resumo(ConsultarAnalisePedidosRequest request) {
         return ApiResponse.ok("Resumo calculado",
                 ResumoAnalisePedidosResponse.from(consultarUseCase.resumir(request.toDomain())));
+    }
+
+    /** Planilha (.xlsx) com todos os itens que atendem aos filtros, sem paginação. */
+    @GetMapping("/exportar")
+    @PreAuthorize("hasAuthority('" + ANALISE_PEDIDOS_EXPORTAR + "')")
+    public ResponseEntity<byte[]> exportar(ConsultarAnalisePedidosRequest request) {
+        var consulta = request.toDomain();
+        var itens = consultarUseCase.listarTodos(consulta);
+        String nome = "analise-pedidos_" + consulta.dataInicio() + "_" + consulta.dataFim() + ".xlsx";
+        return Planilha.download(nome, AnalisePedidosPlanilha.gerar(consulta, itens));
     }
 
     @PostMapping("/importar")

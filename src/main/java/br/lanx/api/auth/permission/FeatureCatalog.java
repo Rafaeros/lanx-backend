@@ -65,13 +65,17 @@ public final class FeatureCatalog {
     }
 
     /**
-     * Ações da funcionalidade: o CRUD de sempre + as extras declaradas (em ordem
-     * alfabética).
+     * Ações da funcionalidade: o CRUD de sempre (ou só "read", nos relatórios) +
+     * as extras declaradas (em ordem alfabética).
      */
     public static List<String> actionsOf(FeatureDefinition def) {
         Set<String> actions = new LinkedHashSet<>();
-        for (Action a : Action.values()) {
-            actions.add(a.key());
+        if (def.crud()) {
+            for (Action a : Action.values()) {
+                actions.add(a.key());
+            }
+        } else {
+            actions.add(Action.READ.key());
         }
         def.extraActions().stream().sorted().forEach(actions::add);
         return List.copyOf(actions);

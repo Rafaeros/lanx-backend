@@ -13,4 +13,6 @@ public interface ConsultarAnalisePedidosPort {
     PageResult<ItemAnalisePedido> buscar(ConsultaAnalisePedidos consulta, PageQuery pagina);
 
     List<IndicadoresItem> buscarIndicadores(ConsultaAnalisePedidos consulta);
+
+    List<ItemAnalisePedido> buscarTodos(ConsultaAnalisePedidos consulta);
 }

@@ -59,7 +59,7 @@ class AuthorizationIntegrationTest {
                 {"name":"SO_UNIDADES","description":"teste","permissions":["cadastros.unidade-medida:read"]}"""));
         send("POST", "/auth/users", admin, """
                 {"username":"maria","password":"Senha12345","roleIds":["%s"]}""".formatted(roleId));
-        String maria = login("maria", "Senha12345");
+        String maria = primeiroAcesso("maria", "Senha12345");
 
         assertThat(send("GET", "/unidade-medida", maria, null).statusCode()).isEqualTo(200);
         assertThat(send("GET", "/auth/roles", maria, null).statusCode()).isEqualTo(403);
@@ -95,19 +95,35 @@ class AuthorizationIntegrationTest {
                 {"name":"SO_LEITURA_COMPRAS","description":"teste","permissions":["compras.analise-pedidos:read"]}"""));
         send("POST", "/auth/users", admin, """
                 {"username":"joao","password":"Senha12345","roleIds":["%s"]}""".formatted(roleId));
-        String joao = login("joao", "Senha12345");
+        String joao = primeiroAcesso("joao", "Senha12345");
 
         assertThat(send("POST", "/compras/relatorios/analise-pedidos/importar?dataInicio=2026-10-01&dataFim=2026-10-31",
                 joao, null).statusCode()).isEqualTo(403);
+
+        // exportar é uma ação à parte: só ler não baixa a planilha
+        assertThat(navigation).contains("\"exportar\"");
+        assertThat(send("GET", "/compras/relatorios/analise-pedidos/exportar", joao, null).statusCode())
+                .isEqualTo(403);
+        assertThat(send("GET", "/compras/relatorios/analise-pedidos/exportar", admin, null).statusCode())
+                .isEqualTo(200);
+
+        // relatórios não têm CRUD: create/update/delete não existem mais para eles
+        assertThat(send("POST", "/auth/roles", admin, """
+                {"name":"CRUD_RELATORIO","permissions":["compras.iqf:create"]}""").statusCode()).isEqualTo(400);
 
         // sem nenhuma permissão de compras, nem a consulta é liberada
         String semCompras = id(send("POST", "/auth/roles", admin, """
                 {"name":"SEM_COMPRAS","description":"teste","permissions":["cadastros.materiais:read"]}"""));
         send("POST", "/auth/users", admin, """
                 {"username":"ana","password":"Senha12345","roleIds":["%s"]}""".formatted(semCompras));
-        String ana = login("ana", "Senha12345");
+        String ana = primeiroAcesso("ana", "Senha12345");
 
         assertThat(send("GET", "/compras/relatorios/analise-pedidos", ana, null).statusCode()).isEqualTo(403);
+        assertThat(send("GET", "/compras/relatorios/iqf", ana, null).statusCode()).isEqualTo(403);
+
+        // o IQF é uma funcionalidade à parte: ler a análise de pedidos não libera o IQF
+        assertThat(navigation).contains("\"compras.iqf\"");
+        assertThat(send("GET", "/compras/relatorios/iqf", joao, null).statusCode()).isEqualTo(403);
     }
 
     // ---------- helpers ----------
@@ -116,6 +132,15 @@ class AuthorizationIntegrationTest {
         var response = send("POST", "/auth/login", null, """
                 {"username":"%s","password":"%s"}""".formatted(username, password));
         assertThat(response.statusCode()).as("login de %s", username).isEqualTo(200);
+        return find(TOKEN, response.body());
+    }
+
+    /** Usuário recém-cadastrado: troca a senha provisória e devolve o token. */
+    private String primeiroAcesso(String username, String senhaProvisoria) throws Exception {
+        var response = send("POST", "/auth/first-access", null, """
+                {"username":"%s","currentPassword":"%s","newPassword":"Nova#Senha2026","confirmPassword":"Nova#Senha2026"}"""
+                .formatted(username, senhaProvisoria));
+        assertThat(response.statusCode()).as("primeiro acesso de %s: %s", username, response.body()).isEqualTo(200);
         return find(TOKEN, response.body());
     }
 

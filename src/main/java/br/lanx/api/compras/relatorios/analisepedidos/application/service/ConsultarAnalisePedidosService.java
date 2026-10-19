@@ -1,5 +1,7 @@
 package br.lanx.api.compras.relatorios.analisepedidos.application.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,5 +32,11 @@ public class ConsultarAnalisePedidosService implements ConsultarAnalisePedidosUs
     @Transactional(readOnly = true)
     public ResumoAnalisePedidos resumir(ConsultaAnalisePedidos consulta) {
         return ResumoAnalisePedidos.de(consultarAnalisePedidosPort.buscarIndicadores(consulta));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ItemAnalisePedido> listarTodos(ConsultaAnalisePedidos consulta) {
+        return consultarAnalisePedidosPort.buscarTodos(consulta);
     }
 }

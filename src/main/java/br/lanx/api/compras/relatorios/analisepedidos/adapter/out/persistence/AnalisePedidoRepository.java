@@ -1,6 +1,7 @@
 package br.lanx.api.compras.relatorios.analisepedidos.adapter.out.persistence;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -78,6 +79,33 @@ public interface AnalisePedidoRepository extends JpaRepository<AnalisePedidoEnti
         List<AnalisePedidoEntity> buscarEntregasParaIqf(
                         @Param("inicio") LocalDate inicio,
                         @Param("fim") LocalDate fim);
+
+        @Query("""
+                        select e
+                        from AnalisePedidoEntity e
+                        left join fetch e.fornecedor f
+                        where e.dataPrevisaoEntregaPc between :inicio and :fim
+                          and e.rateio in :rateios
+                        order by e.dataPrevisaoEntregaPc, e.id
+                        """)
+        List<AnalisePedidoEntity> buscarEntregasParaIqfPorRateio(
+                        @Param("inicio") LocalDate inicio,
+                        @Param("fim") LocalDate fim,
+                        @Param("rateios") Collection<String> rateios);
+
+        @Query("""
+                        select distinct e.rateio
+                        from AnalisePedidoEntity e
+                        where e.rateio is not null and trim(e.rateio) <> ''
+                        order by e.rateio
+                        """)
+        List<String> listarRateios();
+
+        /** Todos os itens dos filtros, sem paginação (exportação da planilha). */
+        @Query("select e from AnalisePedidoEntity e" + JOINS_FETCH + FILTRO
+                        + " order by e.dataEmissaoPc, e.pedidoDeCompra, m.codigo, e.id")
+        List<AnalisePedidoEntity> listar(@Param("inicio") LocalDate inicio, @Param("fim") LocalDate fim,
+                        @Param("busca") String busca, @Param("situacao") String situacao);
 
         // Delete físico: os itens são reimportados do ERP, não faz sentido acumular
         // soft-deletes

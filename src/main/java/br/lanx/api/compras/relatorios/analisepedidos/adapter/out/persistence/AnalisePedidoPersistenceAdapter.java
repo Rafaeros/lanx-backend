@@ -65,6 +65,12 @@ public class AnalisePedidoPersistenceAdapter implements SalvarAnalisePedidosPort
         return repository.indicadores(consulta.dataInicio(), consulta.dataFim(), busca(consulta), situacao(consulta));
     }
 
+    @Override
+    public List<ItemAnalisePedido> buscarTodos(ConsultaAnalisePedidos consulta) {
+        return repository.listar(consulta.dataInicio(), consulta.dataFim(), busca(consulta), situacao(consulta))
+                .stream().map(mapper::toDomain).toList();
+    }
+
     private static String busca(ConsultaAnalisePedidos consulta) {
         return consulta.temBusca() ? "%" + consulta.busca().toLowerCase(Locale.ROOT) + "%" : "";
     }
