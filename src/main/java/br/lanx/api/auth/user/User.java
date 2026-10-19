@@ -13,6 +13,7 @@ import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import br.lanx.api.auth.role.Role;
+import br.lanx.api.auth.user.exception.FirstAccessAlreadyCompletedException;
 import br.lanx.api.auth.user.exception.InvalidUserException;
 import br.lanx.api.auth.user.exception.UserInactiveException;
 import br.lanx.api.shared.domain.Ids;
@@ -50,6 +51,10 @@ public class User {
 
     @Column(nullable = false)
     private boolean active = true;
+
+    /** Senha provisória: precisa trocar antes de receber um token. */
+    @Column(name = "first_access", nullable = false)
+    private boolean firstAccess;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(schema = "auth", name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -97,6 +102,20 @@ public class User {
         this.active = active;
     }
 
+    /** Cadastrado pelo administrador com senha provisória. */
+    public void requireFirstAccess() {
+        this.firstAccess = true;
+    }
+
+    /** Troca a senha provisória pela definida pelo próprio usuário. */
+    public void completeFirstAccess(String newPasswordHash) {
+        if (!firstAccess) {
+            throw new FirstAccessAlreadyCompletedException();
+        }
+        this.passwordHash = newPasswordHash;
+        this.firstAccess = false;
+    }
+
     public void ensureCanLogin() {
         if (!active) {
             throw new UserInactiveException();
@@ -140,6 +159,10 @@ public class User {
 
     public boolean isActive() {
         return active;
+    }
+
+    public boolean isFirstAccess() {
+        return firstAccess;
     }
 
     public Set<Role> getRoles() {
