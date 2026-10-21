@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -33,10 +32,5 @@ public record ApiResponse<T>(
 
     public static ApiResponse<Void> validation(List<FieldError> errors) {
         return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Dados inválidos", null, errors, Instant.now());
-    }
-
-    /** Garante que o status HTTP e o "status" do corpo nunca divergem. */
-    public ResponseEntity<ApiResponse<T>> toEntity(){
-        return ResponseEntity.status(status).body(this);
     }
 }

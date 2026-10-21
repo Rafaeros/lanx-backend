@@ -27,4 +27,15 @@ class FeatureKeyTest {
                 .isInstanceOf(InvalidFeatureKeyException.class);
         assertThatThrownBy(() -> FeatureKey.of(null)).isInstanceOf(InvalidFeatureKeyException.class);
     }
+
+    @Test
+    @DisplayName("ação extra com o código completo em vez do nome → falha na subida")
+    void acaoExtraInvalida() {
+        assertThatThrownBy(() -> FeatureDefinition.report("producao.comunizado", "Comunizado",
+                "producao.comunizado:importar"))
+                .isInstanceOf(InvalidFeatureKeyException.class)
+                .hasMessageContaining("importar");
+        assertThat(FeatureDefinition.report("producao.comunizado", "Comunizado", "importar").extraActions())
+                .containsExactly("importar");
+    }
 }

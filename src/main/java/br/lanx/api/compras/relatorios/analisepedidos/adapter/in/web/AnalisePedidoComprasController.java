@@ -64,13 +64,13 @@ public class AnalisePedidoComprasController {
 
     @PostMapping("/importar")
     @PreAuthorize("hasAuthority('" + ANALISE_PEDIDOS_IMPORTAR + "')")
-    public ResponseEntity<ApiResponse<ImportarAnalisePedidoResponse>> importar(
+    public ApiResponse<ImportarAnalisePedidoResponse> importar(
             @RequestParam("dataInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
             @RequestParam("dataFim") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
 
         var filtro = new FiltroPedidos(dataInicio, dataFim);
         int itensImportados = importarUseCase.importar(filtro);
 
-        return ApiResponse.ok("Importado com sucesso", new ImportarAnalisePedidoResponse(itensImportados)).toEntity();
+        return ApiResponse.ok("Importado com sucesso", new ImportarAnalisePedidoResponse(itensImportados));
     }
 }

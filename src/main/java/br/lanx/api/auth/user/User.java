@@ -16,6 +16,7 @@ import br.lanx.api.auth.role.Role;
 import br.lanx.api.auth.user.exception.FirstAccessAlreadyCompletedException;
 import br.lanx.api.auth.user.exception.InvalidUserException;
 import br.lanx.api.auth.user.exception.UserInactiveException;
+import br.lanx.api.cadastros.departamentos.Departamento;
 import br.lanx.api.shared.domain.Ids;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,6 +25,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
@@ -55,6 +57,10 @@ public class User {
     /** Senha provisória: precisa trocar antes de receber um token. */
     @Column(name = "first_access", nullable = false)
     private boolean firstAccess;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "departamento_id")
+    private Departamento departamento;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(schema = "auth", name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -120,6 +126,14 @@ public class User {
         if (!active) {
             throw new UserInactiveException();
         }
+    }
+
+    public void assignDepartamento(Departamento departamento) {
+        this.departamento = departamento;
+    }
+
+    public Departamento getDepartamento() {
+        return departamento;
     }
 
     /** Permissões efetivas: união das permissões de todas as roles. */

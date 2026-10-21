@@ -12,11 +12,11 @@ import br.lanx.api.cadastros.pais.dtos.PaisResponse;
 import br.lanx.api.cadastros.pais.exceptions.PaisNotFoundException;
 
 @Service
-public class PaisLookUpServiice {
+public class PaisLookUpService {
 
     private final PaisRepository paisRepository;
 
-    public PaisLookUpServiice(PaisRepository paisRepository) {
+    public PaisLookUpService(PaisRepository paisRepository) {
         this.paisRepository = paisRepository;
     }
 

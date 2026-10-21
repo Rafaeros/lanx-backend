@@ -386,8 +386,4 @@ public class AnalisePedidoEntity {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
 }

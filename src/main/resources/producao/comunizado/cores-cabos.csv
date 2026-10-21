@@ -1,0 +1,27 @@
+# Cores dos cabos usadas no comunizado (código do cabo: MODELO + BITOLA + COR [+ COR DA FAIXA] [+ SUFIXO]).
+# Ex.: CFR0035AZPR = cabo flex reduzido (CFR), 0,35 mm² (0035), azul (AZ) com faixa preta (PR).
+#
+# codigo : sigla da cor no código do cabo (siglas compostas, como AZCL, são reconhecidas antes de AZ)
+# nome   : nome da cor
+# texto  : cor da fonte na planilha (hex RGB) = cor do cabo
+# fundo  : cor de fundo da linha (hex RGB, opcional) para cores claras que somem no branco
+# negrito: sim/nao
+# faixa  : cor da sigla quando esta cor é a FAIXA de um cabo bicolor (hex, opcional; padrão = texto).
+#          Necessária nas cores claras: o "BR" de CFR0050VMBR em branco sumiria na célula.
+#
+# A ordem das linhas é a ordem das cores no comunizado (dentro do mesmo modelo e bitola).
+codigo;nome;texto;fundo;negrito;faixa
+PR;Preto;000000;;sim;
+BR;Branco;FFFFFF;808080;sim;A6A6A6
+CZ;Cinza;808080;;sim;
+MR;Marrom;843C0C;;sim;
+VM;Vermelho;FF0000;;nao;
+LR;Laranja;ED7D31;;sim;
+AM;Amarelo;000000;FFF2CC;nao;FFC000
+VD;Verde;00B050;;sim;
+VDCL;Verde claro;92D050;;sim;
+AZ;Azul;0070C0;;sim;
+AZCL;Azul claro;00B0F0;;sim;
+VL;Violeta;7030A0;;sim;
+RS;Rosa;FF66CC;;sim;
+CL;Claro;A6A6A6;;sim;

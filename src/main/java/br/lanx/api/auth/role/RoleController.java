@@ -7,7 +7,6 @@ import static br.lanx.api.auth.permission.AuthPermissions.PERFIS_UPDATE;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,8 +48,8 @@ public class RoleController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('" + PERFIS_CREATE + "')")
-    ResponseEntity<ApiResponse<CreatedResponse>> create(@Valid @RequestBody RoleRequest request) {
-        return ApiResponse.created("Role criada", new CreatedResponse(service.create(request))).toEntity();
+    ApiResponse<CreatedResponse> create(@Valid @RequestBody RoleRequest request) {
+        return ApiResponse.created("Role criada", new CreatedResponse(service.create(request)));
     }
 
     @PutMapping("/{id}")

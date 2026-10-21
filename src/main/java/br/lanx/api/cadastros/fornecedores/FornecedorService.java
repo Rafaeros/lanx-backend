@@ -12,7 +12,7 @@ import br.lanx.api.cadastros.fornecedores.dtos.UpdateFornecedorRequest;
 import br.lanx.api.cadastros.fornecedores.exceptions.FornecedorAlreadyExistsException;
 import br.lanx.api.cadastros.fornecedores.exceptions.FornecedorNotFoundException;
 import br.lanx.api.cadastros.pais.Pais;
-import br.lanx.api.cadastros.pais.PaisLookUpServiice;
+import br.lanx.api.cadastros.pais.PaisLookUpService;
 import br.lanx.api.shared.pagination.PageResult;
 
 @Service
@@ -21,9 +21,9 @@ public class FornecedorService {
     private static final String NOME_DUPLICADO = "Já existe um fornecedor com esse nome.";
 
     private final FornecedorRepository fornecedorRepository;
-    private final PaisLookUpServiice paisLookUpService;
+    private final PaisLookUpService paisLookUpService;
 
-    public FornecedorService(FornecedorRepository fornecedorRepository, PaisLookUpServiice paisLookUpService) {
+    public FornecedorService(FornecedorRepository fornecedorRepository, PaisLookUpService paisLookUpService) {
         this.fornecedorRepository = fornecedorRepository;
         this.paisLookUpService = paisLookUpService;
     }

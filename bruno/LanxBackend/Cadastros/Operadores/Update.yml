@@ -1,0 +1,23 @@
+info:
+  name: Update
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/operadores/01a15e3f-8b42-74f5-a966-5dc0b6a6fc5b"
+  body:
+    type: json
+    data: |-
+      {
+        "nome": "Rafael Cordeiro",
+        "departamentoId": "01a15e35-d664-7694-ae9b-8b3eaaa8aaf7"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

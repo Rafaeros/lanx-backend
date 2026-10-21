@@ -3,9 +3,20 @@
 Backend do sistema ERP Lanx, desenvolvido com as melhores práticas de engenharia de software para garantir escalabilidade, segurança e fácil manutenção.
 
 ## 🏗 Arquitetura
-O projeto utiliza um modelo híbrido estratégico:
-- **Arquitetura Hexagonal (Ports & Adapters) + DDD (Domain-Driven Design) + CQRS:** Utilizados nos módulos mais complexos e com regras de negócio críticas (como o módulo `Auth` e o futuro módulo de cálculo `IQF`). Garante que o Domínio seja puro e isolado da infraestrutura.
-- **Arquitetura em Camadas (Layered Architecture):** Utilizada em módulos de CRUDs mais simples (como alguns `Cadastros`) para evitar overengineering, mantendo a produtividade sem perder a organização.
+O projeto utiliza um modelo híbrido. A escolha é feita **por feature**, pela complexidade dela:
+
+| Use | Quando | Estrutura | Exemplos |
+|-----|--------|-----------|----------|
+| **Hexagonal (Ports & Adapters)** | Regra de negócio robusta (cálculos, políticas) ou integração com sistema externo (ERP, planilhas) | `domain/` (puro, sem Spring/JPA) · `application/` (casos de uso e portas) · `adapter/in` (web) · `adapter/out` (persistência, clients) | `compras.relatorios.analisepedidos`, `compras.relatorios.iqf`, `cadastros.unidademedida` |
+| **Camadas (Layered)** | CRUD simples, sem regra além de validação e unicidade | `XController` → `XService` → `XRepository`, com `dtos/` e `exceptions/` | `cadastros.fornecedores`, `cadastros.departamentos`, `cadastros.operadores`, `auth` |
+
+Regras comuns às duas, garantidas pelo `ArchitectureTest`:
+- Controller nunca acessa repository; service nunca conhece controller.
+- Um cadastro não conhece quem o usa: para vetar a exclusão de um registro em uso, o módulo dependente implementa um `UsageCheck` (ex.: `DepartamentoUsageCheck`).
+- Exceções de negócio estendem `DomainException` e seguem o padrão `XNotFoundException`, `XAlreadyExistsException`, `XInUseException`.
+- Controllers devolvem só o `ApiResponse` (`ok`, `created`...): o `ApiResponseStatusAdvice` aplica o `status` do corpo como status HTTP.
+
+Uma feature em camadas que ganhar regra complexa ou integração externa migra para hexagonal.
 
 ## 🛠 Tecnologias Principais
 - **Java 21+** (Records, Pattern Matching)

@@ -9,7 +9,6 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,8 +39,8 @@ public class FornecedorController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('" + FORNECEDOR_CREATE + "')")
-    public ResponseEntity<ApiResponse<FornecedorResponse>> create(@Valid @RequestBody CreateFornecedorRequest request) {
-        return ApiResponse.created("Fornecedor cadastrado com sucesso!", fornecedorService.create(request)).toEntity();
+    public ApiResponse<FornecedorResponse> create(@Valid @RequestBody CreateFornecedorRequest request) {
+        return ApiResponse.created("Fornecedor cadastrado com sucesso!", fornecedorService.create(request));
     }
 
     @GetMapping("/{id}")

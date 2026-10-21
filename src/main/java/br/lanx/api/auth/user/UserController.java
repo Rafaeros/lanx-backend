@@ -7,7 +7,6 @@ import static br.lanx.api.auth.permission.AuthPermissions.USUARIOS_UPDATE;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,8 +49,8 @@ public class UserController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('" + USUARIOS_CREATE + "')")
-    ResponseEntity<ApiResponse<CreatedResponse>> create(@Valid @RequestBody RegisterUserRequest request) {
-        return ApiResponse.created("Usuário criado", new CreatedResponse(service.register(request))).toEntity();
+    ApiResponse<CreatedResponse> create(@Valid @RequestBody RegisterUserRequest request) {
+        return ApiResponse.created("Usuário criado", new CreatedResponse(service.register(request)));
     }
 
     @PutMapping("/{id}")

@@ -1,0 +1,24 @@
+info:
+  name: Comunizado
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/producao/operacoes/comunizado"
+  body:
+    type: multipart-form
+    data:
+      - name: arquivo
+        type: file
+        value:
+          - /home/rafaeros/Downloads/IT002_05 - KHN321 - 14.04.2026 (2).xlsx
+        contentType: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

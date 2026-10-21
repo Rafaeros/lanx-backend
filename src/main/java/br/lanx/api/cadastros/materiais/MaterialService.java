@@ -12,7 +12,7 @@ import br.lanx.api.cadastros.materiais.dtos.MaterialResponse;
 import br.lanx.api.cadastros.materiais.dtos.UpdateMaterialRequest;
 import br.lanx.api.cadastros.materiais.exceptions.MaterialAlreadyExistsException;
 import br.lanx.api.cadastros.materiais.exceptions.MaterialNotFoundException;
-import br.lanx.api.cadastros.materiais.exceptions.MaterialUnidadeMedidaNaoEncontradaException;
+import br.lanx.api.cadastros.materiais.exceptions.MaterialUnidadeMedidaNotFoundException;
 import br.lanx.api.cadastros.unidademedida.adapter.out.persistence.UnidadeMedidaEntity;
 import br.lanx.api.cadastros.unidademedida.application.port.in.ExistsUnidadeMedidaUseCase;
 import br.lanx.api.shared.pagination.PageResult;
@@ -95,7 +95,7 @@ public class MaterialService {
 
     private UnidadeMedidaEntity unidadeRef(UUID unidadeMedidaId) {
         if (!existsUnidadeMedida.existsById(unidadeMedidaId)) {
-            throw new MaterialUnidadeMedidaNaoEncontradaException("Unidade de medida não encontrada.");
+            throw new MaterialUnidadeMedidaNotFoundException("Unidade de medida não encontrada.");
         }
         // getReference cria uma proxy gerenciada com o ID, sem fazer SELECT no banco
         return entityManager.getReference(UnidadeMedidaEntity.class, unidadeMedidaId);

@@ -7,7 +7,6 @@ import static br.lanx.api.cadastros.shared.CadastrosPermissions.UNIDADE_MEDIDA_U
 
 import java.util.UUID;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,10 +58,10 @@ public class UnidadeMedidaController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('" + UNIDADE_MEDIDA_CREATE + "')")
-    ResponseEntity<ApiResponse<CreatedResponse>> create(@Valid @RequestBody CreateUnidadeMedidaRequest request) {
+    ApiResponse<CreatedResponse> create(@Valid @RequestBody CreateUnidadeMedidaRequest request) {
         CreatedResult result = createUseCase.create(new CreateUnidadeMedidaUseCase.CreateUnidadeMedidaCommand(
                 request.nome(), request.sigla()));
-        return ApiResponse.created("Unidade de medida criada!", new CreatedResponse(result.id())).toEntity();
+        return ApiResponse.created("Unidade de medida criada!", new CreatedResponse(result.id()));
     }
 
     /**
@@ -71,14 +70,14 @@ public class UnidadeMedidaController {
      */
     @PostMapping("/find-or-create")
     @PreAuthorize("hasAuthority('" + UNIDADE_MEDIDA_CREATE + "')")
-    ResponseEntity<ApiResponse<SearchUnidadeMedidaResponse>> findOrCreate(
+    ApiResponse<SearchUnidadeMedidaResponse> findOrCreate(
             @Valid @RequestBody CreateUnidadeMedidaRequest request) {
         var result = findOrCreateUseCase.findByNomeOrCreate(
                 new FindOrCreateUnidadeMedidaUseCase.Command(request.nome(), request.sigla()));
         var body = SearchUnidadeMedidaResponse.from(result.unidade());
         return result.created()
-                ? ApiResponse.created("Unidade de medida criada!", body).toEntity()
-                : ApiResponse.ok("Unidade de medida já existia", body).toEntity();
+                ? ApiResponse.created("Unidade de medida criada!", body)
+                : ApiResponse.ok("Unidade de medida já existia", body);
     }
 
     @GetMapping("/{id}")

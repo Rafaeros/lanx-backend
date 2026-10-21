@@ -9,7 +9,6 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,8 +39,8 @@ public class MaterialController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('" + MATERIAIS_CREATE + "')")
-    public ResponseEntity<ApiResponse<MaterialResponse>> create(@Valid @RequestBody CreateMaterialRequest request) {
-        return ApiResponse.created("Material cadastrado com sucesso!", materialService.create(request)).toEntity();
+    public ApiResponse<MaterialResponse> create(@Valid @RequestBody CreateMaterialRequest request) {
+        return ApiResponse.created("Material cadastrado com sucesso!", materialService.create(request));
     }
 
     /**
@@ -50,12 +49,12 @@ public class MaterialController {
      */
     @PostMapping("/find-or-create")
     @PreAuthorize("hasAuthority('" + MATERIAIS_CREATE + "')")
-    public ResponseEntity<ApiResponse<MaterialResponse>> findOrCreate(
+    public ApiResponse<MaterialResponse> findOrCreate(
             @Valid @RequestBody CreateMaterialRequest request) {
         var result = materialService.findByCodigoOrCreate(request);
         return result.created()
-                ? ApiResponse.created("Material cadastrado com sucesso!", result.material()).toEntity()
-                : ApiResponse.ok("Material já existia", result.material()).toEntity();
+                ? ApiResponse.created("Material cadastrado com sucesso!", result.material())
+                : ApiResponse.ok("Material já existia", result.material());
     }
 
     @GetMapping("/{id}")

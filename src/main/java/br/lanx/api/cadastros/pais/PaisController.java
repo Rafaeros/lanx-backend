@@ -17,9 +17,9 @@ import br.lanx.api.shared.web.ApiResponse;
 @RequestMapping("/paises")
 public class PaisController {
 
-    private final PaisLookUpServiice paisLookUpService;
+    private final PaisLookUpService paisLookUpService;
 
-    public PaisController(PaisLookUpServiice paisLookUpService) {
+    public PaisController(PaisLookUpService paisLookUpService) {
         this.paisLookUpService = paisLookUpService;
     }
 

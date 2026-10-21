@@ -5,58 +5,6 @@ CREATE SCHEMA IF NOT EXISTS cadastros;
 CREATE SCHEMA IF NOT EXISTS compras;
 
 -- ============================================
--- AUTH
--- ============================================
-CREATE TABLE
-    auth.users (
-        id UUID PRIMARY KEY,
-        username VARCHAR(100) NOT NULL UNIQUE,
-        password_hash VARCHAR(255) NOT NULL,
-        active BOOLEAN NOT NULL DEFAULT TRUE,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
-        deleted_at TIMESTAMPTZ
-    );
-
-CREATE TABLE
-    auth.roles (
-        id UUID PRIMARY KEY,
-        name VARCHAR(50) NOT NULL UNIQUE,
-        description VARCHAR(255),
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
-        deleted_at TIMESTAMPTZ
-    );
-
-CREATE TABLE
-    auth.user_roles (
-        user_id UUID NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
-        role_id UUID NOT NULL REFERENCES auth.roles (id) ON DELETE CASCADE,
-        PRIMARY KEY (user_id, role_id)
-    );
-
-CREATE INDEX idx_user_roles_role ON auth.user_roles (role_id);
-
-CREATE TABLE
-    auth.permissions (
-        id UUID PRIMARY KEY,
-        code VARCHAR(150) NOT NULL UNIQUE,
-        feature_key VARCHAR(100) NOT NULL,
-        action VARCHAR(50) NOT NULL,
-        description VARCHAR(255) NOT NULL,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW ()
-    );
-
-CREATE TABLE
-    auth.role_permissions (
-        role_id UUID NOT NULL REFERENCES auth.roles (id) ON DELETE CASCADE,
-        permission_id UUID NOT NULL REFERENCES auth.permissions (id) ON DELETE CASCADE,
-        PRIMARY KEY (role_id, permission_id)
-    );
-
-CREATE INDEX idx_role_permissions_permission ON auth.role_permissions (permission_id);
-
--- ============================================
 -- CADASTROS
 -- ============================================
 CREATE TABLE
@@ -93,6 +41,25 @@ CREATE TABLE
         CONSTRAINT fk_materiais_unidade_medida FOREIGN KEY (unidade_medida_id) REFERENCES cadastros.unidades_medida (id) ON DELETE RESTRICT
     );
 
+CREATE TABLE
+    cadastros.departamentos (
+        id UUID PRIMARY KEY,
+        nome VARCHAR(100) NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
+        deleted_at TIMESTAMPTZ
+    );
+
+CREATE TABLE
+    cadastros.operadores (
+        id UUID PRIMARY KEY,
+        departamento_id UUID NULL REFERENCES cadastros.departamentos (id),
+        nome VARCHAR(100) NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
+        deleted_at TIMESTAMPTZ
+    );
+
 CREATE INDEX idx_materiais_unidade_medida_id ON cadastros.materiais (unidade_medida_id);
 
 CREATE INDEX idx_materiais_ativos ON cadastros.materiais (id)
@@ -111,6 +78,62 @@ CREATE TABLE
     );
 
 CREATE INDEX idx_fornecedores_pais_id ON cadastros.fornecedores (pais_id);
+
+-- ============================================
+-- AUTH
+-- ============================================
+CREATE TABLE
+    auth.users (
+        id UUID PRIMARY KEY,
+        departamento_id UUID NULL REFERENCES cadastros.departamentos (id),
+        username VARCHAR(100) NOT NULL UNIQUE,
+        password_hash VARCHAR(255) NOT NULL,
+        active BOOLEAN NOT NULL DEFAULT TRUE,
+        first_access BOOLEAN NOT NULL DEFAULT FALSE,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
+        deleted_at TIMESTAMPTZ
+    );
+
+CREATE TABLE
+    auth.roles (
+        id UUID PRIMARY KEY,
+        name VARCHAR(50) NOT NULL UNIQUE,
+        description VARCHAR(255),
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
+        deleted_at TIMESTAMPTZ
+    );
+
+CREATE TABLE
+    auth.user_roles (
+        user_id UUID NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
+        role_id UUID NOT NULL REFERENCES auth.roles (id) ON DELETE CASCADE,
+        PRIMARY KEY (user_id, role_id)
+    );
+
+CREATE SCHEMA IF NOT EXISTS cadastros;
+
+CREATE INDEX idx_user_roles_role ON auth.user_roles (role_id);
+
+CREATE TABLE
+    auth.permissions (
+        id UUID PRIMARY KEY,
+        code VARCHAR(150) NOT NULL UNIQUE,
+        feature_key VARCHAR(100) NOT NULL,
+        action VARCHAR(50) NOT NULL,
+        description VARCHAR(255) NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW ()
+    );
+
+CREATE TABLE
+    auth.role_permissions (
+        role_id UUID NOT NULL REFERENCES auth.roles (id) ON DELETE CASCADE,
+        permission_id UUID NOT NULL REFERENCES auth.permissions (id) ON DELETE CASCADE,
+        PRIMARY KEY (role_id, permission_id)
+    );
+
+CREATE INDEX idx_role_permissions_permission ON auth.role_permissions (permission_id);
 
 -- ============================================
 -- COMPRAS - ANÁLISE DE PEDIDOS

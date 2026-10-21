@@ -21,6 +21,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     boolean existsByUsername(String username);
 
+    boolean existsByDepartamentoId(UUID departamentoId);
+
     /** Todos os usuários para o painel de administração, já com roles e permissões carregadas. */
     @EntityGraph(attributePaths = { "roles", "roles.permissions" })
     List<User> findAllByOrderByUsernameAsc();

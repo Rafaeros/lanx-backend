@@ -115,6 +115,56 @@ class CadastrosCrudIntegrationTest {
         assertThat(send("DELETE", "/materiais/" + material, t, null).statusCode()).isEqualTo(404);
     }
 
+    @Test
+    void departamentosCrudCompleto() throws Exception {
+        String t = adminToken();
+
+        String id = id(send("POST", "/departamentos", t, """
+                {"nome":"Extrusão"}"""), 201);
+        assertThat(send("POST", "/departamentos", t, """
+                {"nome":"extrusão"}""").statusCode()).as("nome duplicado").isEqualTo(409);
+
+        assertThat(send("PUT", "/departamentos/" + id, t, """
+                {"nome":"Extrusão"}""").statusCode()).as("salvar sem trocar o nome").isEqualTo(200);
+        assertThat(send("GET", "/departamentos?busca=extr", t, null).body()).contains("Extrusão");
+
+        assertThat(send("DELETE", "/departamentos/" + id, t, null).statusCode()).isEqualTo(200);
+        assertThat(send("GET", "/departamentos/" + id, t, null).statusCode()).isEqualTo(404);
+    }
+
+    @Test
+    void operadoresCrudCompletoComDepartamentoOpcional() throws Exception {
+        String t = adminToken();
+        String departamento = id(send("POST", "/departamentos", t, """
+                {"nome":"Trefilação"}"""), 201);
+
+        var create = send("POST", "/operadores", t, """
+                {"nome":"João Silva","departamentoId":"%s"}""".formatted(departamento));
+        String operador = id(create, 201);
+        assertThat(create.body()).contains("Trefilação");
+        assertThat(send("POST", "/operadores", t, """
+                {"nome":"joão silva"}""").statusCode()).as("nome duplicado").isEqualTo(409);
+        assertThat(send("POST", "/operadores", t, """
+                {"nome":"Maria","departamentoId":"%s"}""".formatted(java.util.UUID.randomUUID())).statusCode())
+                .as("departamento inexistente").isEqualTo(404);
+
+        assertThat(send("GET", "/operadores?busca=joão", t, null).body()).contains(departamento);
+        // departamento com operador não pode ser excluído
+        assertThat(send("DELETE", "/departamentos/" + departamento, t, null).statusCode()).isEqualTo(409);
+
+        var semDepartamento = send("PUT", "/operadores/" + operador, t, """
+                {"nome":"João Silva","departamentoId":null}""");
+        assertThat(semDepartamento.statusCode()).isEqualTo(200);
+        assertThat(semDepartamento.body()).as("departamento removido").doesNotContain("Trefilação");
+        assertThat(send("PUT", "/operadores/" + operador, t, """
+                {"nome":" "}""").statusCode()).as("nome em branco").isEqualTo(400);
+
+        assertThat(send("DELETE", "/operadores/" + operador, t, null).statusCode()).isEqualTo(200);
+        assertThat(send("GET", "/operadores/" + operador, t, null).statusCode()).isEqualTo(404);
+        assertThat(send("DELETE", "/departamentos/" + departamento, t, null).statusCode())
+                .as("sem operadores, sai do cadastro").isEqualTo(200);
+    }
+
     // ---------- helpers ----------
 
     private String adminToken() throws Exception {

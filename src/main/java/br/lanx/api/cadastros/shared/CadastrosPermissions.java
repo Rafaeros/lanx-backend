@@ -11,6 +11,8 @@ public final class CadastrosPermissions {
     public static final String MATERIAIS = "cadastros.materiais";
     public static final String PAIS = "cadastros.pais";
     public static final String FORNECEDOR = "cadastros.fornecedores";
+    public static final String DEPARTAMENTO = "cadastros.departamentos";
+    public static final String OPERADORES = "cadastros.operadores";
 
     public static final String UNIDADE_MEDIDA_READ = UNIDADE_MEDIDA + ":read";
     public static final String UNIDADE_MEDIDA_CREATE = UNIDADE_MEDIDA + ":create";
@@ -28,6 +30,16 @@ public final class CadastrosPermissions {
     public static final String FORNECEDOR_CREATE = FORNECEDOR + ":create";
     public static final String FORNECEDOR_UPDATE = FORNECEDOR + ":update";
     public static final String FORNECEDOR_DELETE = FORNECEDOR + ":delete";
+
+    public static final String DEPARTAMENTO_READ = DEPARTAMENTO + ":read";
+    public static final String DEPARTAMENTO_CREATE = DEPARTAMENTO + ":create";
+    public static final String DEPARTAMENTO_UPDATE = DEPARTAMENTO + ":update";
+    public static final String DEPARTAMENTO_DELETE = DEPARTAMENTO + ":delete";
+
+    public static final String OPERADORES_READ = OPERADORES + ":read";
+    public static final String OPERADORES_CREATE = OPERADORES + ":create";
+    public static final String OPERADORES_UPDATE = OPERADORES + ":update";
+    public static final String OPERADORES_DELETE = OPERADORES + ":delete";
 
     private CadastrosPermissions() {
     }

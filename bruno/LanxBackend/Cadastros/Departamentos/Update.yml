@@ -1,0 +1,22 @@
+info:
+  name: Update
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/departamentos/01a15a8b-198b-759a-9f3d-6148a415e8f1"
+  body:
+    type: json
+    data: |-
+      {
+        "nome": "Sala Técnica 2"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
