@@ -8,10 +8,13 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import br.lanx.api.cadastros.materiais.enums.TipoMaterial;
 import br.lanx.api.cadastros.unidademedida.adapter.out.persistence.UnidadeMedidaEntity;
 import br.lanx.api.shared.domain.Ids;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -33,6 +36,9 @@ public class Material {
 
     @Column(name = "descricao", nullable = false)
     private String descricao;
+
+    @Enumerated(EnumType.STRING)
+    private TipoMaterial tipo = TipoMaterial.MATERIA_PRIMA;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "unidade_medida_id", nullable = false)
@@ -89,6 +95,14 @@ public class Material {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public TipoMaterial getTipoMaterial() {
+        return tipo;
+    }
+
+    public void setTipo(TipoMaterial tipo) {
+        this.tipo = tipo;
     }
 
     public UnidadeMedidaEntity getUnidadeMedida() {

@@ -14,6 +14,7 @@ import br.lanx.api.cadastros.compradores.dtos.CompradorResponse;
 import br.lanx.api.cadastros.compradores.exceptions.CompradorAlreadyExistsException;
 import br.lanx.api.cadastros.compradores.exceptions.CompradorInUseException;
 import br.lanx.api.cadastros.compradores.exceptions.CompradorNotFoundException;
+import br.lanx.api.cadastros.shared.UsuarioLookup;
 import br.lanx.api.shared.pagination.PageResult;
 
 @Service

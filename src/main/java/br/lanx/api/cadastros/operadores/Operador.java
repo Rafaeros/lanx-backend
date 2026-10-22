@@ -8,6 +8,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import br.lanx.api.auth.user.User;
 import br.lanx.api.cadastros.departamentos.Departamento;
 import br.lanx.api.shared.domain.Ids;
 import jakarta.persistence.Column;
@@ -21,8 +22,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(schema = "cadastros", name = "operadores")
-@SQLDelete (sql = "UPDATE cadastros.operadores SET deleted_at = NOW() WHERE id = ?")
-@SQLRestriction ("deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE cadastros.operadores SET deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class Operador {
 
     @Id
@@ -34,6 +35,9 @@ public class Operador {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "departamento_id")
     private Departamento departamento;
+
+    @Column(name = "user_id")
+    private UUID userId;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -74,6 +78,14 @@ public class Operador {
 
     public Departamento getDepartamento() {
         return departamento;
+    }
+
+    public void assignUser(UUID userId) {
+        this.userId = userId;
+    }
+
+    public UUID getUserId() {
+        return userId;
     }
 
     public Instant getCreatedAt() {

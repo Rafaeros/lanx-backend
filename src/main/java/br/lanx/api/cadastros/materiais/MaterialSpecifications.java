@@ -15,7 +15,8 @@ public final class MaterialSpecifications {
 
         return Specification
                 .where(hasCodigo(filter))
-                .and(hasDescricao(filter));
+                .and(hasDescricao(filter))
+                .and(hasTipo(filter));
     }
 
     /** Filtro ausente = não restringe nada. O Spring Data JPA 4 não aceita Specification nula em and(). */
@@ -30,6 +31,13 @@ public final class MaterialSpecifications {
         return (root, query, cb) -> cb.equal(
                 cb.lower(root.get("codigo")),
                 filter.codigo().trim().toLowerCase());
+    }
+
+    private static Specification<Material> hasTipo(MaterialFilter filter) {
+        if (filter.tipo() == null) {
+            return matchAll();
+        }
+        return (root, query, cb) -> cb.equal(root.get("tipo"), filter.tipo());
     }
 
     private static Specification<Material> hasDescricao(MaterialFilter filter) {

@@ -7,9 +7,9 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
-import br.lanx.api.cadastros.compradores.UsuarioLookup;
+import br.lanx.api.cadastros.shared.UsuarioLookup;
 
-/** Usuários do LANX para o vínculo dos compradores (cadastros não conhece auth). */
+/** Usuários do LANX para os vínculos de cadastros: compradores e operadores (cadastros não conhece auth). */
 @Component
 class UsuarioLookupAdapter implements UsuarioLookup {
 

@@ -1,11 +1,11 @@
-package br.lanx.api.cadastros.compradores;
+package br.lanx.api.cadastros.shared;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
 /**
- * Consulta de usuários do LANX para o vínculo comprador ↔ usuário. Implementada pelo
+ * Consulta de usuários do LANX para os vínculos de cadastros (comprador, operador). Implementada pelo
  * módulo auth: cadastros não depende de auth (auth já depende de cadastros).
  */
 public interface UsuarioLookup {

@@ -28,4 +28,8 @@ public interface OperadorRepository extends JpaRepository<Operador, UUID> {
     boolean existsByNomeIgnoreCaseAndIdNot(String nome, UUID id);
 
     boolean existsByDepartamentoId(UUID departamentoId);
+
+    boolean existsByUserId(UUID userId);
+
+    boolean existsByUserIdAndIdNot(UUID userId, UUID id);
 }

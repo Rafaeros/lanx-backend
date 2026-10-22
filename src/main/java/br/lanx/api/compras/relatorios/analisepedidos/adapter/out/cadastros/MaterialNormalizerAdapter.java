@@ -2,6 +2,7 @@ package br.lanx.api.compras.relatorios.analisepedidos.adapter.out.cadastros;
 
 import java.util.UUID;
 import br.lanx.api.cadastros.materiais.dtos.CreateMaterialRequest;
+import br.lanx.api.cadastros.materiais.enums.TipoMaterial;
 
 import org.springframework.stereotype.Component;
 
@@ -19,7 +20,8 @@ public class MaterialNormalizerAdapter implements NormalizeMaterialPort {
 
     @Override
     public UUID obterOuCriar(String codigo, String descricao, UUID unidadeMedidaId) {
-        var createRequest = new CreateMaterialRequest(codigo, descricao, unidadeMedidaId);
+        // Itens comprados entram como matéria-prima; um material existente mantém o tipo que já tem
+        var createRequest = new CreateMaterialRequest(codigo, descricao, unidadeMedidaId, TipoMaterial.MATERIA_PRIMA);
 
         var result = materialService.findByCodigoOrCreate(createRequest);
 

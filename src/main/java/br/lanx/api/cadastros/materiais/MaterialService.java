@@ -44,6 +44,9 @@ public class MaterialService {
         }
 
         Material material = new Material(codigo, request.descricao().trim(), unidadeRef(request.unidadeMedidaId()));
+        if (request.tipo() != null) {
+            material.setTipo(request.tipo());
+        }
         return MaterialResponse.fromEntity(materialRepository.save(material));
     }
 
@@ -70,6 +73,9 @@ public class MaterialService {
         }
 
         material.update(codigo, request.descricao().trim(), unidadeRef(request.unidadeMedidaId()));
+        if (request.tipo() != null) {
+            material.setTipo(request.tipo());
+        }
         return MaterialResponse.fromEntity(materialRepository.save(material));
     }
 

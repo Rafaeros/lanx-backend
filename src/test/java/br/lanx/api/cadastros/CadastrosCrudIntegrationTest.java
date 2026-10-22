@@ -217,6 +217,59 @@ class CadastrosCrudIntegrationTest {
         assertThat(send("GET", "/compradores/" + id, t, null).statusCode()).isEqualTo(404);
     }
 
+    @Test
+    void operadorVinculadoAUmUsuarioNoMaximo() throws Exception {
+        String t = adminToken();
+        String adminId = find(Pattern.compile("\"id\"\\s*:\\s*\"([^\"]+)\"\\s*,\\s*\"username\"\\s*:\\s*\"admin\""),
+                send("GET", "/auth/users", t, null).body());
+
+        var vinculado = send("POST", "/operadores", t, """
+                {"nome":"Operador Vinculado","userId":"%s"}""".formatted(adminId));
+        String operador = id(vinculado, 201);
+        assertThat(vinculado.body()).contains("\"username\":\"admin\"");
+        assertThat(send("GET", "/operadores?busca=vinculado", t, null).body()).contains("\"username\":\"admin\"");
+
+        assertThat(send("POST", "/operadores", t, """
+                {"nome":"Outro Operador","userId":"%s"}""".formatted(adminId)).statusCode())
+                .as("usuário já é de outro operador").isEqualTo(409);
+        assertThat(send("POST", "/operadores", t, """
+                {"nome":"Operador Fantasma","userId":"%s"}""".formatted(java.util.UUID.randomUUID())).statusCode())
+                .as("usuário inexistente").isEqualTo(404);
+        assertThat(send("PUT", "/operadores/" + operador, t, """
+                {"nome":"Operador Vinculado","userId":"%s"}""".formatted(adminId)).statusCode())
+                .as("salvar o próprio vínculo de novo").isEqualTo(200);
+
+        // excluído, o usuário fica livre para outro operador (índice parcial + @SQLRestriction)
+        assertThat(send("DELETE", "/operadores/" + operador, t, null).statusCode()).isEqualTo(200);
+        id(send("POST", "/operadores", t, """
+                {"nome":"Operador Novo","userId":"%s"}""".formatted(adminId)), 201);
+    }
+
+    @Test
+    void materialNasceComoMateriaPrimaEFiltraPorTipo() throws Exception {
+        String t = adminToken();
+        String unidade = id(send("POST", "/unidade-medida", t, """
+                {"nome":"Peça tipo","sigla":"pct"}"""), 201);
+
+        var materia = send("POST", "/materiais", t, """
+                {"codigo":"TIPO-MP","descricao":"Cobre","unidadeMedidaId":"%s"}""".formatted(unidade));
+        id(materia, 201);
+        assertThat(materia.body()).as("sem tipo = matéria-prima").contains("\"tipo\":\"MATERIA_PRIMA\"");
+
+        String produto = id(send("POST", "/materiais", t, """
+                {"codigo":"TIPO-PA","descricao":"Chicote","unidadeMedidaId":"%s","tipo":"PRODUTO_ACABADO"}"""
+                .formatted(unidade)), 201);
+        var semTipo = send("PUT", "/materiais/" + produto, t, """
+                {"codigo":"TIPO-PA","descricao":"Chicote H5","unidadeMedidaId":"%s"}""".formatted(unidade));
+        assertThat(semTipo.body()).as("update sem tipo mantém o atual").contains("\"tipo\":\"PRODUTO_ACABADO\"");
+
+        var produtos = send("GET", "/materiais?tipo=PRODUTO_ACABADO", t, null).body();
+        assertThat(produtos).contains("TIPO-PA").doesNotContain("TIPO-MP");
+        assertThat(send("POST", "/materiais", t, """
+                {"codigo":"TIPO-X","descricao":"X","unidadeMedidaId":"%s","tipo":"QUALQUER"}"""
+                .formatted(unidade)).statusCode()).as("tipo inválido").isEqualTo(400);
+    }
+
     // ---------- helpers ----------
 
     private String adminToken() throws Exception {
