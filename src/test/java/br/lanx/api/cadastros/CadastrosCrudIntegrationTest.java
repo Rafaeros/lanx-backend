@@ -195,6 +195,10 @@ class CadastrosCrudIntegrationTest {
         assertThat(semUsuario.body()).as("comprador do ERP sem login").doesNotContain("\"usuario\"");
         assertThat(send("POST", "/compradores", t, """
                 {"nome":"mariana silva"}""").statusCode()).as("nome duplicado").isEqualTo(409);
+        // listagem só com compradores sem usuário (caso dos que vêm do ERP)
+        var listaSemVinculo = send("GET", "/compradores?busca=mariana", t, null);
+        assertThat(listaSemVinculo.statusCode()).as(listaSemVinculo.body()).isEqualTo(200);
+        assertThat(listaSemVinculo.body()).contains("MARIANA SILVA");
 
         var vinculado = send("PUT", "/compradores/" + id, t, """
                 {"nome":"MARIANA SILVA","userId":"%s"}""".formatted(adminId));

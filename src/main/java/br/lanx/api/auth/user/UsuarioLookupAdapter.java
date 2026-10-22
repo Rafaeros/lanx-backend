@@ -1,9 +1,9 @@
 package br.lanx.api.auth.user;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -26,9 +26,11 @@ class UsuarioLookupAdapter implements UsuarioLookup {
 
     @Override
     public Map<UUID, String> usernames(Collection<UUID> userIds) {
-        if (userIds.isEmpty()) {
-            return Map.of();
+        // HashMap: quem consulta pode perguntar por id nulo sem estourar NPE
+        Map<UUID, String> usernames = new HashMap<>();
+        if (!userIds.isEmpty()) {
+            users.findAllById(userIds).forEach(user -> usernames.put(user.getId(), user.getUsername()));
         }
-        return users.findAllById(userIds).stream().collect(Collectors.toMap(User::getId, User::getUsername));
+        return usernames;
     }
 }

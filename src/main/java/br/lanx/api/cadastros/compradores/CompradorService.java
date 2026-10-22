@@ -53,7 +53,7 @@ public class CompradorService {
         // usernames da página numa consulta só
         Map<UUID, String> usernames = usuarioLookup.usernames(
                 page.getContent().stream().map(Comprador::getUserId).filter(Objects::nonNull).toList());
-        return PageResult.from(page.map(c -> CompradorResponse.of(c, usernames.get(c.getUserId()))));
+        return PageResult.from(page.map(c -> CompradorResponse.of(c, username(usernames, c.getUserId()))));
     }
 
     @Transactional(readOnly = true)
@@ -105,6 +105,11 @@ public class CompradorService {
             throw new CompradorNotFoundException("Usuário não encontrado: " + userId);
         }
         return userId;
+    }
+
+    /** Comprador sem vínculo não consulta o mapa (alguns Map, como Map.of(), recusam chave nula). */
+    private static String username(Map<UUID, String> usernames, UUID userId) {
+        return userId == null ? null : usernames.get(userId);
     }
 
     private CompradorResponse toResponse(Comprador comprador) {
