@@ -24,6 +24,8 @@ class ComunizadoServiceTest {
     private static final Path IT002 = Path.of("docs", "IT002_05 - KHN321 - 14.04.2026 (2).xlsx");
     /** IT sem CIRC (só GRAVAÇÃO) e com a lista de corte continuando em "IT CABOS (2)". */
     private static final Path MWM030 = Path.of("docs", "IT002_05 -MWM030- 12.08.2025 (1).xlsx");
+    /** "IT CABOS (3)": COMP mesclado no par trançado (B7:B8) e despontes com duas medidas ("40.0/6.0"). */
+    private static final Path OXB134 = Path.of("docs", "IT002_05 -OXB134 02.10.2026 (2).xlsx");
 
     private final ComunizadoService service = new ComunizadoService();
     private final DataFormatter fmt = new DataFormatter();
@@ -181,6 +183,38 @@ class ComunizadoServiceTest {
         assertThatThrownBy(() -> service.executar(itSintetica("CIRC", linhas), request(null, null, null)))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("COMP");
+    }
+
+    @Test
+    void compMescladoValeParaOParEDesponteComDuasMedidasViraTexto() throws Exception {
+        var resultado = service.executar(arquivo(OXB134), request(null, null, null));
+
+        try (var wb = new XSSFWorkbook(new ByteArrayInputStream(resultado.conteudo()))) {
+            List<List<String>> linhas = new ArrayList<>();
+            for (Sheet sheet : wb) {
+                for (int i = 10; i <= sheet.getLastRowNum(); i++) {
+                    if (sheet.getRow(i) != null) {
+                        linhas.add(linhaTexto(sheet.getRow(i)));
+                    }
+                }
+            }
+            // 905-9 é a 2ª linha do par: COMP vazio na célula, 390 pela mesclagem B7:B8
+            List<String> par = linhas.stream().filter(l -> l.contains("905-9")).findFirst().orElseThrow();
+            assertThat(par).contains("390", "CAN2V075PR02-VD", "40.0/4.0", "40.0/6.0");
+            // desponte numérico simples segue com uma casa
+            List<String> simples = linhas.stream().filter(l -> l.contains("905-10")).findFirst().orElseThrow();
+            assertThat(simples).contains("3480", "6.0", "40.0/6.0");
+        }
+    }
+
+    @Test
+    void desponteInvalidoApontaALinha() throws Exception {
+        List<Object[]> linhas = new ArrayList<>();
+        linhas.add(new Object[] { "C01", 500, "CFR0100AM", "TA", "40/abc", "TB", "4.0" });
+        assertThatThrownBy(() -> service.executar(itSintetica("CIRC", linhas), request(null, null, null)))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("DESP. A inválido na linha")
+                .hasMessageContaining("40/abc");
     }
 
     @Test

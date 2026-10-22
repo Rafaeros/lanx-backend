@@ -22,8 +22,8 @@ class ComunizadoPlanilhaTest {
             null, null, null, null, null);
 
     private static ItemCorte item(String circuito, String tipo) {
-        return new ItemCorte(null, null, circuito, null, BigDecimal.valueOf(500), tipo, "TA", BigDecimal.ONE, "TB",
-                BigDecimal.ONE);
+        return new ItemCorte(null, null, circuito, null, BigDecimal.valueOf(500), tipo, "TA", "1.0", "TB",
+                "1.0");
     }
 
     /** Coluna TIPO (índice 4, sem gravação) da linha de dados {@code i}. */

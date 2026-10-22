@@ -24,6 +24,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ import org.springframework.web.server.ResponseStatusException;
 import br.lanx.api.producao.operacoes.comunizado.domain.CabecalhoComunizado;
 import br.lanx.api.producao.operacoes.comunizado.domain.CodigoCabo;
 import br.lanx.api.producao.operacoes.comunizado.domain.CoresCabos;
+import br.lanx.api.producao.operacoes.comunizado.domain.Desponte;
 import br.lanx.api.producao.operacoes.comunizado.domain.ItemCorte;
 
 @Service
@@ -296,6 +298,7 @@ public class ComunizadoService {
             DataFormatter formatter,
             FormulaEvaluator evaluator) {
         List<ItemCorte> itens = new ArrayList<>();
+        Map<CellAddress, CellAddress> mesclagens = mesclagensVerticais(sheet, linhaCabecalho);
 
         for (int indice = linhaCabecalho + 1; indice <= sheet.getLastRowNum(); indice++) {
 
@@ -313,23 +316,23 @@ public class ComunizadoService {
             int numeroLinha = indice + 1;
 
             String gravacao = lerCampoTexto(
-                    row, colunas, "GRAVACAO", formatter, evaluator);
+                    sheet, mesclagens, row, colunas, "GRAVACAO", formatter, evaluator);
 
             String circuito = colunas.containsKey("CIRC")
-                    ? lerCampoTexto(row, colunas, "CIRC", formatter, evaluator)
+                    ? lerCampoTexto(sheet, mesclagens, row, colunas, "CIRC", formatter, evaluator)
                     : circuitoDaGravacao(gravacao);
 
             String comprimentoTexto = lerCampoTexto(
-                    row, colunas, "COMP", formatter, evaluator);
+                    sheet, mesclagens, row, colunas, "COMP", formatter, evaluator);
 
             String tipo = lerCampoTexto(
-                    row, colunas, "TIPO", formatter, evaluator);
+                    sheet, mesclagens, row, colunas, "TIPO", formatter, evaluator);
 
             String terminalA = lerCampoTexto(
-                    row, colunas, "TERMINALA", formatter, evaluator);
+                    sheet, mesclagens, row, colunas, "TERMINALA", formatter, evaluator);
 
             String terminalB = lerCampoTexto(
-                    row, colunas, "TERMINALB", formatter, evaluator);
+                    sheet, mesclagens, row, colunas, "TERMINALB", formatter, evaluator);
 
             validarCampoObrigatorio(circuito, colunas.containsKey("CIRC") ? "CIRC" : "GRAVAÇÃO", numeroLinha);
             validarCampoObrigatorio(comprimentoTexto, "COMP", numeroLinha);
@@ -338,8 +341,7 @@ public class ComunizadoService {
             validarCampoObrigatorio(terminalB, "TERMINAL B", numeroLinha);
 
             BigDecimal comprimento = lerDecimal(
-                    row,
-                    colunas.get("COMP"),
+                    celula(sheet, mesclagens, row, colunas.get("COMP")),
                     formatter,
                     evaluator,
                     true,
@@ -349,27 +351,17 @@ public class ComunizadoService {
                 throw erro("COMP não pode ser negativo na linha " + numeroLinha + ".");
             }
 
-            BigDecimal desponteA = lerDecimal(
-                    row,
-                    colunas.get("DESPA"),
-                    formatter,
-                    evaluator,
-                    false,
-                    numeroLinha);
+            String desponteA = lerDesponte(
+                    celula(sheet, mesclagens, row, colunas.get("DESPA")), "DESP. A", formatter, evaluator, numeroLinha);
 
-            BigDecimal desponteB = lerDecimal(
-                    row,
-                    colunas.get("DESPB"),
-                    formatter,
-                    evaluator,
-                    false,
-                    numeroLinha);
+            String desponteB = lerDesponte(
+                    celula(sheet, mesclagens, row, colunas.get("DESPB")), "DESP. B", formatter, evaluator, numeroLinha);
 
             String produto = lerCampoTexto(
-                    row, colunas, "PROD", formatter, evaluator);
+                    sheet, mesclagens, row, colunas, "PROD", formatter, evaluator);
 
             String operador = lerCampoTexto(
-                    row, colunas, "OPERADOR", formatter, evaluator);
+                    sheet, mesclagens, row, colunas, "OPERADOR", formatter, evaluator);
 
             itens.add(new ItemCorte(
                     produto,
@@ -455,19 +447,72 @@ public class ComunizadoService {
                 .thenComparing(ItemCorte::circuito, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
     }
 
+    /**
+     * Células mescladas na vertical dentro da tabela (ex.: COMP em B7:B8, compartilhado
+     * pelo par trançado -AM/-VD): cada célula "escondida" aponta para a do canto
+     * superior esquerdo, que é a única com valor.
+     */
+    private Map<CellAddress, CellAddress> mesclagensVerticais(Sheet sheet, int linhaCabecalho) {
+        Map<CellAddress, CellAddress> mapa = new HashMap<>();
+        for (CellRangeAddress regiao : sheet.getMergedRegions()) {
+            if (regiao.getFirstRow() <= linhaCabecalho || regiao.getFirstRow() == regiao.getLastRow()) {
+                continue;
+            }
+            CellAddress origem = new CellAddress(regiao.getFirstRow(), regiao.getFirstColumn());
+            for (int linha = regiao.getFirstRow(); linha <= regiao.getLastRow(); linha++) {
+                for (int coluna = regiao.getFirstColumn(); coluna <= regiao.getLastColumn(); coluna++) {
+                    mapa.put(new CellAddress(linha, coluna), origem);
+                }
+            }
+        }
+        return mapa;
+    }
+
+    /** Célula da coluna nesta linha; se ela fizer parte de uma mesclagem, a célula com o valor. */
+    private Cell celula(Sheet sheet, Map<CellAddress, CellAddress> mesclagens, Row row, Integer coluna) {
+        if (coluna == null) {
+            return null;
+        }
+        CellAddress origem = mesclagens.get(new CellAddress(row.getRowNum(), coluna));
+        if (origem == null) {
+            return row.getCell(coluna);
+        }
+        Row linhaOrigem = sheet.getRow(origem.getRow());
+        return linhaOrigem == null ? null : linhaOrigem.getCell(origem.getColumn());
+    }
+
     private String lerCampoTexto(
+            Sheet sheet,
+            Map<CellAddress, CellAddress> mesclagens,
             Row row,
             Map<String, Integer> colunas,
             String coluna,
             DataFormatter formatter,
             FormulaEvaluator evaluator) {
-        Integer indice = colunas.get(coluna);
+        return lerTexto(celula(sheet, mesclagens, row, colunas.get(coluna)), formatter, evaluator).trim();
+    }
 
-        if (indice == null) {
-            return "";
+    /** Número ("6.0") ou texto com uma ou duas medidas ("40.0/6.0"), normalizado por {@link Desponte}. */
+    private String lerDesponte(
+            Cell cell,
+            String campo,
+            DataFormatter formatter,
+            FormulaEvaluator evaluator,
+            int numeroLinha) {
+        if (cell == null || cell.getCellType() == CellType.BLANK) {
+            return null;
         }
-
-        return lerTexto(row.getCell(indice), formatter, evaluator).trim();
+        CellType tipo = cell.getCellType() == CellType.FORMULA ? evaluator.evaluateFormulaCell(cell) : cell.getCellType();
+        // Numérico pelo valor (o formato de exibição pode esconder casas); texto como veio
+        String bruto = tipo == CellType.NUMERIC
+                ? BigDecimal.valueOf(cell.getNumericCellValue()).toPlainString()
+                : lerTexto(cell, formatter, evaluator);
+        try {
+            return Desponte.normalizar(bruto);
+        } catch (IllegalArgumentException e) {
+            throw erro(campo + " inválido na linha " + numeroLinha + ": " + bruto
+                    + ". Use um número (6.0) ou duas medidas separadas por barra (40.0/6.0).");
+        }
     }
 
     private String lerTexto(
@@ -482,18 +527,11 @@ public class ComunizadoService {
     }
 
     private BigDecimal lerDecimal(
-            Row row,
-            Integer indiceColuna,
+            Cell cell,
             DataFormatter formatter,
             FormulaEvaluator evaluator,
             boolean comprimentoInteiro,
             int numeroLinha) {
-        if (indiceColuna == null) {
-            return null;
-        }
-
-        Cell cell = row.getCell(indiceColuna);
-
         if (cell == null || cell.getCellType() == CellType.BLANK) {
             return null;
         }

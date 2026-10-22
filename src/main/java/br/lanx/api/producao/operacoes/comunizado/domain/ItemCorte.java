@@ -4,7 +4,8 @@ import java.math.BigDecimal;
 
 /**
  * Um circuito da lista de corte. {@code gravacao} é o texto gravado no cabo
- * (coluna GRAVAÇÃO, só em algumas ITs); nulo quando a IT não tem.
+ * (coluna GRAVAÇÃO, só em algumas ITs); nulo quando a IT não tem. Os despontes
+ * já vêm normalizados por {@link Desponte} ("3.5", "40.0/6.0").
  */
 public record ItemCorte(
     String produto,
@@ -14,7 +15,7 @@ public record ItemCorte(
     BigDecimal comprimento,
     String tipo,
     String terminalA,
-    BigDecimal desponteA,
+    String desponteA,
     String terminalB,
-    BigDecimal desponteB
+    String desponteB
 ){}

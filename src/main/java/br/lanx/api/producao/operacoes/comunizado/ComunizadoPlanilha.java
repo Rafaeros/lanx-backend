@@ -88,9 +88,9 @@ public class ComunizadoPlanilha {
                 new Coluna("COMP", 13.0, l -> l.item().comprimento()),
                 TIPO,
                 new Coluna("TERMINAL A", 39.7, l -> l.item().terminalA()),
-                new Coluna("DESP. A", 17.1, l -> desponte(l.item().desponteA())),
+                new Coluna("DESP. A", 17.1, l -> l.item().desponteA()),
                 new Coluna("TERMINAL B", 35.9, l -> l.item().terminalB()),
-                new Coluna("DESP. B", 16.0, l -> desponte(l.item().desponteB()))));
+                new Coluna("DESP. B", 16.0, l -> l.item().desponteB())));
         return colunas;
     }
 
@@ -257,14 +257,6 @@ public class ComunizadoPlanilha {
 
     // ---------- valores ----------
 
-    /** Desponte como no modelo: texto com uma casa e ponto ("3.5", "16.0"). */
-    private static String desponte(BigDecimal valor) {
-        if (valor == null) {
-            return null;
-        }
-        BigDecimal limpo = valor.stripTrailingZeros();
-        return (limpo.scale() < 1 ? limpo.setScale(1) : limpo).toPlainString();
-    }
 
     private static String texto(String valor) {
         return valor == null ? "" : valor.trim();
