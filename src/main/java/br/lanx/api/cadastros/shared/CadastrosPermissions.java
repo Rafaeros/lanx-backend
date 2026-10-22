@@ -13,6 +13,8 @@ public final class CadastrosPermissions {
     public static final String FORNECEDOR = "cadastros.fornecedores";
     public static final String DEPARTAMENTO = "cadastros.departamentos";
     public static final String OPERADORES = "cadastros.operadores";
+    public static final String RATEIOS = "cadastros.rateios";
+    public static final String COMPRADORES = "cadastros.compradores";
 
     public static final String UNIDADE_MEDIDA_READ = UNIDADE_MEDIDA + ":read";
     public static final String UNIDADE_MEDIDA_CREATE = UNIDADE_MEDIDA + ":create";
@@ -40,6 +42,16 @@ public final class CadastrosPermissions {
     public static final String OPERADORES_CREATE = OPERADORES + ":create";
     public static final String OPERADORES_UPDATE = OPERADORES + ":update";
     public static final String OPERADORES_DELETE = OPERADORES + ":delete";
+
+    public static final String RATEIOS_READ = RATEIOS + ":read";
+    public static final String RATEIOS_CREATE = RATEIOS + ":create";
+    public static final String RATEIOS_UPDATE = RATEIOS + ":update";
+    public static final String RATEIOS_DELETE = RATEIOS + ":delete";
+
+    public static final String COMPRADORES_READ = COMPRADORES + ":read";
+    public static final String COMPRADORES_CREATE = COMPRADORES + ":create";
+    public static final String COMPRADORES_UPDATE = COMPRADORES + ":update";
+    public static final String COMPRADORES_DELETE = COMPRADORES + ":delete";
 
     private CadastrosPermissions() {
     }

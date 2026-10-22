@@ -21,7 +21,9 @@ import org.springframework.test.context.ActiveProfiles;
 
 import br.lanx.api.compras.relatorios.analisepedidos.adapter.out.persistence.AnalisePedidoPersistenceAdapter;
 import br.lanx.api.compras.relatorios.analisepedidos.adapter.out.persistence.AnalisePedidoRepository;
+import br.lanx.api.compras.relatorios.analisepedidos.application.port.out.NormalizeCompradorPort;
 import br.lanx.api.compras.relatorios.analisepedidos.application.port.out.NormalizeFornecedorPort;
+import br.lanx.api.compras.relatorios.analisepedidos.application.port.out.NormalizeRateioPort;
 import br.lanx.api.compras.relatorios.analisepedidos.application.port.out.NormalizeMaterialPort;
 import br.lanx.api.compras.relatorios.analisepedidos.application.port.out.NormalizeUnidadeMedidaPort;
 import br.lanx.api.compras.relatorios.analisepedidos.domain.ItemAnalisePedido;
@@ -55,6 +57,12 @@ class IqfIntegrationTest {
 
     @Autowired
     NormalizeFornecedorPort fornecedores;
+
+    @Autowired
+    NormalizeCompradorPort compradores;
+
+    @Autowired
+    NormalizeRateioPort rateios;
 
     private final HttpClient http = HttpClient.newHttpClient();
     private String admin;
@@ -120,6 +128,16 @@ class IqfIntegrationTest {
         var ambos = get(BASE + "?dataInicio=2026-08-01&dataFim=2026-10-31&rateios=MATERIA-PRIMA&rateios="
                 + java.net.URLEncoder.encode("MATERIAL DE ESCRITÓRIO", java.nio.charset.StandardCharsets.UTF_8));
         assertThat(ambos).contains("\"entregasAvaliadas\":5");
+    }
+
+    @Test
+    void rateioUsadoPorItensNaoPodeSerExcluido() throws Exception {
+        Matcher m = Pattern.compile("\"id\"\\s*:\\s*\"([^\"]+)\"").matcher(get("/rateios?busca=MATERIA-PRIMA"));
+        assertThat(m.find()).isTrue();
+        var request = HttpRequest.newBuilder(URI.create("http://localhost:" + port + "/api/v1/rateios/" + m.group(1)))
+                .header("Authorization", "Bearer " + admin)
+                .DELETE().build();
+        assertThat(http.send(request, HttpResponse.BodyHandlers.ofString()).statusCode()).isEqualTo(409);
     }
 
     @Test
@@ -204,7 +222,9 @@ class IqfIntegrationTest {
         return base
                 .withUnidadeMedidaId(unidadeId)
                 .withMaterialId(materiais.obterOuCriar(codigo, "Descrição " + codigo, unidadeId))
-                .withFornecedorId(fornecedores.obterOuCriar(fornecedor, "Brasil"));
+                .withFornecedorId(fornecedores.obterOuCriar(fornecedor, "Brasil"))
+                .withCompradorId(compradores.obterOuCriar(base.comprador()))
+                .withRateioId(rateios.obterOuCriar(base.rateio()));
     }
 
     private String get(String path) throws Exception {

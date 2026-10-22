@@ -4,6 +4,9 @@ spring:
     properties:
       hibernate:
         "[hibernate.jdbc.format_sql]": true
+  devtools:
+    restart:
+      exclude: db/migration/**
 
 logging:
   level:

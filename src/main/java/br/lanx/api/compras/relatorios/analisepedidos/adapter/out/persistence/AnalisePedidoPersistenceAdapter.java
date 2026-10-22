@@ -1,7 +1,9 @@
 package br.lanx.api.compras.relatorios.analisepedidos.adapter.out.persistence;
 
+import br.lanx.api.cadastros.compradores.Comprador;
 import br.lanx.api.cadastros.fornecedores.Fornecedor;
 import br.lanx.api.cadastros.materiais.Material;
+import br.lanx.api.cadastros.rateios.Rateio;
 import br.lanx.api.cadastros.unidademedida.adapter.out.persistence.UnidadeMedidaEntity;
 import br.lanx.api.compras.relatorios.analisepedidos.application.port.out.ConsultarAnalisePedidosPort;
 import br.lanx.api.compras.relatorios.analisepedidos.application.port.out.SalvarAnalisePedidosPort;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.UUID;
 
 @Component
 public class AnalisePedidoPersistenceAdapter implements SalvarAnalisePedidosPort, ConsultarAnalisePedidosPort {
@@ -45,10 +48,16 @@ public class AnalisePedidoPersistenceAdapter implements SalvarAnalisePedidosPort
                                 Objects.requireNonNull(item.materialId(), "materialId não normalizado")),
                         entityManager.getReference(UnidadeMedidaEntity.class,
                                 Objects.requireNonNull(item.unidadeMedidaId(), "unidadeMedidaId não normalizado")),
-                        item.fornecedorId() == null ? null
-                                : entityManager.getReference(Fornecedor.class, item.fornecedorId())))
+                        referencia(Fornecedor.class, item.fornecedorId()),
+                        referencia(Comprador.class, item.compradorId()),
+                        referencia(Rateio.class, item.rateioId())))
                 .toList();
         repository.saveAll(entities);
+    }
+
+    /** Vínculo opcional: id nulo = item sem esse cadastro. */
+    private <T> T referencia(Class<T> tipo, UUID id) {
+        return id == null ? null : entityManager.getReference(tipo, id);
     }
 
     // A ordenação (emissão, pedido, código do material) está na própria query

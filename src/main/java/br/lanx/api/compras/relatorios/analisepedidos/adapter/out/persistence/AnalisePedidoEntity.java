@@ -7,8 +7,10 @@ import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import br.lanx.api.cadastros.compradores.Comprador;
 import br.lanx.api.cadastros.fornecedores.Fornecedor;
 import br.lanx.api.cadastros.materiais.Material;
+import br.lanx.api.cadastros.rateios.Rateio;
 import br.lanx.api.cadastros.unidademedida.adapter.out.persistence.UnidadeMedidaEntity;
 import br.lanx.api.shared.domain.Ids;
 import jakarta.persistence.Column;
@@ -54,8 +56,9 @@ public class AnalisePedidoEntity {
     @Column(name = "pedido_de_compra")
     private String pedidoDeCompra;
 
-    @Column(name = "comprador")
-    private String comprador;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comprador_id")
+    private Comprador comprador;
 
     @Column(name = "data_emissao_pc")
     private LocalDate dataEmissaoPc;
@@ -105,8 +108,9 @@ public class AnalisePedidoEntity {
     @Column(name = "quantidade_recebimentos")
     private Integer quantidadeRecebimentos;
 
-    @Column(name = "rateio")
-    private String rateio;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rateio_id")
+    private Rateio rateio;
 
     @Column(name = "referencia")
     private String referencia;
@@ -206,11 +210,11 @@ public class AnalisePedidoEntity {
         this.pedidoDeCompra = pedidoDeCompra;
     }
 
-    public String getComprador() {
+    public Comprador getComprador() {
         return comprador;
     }
 
-    public void setComprador(String comprador) {
+    public void setComprador(Comprador comprador) {
         this.comprador = comprador;
     }
 
@@ -342,11 +346,11 @@ public class AnalisePedidoEntity {
         this.quantidadeRecebimentos = quantidadeRecebimentos;
     }
 
-    public String getRateio() {
+    public Rateio getRateio() {
         return rateio;
     }
 
-    public void setRateio(String rateio) {
+    public void setRateio(Rateio rateio) {
         this.rateio = rateio;
     }
 

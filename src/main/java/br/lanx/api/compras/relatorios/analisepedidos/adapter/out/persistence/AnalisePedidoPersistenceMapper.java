@@ -1,7 +1,9 @@
 package br.lanx.api.compras.relatorios.analisepedidos.adapter.out.persistence;
 
+import br.lanx.api.cadastros.compradores.Comprador;
 import br.lanx.api.cadastros.fornecedores.Fornecedor;
 import br.lanx.api.cadastros.materiais.Material;
+import br.lanx.api.cadastros.rateios.Rateio;
 import br.lanx.api.cadastros.unidademedida.adapter.out.persistence.UnidadeMedidaEntity;
 import br.lanx.api.compras.relatorios.analisepedidos.domain.ItemAnalisePedido;
 import org.springframework.stereotype.Component;
@@ -12,7 +14,9 @@ public class AnalisePedidoPersistenceMapper {
     public AnalisePedidoEntity toEntity(ItemAnalisePedido item,
             Material material,
             UnidadeMedidaEntity unidadeMedida,
-            Fornecedor fornecedor) {
+            Fornecedor fornecedor,
+            Comprador comprador,
+            Rateio rateio) {
         if (item == null) {
             return null;
         }
@@ -22,13 +26,14 @@ public class AnalisePedidoPersistenceMapper {
         entity.setMaterial(material);
         entity.setUnidadeMedida(unidadeMedida);
         entity.setFornecedor(fornecedor);
+        entity.setComprador(comprador);
+        entity.setRateio(rateio);
 
         entity.setRequisicaoDeCompra(item.requisicaoDeCompra());
         entity.setSolicitante(item.solicitante());
         entity.setDataEmissaoRc(item.dataEmissaoRc());
         entity.setDataPrevisaoEntregaRc(item.dataPrevisaoEntregaRc());
         entity.setPedidoDeCompra(item.pedidoDeCompra());
-        entity.setComprador(item.comprador());
         entity.setDataEmissaoPc(item.dataEmissaoPc());
         entity.setDataPrevisaoEntregaPc(item.dataPrevisaoEntregaPc());
         entity.setDataEntregaPc(item.dataEntregaPc());
@@ -45,7 +50,6 @@ public class AnalisePedidoPersistenceMapper {
         entity.setRecebimento(item.recebimento());
         entity.setNotaFiscal(item.notaFiscal());
         entity.setQuantidadeRecebimentos(item.quantidadeRecebimentos());
-        entity.setRateio(item.rateio());
         entity.setReferencia(item.referencia());
         entity.setInvoice(item.invoice());
         entity.setResponsavelCompras(item.responsavelCompras());
@@ -62,18 +66,22 @@ public class AnalisePedidoPersistenceMapper {
         Material material = entity.getMaterial();
         UnidadeMedidaEntity unidadeMedida = entity.getUnidadeMedida();
         Fornecedor fornecedor = entity.getFornecedor();
+        Comprador comprador = entity.getComprador();
+        Rateio rateio = entity.getRateio();
 
         return new ItemAnalisePedido(
                 entity.getId(),
                 material != null ? material.getId() : null,
                 unidadeMedida != null ? unidadeMedida.getId() : null,
                 fornecedor != null ? fornecedor.getId() : null,
+                comprador != null ? comprador.getId() : null,
+                rateio != null ? rateio.getId() : null,
                 entity.getRequisicaoDeCompra(),
                 entity.getSolicitante(),
                 entity.getDataEmissaoRc(),
                 entity.getDataPrevisaoEntregaRc(),
                 entity.getPedidoDeCompra(),
-                entity.getComprador(),
+                comprador != null ? comprador.getNome() : null,
                 entity.getDataEmissaoPc(),
                 entity.getDataPrevisaoEntregaPc(),
                 entity.getDataEntregaPc(),
@@ -97,7 +105,7 @@ public class AnalisePedidoPersistenceMapper {
                 entity.getRecebimento(),
                 entity.getNotaFiscal(),
                 entity.getQuantidadeRecebimentos(),
-                entity.getRateio(),
+                rateio != null ? rateio.getNome() : null,
                 entity.getReferencia(),
                 entity.getInvoice(),
                 entity.getResponsavelCompras(),

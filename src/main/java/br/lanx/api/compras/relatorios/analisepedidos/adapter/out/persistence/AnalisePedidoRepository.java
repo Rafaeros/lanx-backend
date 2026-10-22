@@ -25,6 +25,8 @@ public interface AnalisePedidoRepository extends JpaRepository<AnalisePedidoEnti
                          left join e.material m
                          left join e.unidadeMedida u
                          left join e.fornecedor f
+                         left join e.comprador c
+                         left join e.rateio r
                         """;
 
         /**
@@ -36,6 +38,8 @@ public interface AnalisePedidoRepository extends JpaRepository<AnalisePedidoEnti
                          left join fetch e.unidadeMedida u
                          left join fetch e.fornecedor f
                          left join fetch f.pais p
+                         left join fetch e.comprador c
+                         left join fetch e.rateio r
                         """;
 
         /**
@@ -84,8 +88,9 @@ public interface AnalisePedidoRepository extends JpaRepository<AnalisePedidoEnti
                         select e
                         from AnalisePedidoEntity e
                         left join fetch e.fornecedor f
+                        join e.rateio r
                         where e.dataPrevisaoEntregaPc between :inicio and :fim
-                          and e.rateio in :rateios
+                          and r.nome in :rateios
                         order by e.dataPrevisaoEntregaPc, e.id
                         """)
         List<AnalisePedidoEntity> buscarEntregasParaIqfPorRateio(
@@ -94,12 +99,16 @@ public interface AnalisePedidoRepository extends JpaRepository<AnalisePedidoEnti
                         @Param("rateios") Collection<String> rateios);
 
         @Query("""
-                        select distinct e.rateio
+                        select distinct r.nome
                         from AnalisePedidoEntity e
-                        where e.rateio is not null and trim(e.rateio) <> ''
-                        order by e.rateio
+                        join e.rateio r
+                        order by r.nome
                         """)
         List<String> listarRateios();
+
+        boolean existsByCompradorId(UUID compradorId);
+
+        boolean existsByRateioId(UUID rateioId);
 
         /** Todos os itens dos filtros, sem paginação (exportação da planilha). */
         @Query("select e from AnalisePedidoEntity e" + JOINS_FETCH + FILTRO

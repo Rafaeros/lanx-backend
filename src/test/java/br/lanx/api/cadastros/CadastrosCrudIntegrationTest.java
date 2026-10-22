@@ -165,6 +165,54 @@ class CadastrosCrudIntegrationTest {
                 .as("sem operadores, sai do cadastro").isEqualTo(200);
     }
 
+    @Test
+    void rateiosCrudCompleto() throws Exception {
+        String t = adminToken();
+
+        String id = id(send("POST", "/rateios", t, """
+                {"nome":"RATEIO-CRUD"}"""), 201);
+        assertThat(send("POST", "/rateios", t, """
+                {"nome":"rateio-crud"}""").statusCode()).as("nome duplicado").isEqualTo(409);
+        assertThat(send("PUT", "/rateios/" + id, t, """
+                {"nome":"RATEIO-CRUD"}""").statusCode()).as("salvar sem trocar o nome").isEqualTo(200);
+        assertThat(send("GET", "/rateios?busca=crud", t, null).body()).contains("RATEIO-CRUD");
+
+        assertThat(send("DELETE", "/rateios/" + id, t, null).statusCode()).isEqualTo(200);
+        assertThat(send("GET", "/rateios/" + id, t, null).statusCode()).isEqualTo(404);
+        assertThat(send("POST", "/rateios", t, """
+                {"nome":"RATEIO-CRUD"}""").statusCode()).as("nome de rateio excluído pode voltar").isEqualTo(201);
+    }
+
+    @Test
+    void compradoresCrudComVinculoOpcionalAoUsuario() throws Exception {
+        String t = adminToken();
+        String adminId = find(Pattern.compile("\"id\"\\s*:\\s*\"([^\"]+)\"\\s*,\\s*\"username\"\\s*:\\s*\"admin\""),
+                send("GET", "/auth/users", t, null).body());
+
+        var semUsuario = send("POST", "/compradores", t, """
+                {"nome":"MARIANA SILVA"}""");
+        String id = id(semUsuario, 201);
+        assertThat(semUsuario.body()).as("comprador do ERP sem login").doesNotContain("\"usuario\"");
+        assertThat(send("POST", "/compradores", t, """
+                {"nome":"mariana silva"}""").statusCode()).as("nome duplicado").isEqualTo(409);
+
+        var vinculado = send("PUT", "/compradores/" + id, t, """
+                {"nome":"MARIANA SILVA","userId":"%s"}""".formatted(adminId));
+        assertThat(vinculado.statusCode()).isEqualTo(200);
+        assertThat(vinculado.body()).contains("\"username\":\"admin\"");
+        assertThat(send("GET", "/compradores?busca=mariana", t, null).body()).contains("\"username\":\"admin\"");
+        assertThat(send("PUT", "/compradores/" + id, t, """
+                {"nome":"MARIANA SILVA","userId":"%s"}""".formatted(java.util.UUID.randomUUID())).statusCode())
+                .as("usuário inexistente").isEqualTo(404);
+
+        var desvinculado = send("PUT", "/compradores/" + id, t, """
+                {"nome":"MARIANA SILVA","userId":null}""");
+        assertThat(desvinculado.body()).doesNotContain("\"usuario\"");
+
+        assertThat(send("DELETE", "/compradores/" + id, t, null).statusCode()).isEqualTo(200);
+        assertThat(send("GET", "/compradores/" + id, t, null).statusCode()).isEqualTo(404);
+    }
+
     // ---------- helpers ----------
 
     private String adminToken() throws Exception {

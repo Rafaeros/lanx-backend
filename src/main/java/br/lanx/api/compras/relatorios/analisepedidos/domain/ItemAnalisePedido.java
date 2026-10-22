@@ -11,6 +11,8 @@ public record ItemAnalisePedido(
         UUID materialId,
         UUID unidadeMedidaId,
         UUID fornecedorId,
+        UUID compradorId,
+        UUID rateioId,
         String requisicaoDeCompra,
         String solicitante,
         LocalDate dataEmissaoRc,
@@ -58,7 +60,7 @@ public record ItemAnalisePedido(
             String rateio, String referencia, String invoice,
             String responsavelCompras, String observacao) {
 
-        this(Ids.newId(), null, null, null,
+        this(Ids.newId(), null, null, null, null, null,
                 requisicaoDeCompra, solicitante, dataEmissaoRc, dataPrevisaoEntregaRc,
                 pedidoDeCompra, comprador, dataEmissaoPc, dataPrevisaoEntregaPc, dataEntregaPc,
                 fornecedor, pais, codigoItem, descricaoItem, unidadeMedida,
@@ -78,7 +80,7 @@ public record ItemAnalisePedido(
 
     public ItemAnalisePedido withMaterialId(UUID materialId) {
         return new ItemAnalisePedido(
-                this.id, materialId, this.unidadeMedidaId, this.fornecedorId,
+                this.id, materialId, this.unidadeMedidaId, this.fornecedorId, this.compradorId, this.rateioId,
                 this.requisicaoDeCompra, this.solicitante, this.dataEmissaoRc, this.dataPrevisaoEntregaRc,
                 this.pedidoDeCompra, this.comprador, this.dataEmissaoPc, this.dataPrevisaoEntregaPc, this.dataEntregaPc,
                 this.fornecedor, this.pais, this.codigoItem, this.descricaoItem, this.unidadeMedida,
@@ -90,7 +92,7 @@ public record ItemAnalisePedido(
 
     public ItemAnalisePedido withUnidadeMedidaId(UUID unidadeMedidaId) {
         return new ItemAnalisePedido(
-                this.id, this.materialId, unidadeMedidaId, this.fornecedorId,
+                this.id, this.materialId, unidadeMedidaId, this.fornecedorId, this.compradorId, this.rateioId,
                 this.requisicaoDeCompra, this.solicitante, this.dataEmissaoRc, this.dataPrevisaoEntregaRc,
                 this.pedidoDeCompra, this.comprador, this.dataEmissaoPc, this.dataPrevisaoEntregaPc, this.dataEntregaPc,
                 this.fornecedor, this.pais, this.codigoItem, this.descricaoItem, this.unidadeMedida,
@@ -102,7 +104,31 @@ public record ItemAnalisePedido(
 
     public ItemAnalisePedido withFornecedorId(UUID fornecedorId) {
         return new ItemAnalisePedido(
-                this.id, this.materialId, this.unidadeMedidaId, fornecedorId,
+                this.id, this.materialId, this.unidadeMedidaId, fornecedorId, this.compradorId, this.rateioId,
+                this.requisicaoDeCompra, this.solicitante, this.dataEmissaoRc, this.dataPrevisaoEntregaRc,
+                this.pedidoDeCompra, this.comprador, this.dataEmissaoPc, this.dataPrevisaoEntregaPc, this.dataEntregaPc,
+                this.fornecedor, this.pais, this.codigoItem, this.descricaoItem, this.unidadeMedida,
+                this.quantidadeSolicitada, this.quantidadeAtendida, this.saldo, this.local,
+                this.valorUnitario, this.valorFrete, this.ipi, this.valorTotal, this.condicaoPagamento, this.ncm,
+                this.recebimento, this.notaFiscal, this.quantidadeRecebimentos, this.rateio, this.referencia,
+                this.invoice, this.responsavelCompras, this.observacao);
+    }
+
+    public ItemAnalisePedido withCompradorId(UUID compradorId) {
+        return new ItemAnalisePedido(
+                this.id, this.materialId, this.unidadeMedidaId, this.fornecedorId, compradorId, this.rateioId,
+                this.requisicaoDeCompra, this.solicitante, this.dataEmissaoRc, this.dataPrevisaoEntregaRc,
+                this.pedidoDeCompra, this.comprador, this.dataEmissaoPc, this.dataPrevisaoEntregaPc, this.dataEntregaPc,
+                this.fornecedor, this.pais, this.codigoItem, this.descricaoItem, this.unidadeMedida,
+                this.quantidadeSolicitada, this.quantidadeAtendida, this.saldo, this.local,
+                this.valorUnitario, this.valorFrete, this.ipi, this.valorTotal, this.condicaoPagamento, this.ncm,
+                this.recebimento, this.notaFiscal, this.quantidadeRecebimentos, this.rateio, this.referencia,
+                this.invoice, this.responsavelCompras, this.observacao);
+    }
+
+    public ItemAnalisePedido withRateioId(UUID rateioId) {
+        return new ItemAnalisePedido(
+                this.id, this.materialId, this.unidadeMedidaId, this.fornecedorId, this.compradorId, rateioId,
                 this.requisicaoDeCompra, this.solicitante, this.dataEmissaoRc, this.dataPrevisaoEntregaRc,
                 this.pedidoDeCompra, this.comprador, this.dataEmissaoPc, this.dataPrevisaoEntregaPc, this.dataEntregaPc,
                 this.fornecedor, this.pais, this.codigoItem, this.descricaoItem, this.unidadeMedida,
