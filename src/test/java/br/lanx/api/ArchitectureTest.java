@@ -70,7 +70,19 @@ class ArchitectureTest {
         static final ArchRule sharedNaoDependeDeModulos = noClasses()
                         .that().resideInAPackage("br.lanx.api.shared..")
                         .should().dependOnClassesThat()
-                        .resideInAnyPackage("br.lanx.api.auth..", "br.lanx.api.cadastros..", "br.lanx.api.compras..");
+                        .resideInAnyPackage("br.lanx.api.auth..", "br.lanx.api.cadastros..", "br.lanx.api.compras..",
+                                        "br.lanx.api.producao..", "br.lanx.api.comercial..", "br.lanx.api.qualidade..");
+
+        /**
+         * Cadastros são dados mestres usados por todos os módulos: não podem depender de nenhum deles
+         * (o contrário é que vale). Checagens de uso (ex.: cliente com OP) entram por interface do cadastro.
+         */
+        @ArchTest
+        static final ArchRule cadastrosNaoDependemDeModulos = noClasses()
+                        .that().resideInAPackage("br.lanx.api.cadastros..")
+                        .should().dependOnClassesThat()
+                        .resideInAnyPackage("br.lanx.api.compras..", "br.lanx.api.producao..",
+                                        "br.lanx.api.comercial..", "br.lanx.api.qualidade..");
 
         // ---------- segurança: nenhuma rota fica aberta por esquecimento ----------
 

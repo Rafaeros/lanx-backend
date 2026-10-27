@@ -11,7 +11,8 @@ public record AnalisePedidoResponse(
         LocalDate dataEmissaoRc,
         LocalDate dataPrevisaoEntregaRc,
         String pedidoDeCompra,
-        String comprador,
+        /** Null quando o item veio do ERP sem comprador. */
+        CompradorResumo comprador,
         LocalDate dataEmissaoPc,
         LocalDate dataPrevisaoEntregaPc,
         LocalDate dataEntregaPc,
@@ -36,7 +37,8 @@ public record AnalisePedidoResponse(
         String recebimento,
         String notaFiscal,
         Integer quantidadeRecebimentos,
-        String rateio,
+        /** Null quando o item veio do ERP sem rateio. */
+        RateioResumo rateio,
         String referencia,
         String invoice,
         String responsavelCompras,
@@ -49,5 +51,11 @@ public record AnalisePedidoResponse(
     }
 
     public record UnidadeMedidaResumo(UUID id, String sigla) {
+    }
+
+    public record CompradorResumo(UUID id, String nome) {
+    }
+
+    public record RateioResumo(UUID id, String nome) {
     }
 }

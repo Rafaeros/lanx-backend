@@ -7,5 +7,6 @@ public enum ErrorType {
     FORBIDDEN,         // sei quem você é, mas não pode
     NOT_FOUND,
     CONFLICT,          // ex.: CNPJ já cadastrado
-    BUSINESS_RULE      // regra violada: ex.: aprovar pedido já cancelado
+    BUSINESS_RULE,     // regra violada: ex.: aprovar pedido já cancelado
+    UNAVAILABLE        // sistema externo (ex.: ERP via cg-scraper) fora do ar ou sem resposta
 }

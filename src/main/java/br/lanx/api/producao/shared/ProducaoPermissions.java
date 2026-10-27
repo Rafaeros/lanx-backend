@@ -3,15 +3,18 @@ package br.lanx.api.producao.shared;
 public class ProducaoPermissions {
     public static final String PRODUCAO = "producao";
     public static final String COMUNIZADO = "producao.comunizado";
+    public static final String ORDENS_PRODUCAO = "producao.ordens-producao";
 
     /** Ação extra: dispara a importação dos pedidos a partir do ERP. */
     public static final String IMPORTAR = "importar";
 
-    /** Ação extra: baixa o relatório filtrado em planilha. */
-    public static final String EXPORTAR = "exportar";
-
     public static final String COMUNIZADO_READ = COMUNIZADO + ":read";
     public static final String COMUNIZADO_IMPORTAR = COMUNIZADO + ":" + IMPORTAR;
+
+    public static final String ORDENS_PRODUCAO_READ = ORDENS_PRODUCAO + ":read";
+    public static final String ORDENS_PRODUCAO_CREATE = ORDENS_PRODUCAO + ":create";
+    public static final String ORDENS_PRODUCAO_UPDATE = ORDENS_PRODUCAO + ":update";
+    public static final String ORDENS_PRODUCAO_DELETE = ORDENS_PRODUCAO + ":delete";
 
     private ProducaoPermissions() {
     }

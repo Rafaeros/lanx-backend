@@ -270,6 +270,75 @@ class CadastrosCrudIntegrationTest {
                 .formatted(unidade)).statusCode()).as("tipo inválido").isEqualTo(400);
     }
 
+    @Test
+    void clientesCrudComCnpjOpcionalEUnico() throws Exception {
+        String t = adminToken();
+
+        var semCnpj = send("POST", "/clientes", t, """
+                {"nome":"Cliente Sem CNPJ"}""");
+        id(semCnpj, 201);
+        assertThat(semCnpj.body()).doesNotContain("\"cnpj\"");
+
+        var comMascara = send("POST", "/clientes", t, """
+                {"nome":"Cliente CRUD","cnpj":"11.222.333/0001-81"}""");
+        String id = id(comMascara, 201);
+        assertThat(comMascara.body()).as("salvo só com os dígitos").contains("\"cnpj\":\"11222333000181\"");
+        assertThat(send("POST", "/clientes", t, """
+                {"nome":"Outro","cnpj":"11222333000181"}""").statusCode()).as("CNPJ duplicado").isEqualTo(409);
+        assertThat(send("POST", "/clientes", t, """
+                {"nome":"cliente crud"}""").statusCode()).as("nome duplicado").isEqualTo(409);
+        assertThat(send("POST", "/clientes", t, """
+                {"nome":"CNPJ ruim","cnpj":"11222333000100"}""").statusCode()).as("CNPJ inválido").isEqualTo(400);
+
+        assertThat(send("PUT", "/clientes/" + id, t, """
+                {"nome":"Cliente CRUD","cnpj":"11222333000181"}""").statusCode()).as("salvar sem trocar").isEqualTo(200);
+        assertThat(send("GET", "/clientes?busca=222333", t, null).body()).as("busca pelo CNPJ").contains("Cliente CRUD");
+        assertThat(send("GET", "/clientes?busca=crud", t, null).body()).contains("Cliente CRUD");
+
+        assertThat(send("DELETE", "/clientes/" + id, t, null).statusCode()).isEqualTo(200);
+        assertThat(send("GET", "/clientes/" + id, t, null).statusCode()).isEqualTo(404);
+    }
+
+    @Test
+    void ordensDeProducaoCrudEClienteEmUsoNaoSai() throws Exception {
+        String t = adminToken();
+        String unidade = id(send("POST", "/unidade-medida", t, """
+                {"nome":"Peça OP","sigla":"pop"}"""), 201);
+        String material = id(send("POST", "/materiais", t, """
+                {"codigo":"OP-PA","descricao":"Chicote OP","unidadeMedidaId":"%s","tipo":"PRODUTO_ACABADO"}"""
+                .formatted(unidade)), 201);
+        String cliente = id(send("POST", "/clientes", t, """
+                {"nome":"Cliente da OP"}"""), 201);
+
+        String base = "/producao/operacoes/ordens-de-producao";
+        var criada = send("POST", base, t, """
+                {"codigo":"OP-0001","clienteId":"%s","materialId":"%s","quantidade":74,"previsao":"2026-11-10"}"""
+                .formatted(cliente, material));
+        String op = id(criada, 201);
+        assertThat(criada.body()).contains("\"nome\":\"Cliente da OP\"").contains("\"codigo\":\"OP-PA\"");
+        assertThat(send("POST", base, t, """
+                {"codigo":"op-0001","clienteId":"%s","materialId":"%s","quantidade":1,"previsao":"2026-11-10"}"""
+                .formatted(cliente, material)).statusCode()).as("código duplicado").isEqualTo(409);
+        assertThat(send("POST", base, t, """
+                {"codigo":"OP-0002","clienteId":"%s","materialId":"%s","quantidade":0,"previsao":"2026-11-10"}"""
+                .formatted(cliente, material)).statusCode()).as("quantidade zero").isEqualTo(400);
+        assertThat(send("POST", base, t, """
+                {"codigo":"OP-0003","clienteId":"%s","materialId":"%s","quantidade":1,"previsao":"2026-11-10"}"""
+                .formatted(java.util.UUID.randomUUID(), material)).statusCode()).as("cliente inexistente").isEqualTo(404);
+
+        var editada = send("PUT", base + "/" + op, t, """
+                {"codigo":"OP-0001","clienteId":"%s","materialId":"%s","quantidade":80,"previsao":"2026-11-12","etapaAtual":"Corte"}"""
+                .formatted(cliente, material));
+        assertThat(editada.statusCode()).as(editada.body()).isEqualTo(200);
+        assertThat(editada.body()).contains("\"etapaAtual\":\"Corte\"");
+        assertThat(send("GET", base + "?busca=chicote", t, null).body()).as("busca pelo material").contains("OP-0001");
+
+        assertThat(send("DELETE", "/clientes/" + cliente, t, null).statusCode()).as("cliente com OP").isEqualTo(409);
+        assertThat(send("DELETE", base + "/" + op, t, null).statusCode()).isEqualTo(200);
+        assertThat(send("GET", base + "/" + op, t, null).statusCode()).isEqualTo(404);
+        assertThat(send("DELETE", "/clientes/" + cliente, t, null).statusCode()).as("sem OPs, sai").isEqualTo(200);
+    }
+
     // ---------- helpers ----------
 
     private String adminToken() throws Exception {

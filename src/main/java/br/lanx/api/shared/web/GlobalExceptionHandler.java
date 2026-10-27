@@ -25,6 +25,7 @@ public class GlobalExceptionHandler {
             case NOT_FOUND -> HttpStatus.NOT_FOUND; // 404
             case CONFLICT -> HttpStatus.CONFLICT; // 409
             case BUSINESS_RULE -> HttpStatus.UNPROCESSABLE_CONTENT; // 422
+            case UNAVAILABLE -> HttpStatus.SERVICE_UNAVAILABLE; // 503
         };
         return ApiResponse.error(status, ex.getMessage());
     }

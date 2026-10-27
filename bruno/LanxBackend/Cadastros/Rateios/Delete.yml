@@ -1,0 +1,25 @@
+info:
+  name: Delete
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/rateios/{{rateioId}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Excluir rateio**
+
+  - **Rota:** `DELETE /rateios/{id}`
+  - **Segurança:** token + `cadastros.rateios:delete`
+  - **Variável:** `rateioId` (ambiente)
+  - **Resposta 200:** `data` nulo.
+  - **Erros:** `401` sem token · `403` sem a permissão · `404` rateio não encontrado · `409` rateio em uso por itens importados da Análise de Pedidos

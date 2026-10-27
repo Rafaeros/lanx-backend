@@ -2,6 +2,7 @@ package br.lanx.api.compras.relatorios.analisepedidos.adapter.in.web;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.poi.ss.usermodel.Row;
 
@@ -40,7 +41,7 @@ final class AnalisePedidosPlanilha {
             var aba = planilha.aba("Análise de pedidos");
             int linha = planilha.titulo(aba, "Análise de pedidos",
                     "Emissão do PC de " + consulta.dataInicio().format(BR) + " a " + consulta.dataFim().format(BR)
-                            + filtros(consulta) + " · " + itens.size() + " itens");
+                            + filtros(consulta, itens) + " · " + itens.size() + " itens");
 
             planilha.cabecalho(aba, linha, COLUNAS, linha + itens.size());
             planilha.larguras(aba, LARGURAS);
@@ -87,13 +88,18 @@ final class AnalisePedidosPlanilha {
         }
     }
 
-    private static String filtros(ConsultaAnalisePedidos consulta) {
+    /** Os nomes dos rateios filtrados saem dos próprios itens (todos pertencem a um deles). */
+    private static String filtros(ConsultaAnalisePedidos consulta, List<ItemAnalisePedido> itens) {
         var sb = new StringBuilder();
         if (consulta.temBusca()) {
             sb.append(" · busca \"").append(consulta.busca().trim()).append('"');
         }
         if (consulta.situacao() != null) {
             sb.append(" · situação ").append(rotulo(consulta.situacao()).toLowerCase());
+        }
+        if (consulta.filtraRateios()) {
+            sb.append(" · rateios: ").append(String.join(", ", itens.stream().map(ItemAnalisePedido::rateio)
+                    .filter(Objects::nonNull).distinct().sorted().toList()));
         }
         return sb.toString();
     }

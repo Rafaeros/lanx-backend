@@ -21,8 +21,6 @@ public class ComprasFeatureContributor implements FeatureCatalogContributor {
                 return List.of(
                                 FeatureDefinition.of(ComprasPermissions.COMPRAS, "Compras"),
                                 FeatureDefinition.report(ComprasPermissions.ANALISE_PEDIDOS, "Análise de Pedidos",
-                                                ComprasPermissions.IMPORTAR, ComprasPermissions.EXPORTAR),
-                                FeatureDefinition.report(ComprasPermissions.IQF, "IQF de Fornecedores",
-                                                ComprasPermissions.EXPORTAR));
+                                                ComprasPermissions.IMPORTAR, ComprasPermissions.EXPORTAR));
         }
 }

@@ -12,7 +12,8 @@ http:
       {
         "codigo": "CNFAT04CZ",
         "descricao": "CONECTOR 4 VIAS CINZA",
-        "unidadeMedidaId": "{{unidadeMedidaId}}"
+        "unidadeMedidaId": "{{unidadeMedidaId}}",
+        "tipo": "MATERIA_PRIMA"
       }
   auth:
     type: bearer
@@ -31,6 +32,6 @@ docs: |-
   - **Rota:** `PUT /materiais/{id}`
   - **Segurança:** token + `cadastros.materiais:update`
   - **Variáveis:** `materialId`, `unidadeMedidaId` (ambiente)
-  - **Body:** os três campos são obrigatórios e **substituem** os atuais.
+  - **Body:** `codigo`, `descricao` e `unidadeMedidaId` são obrigatórios e **substituem** os atuais; `tipo` (`MATERIA_PRIMA` | `PRODUTO_ACABADO`) é opcional — nulo mantém o tipo atual.
   - **Resposta 200:** o material atualizado (mesmo formato do Create).
   - **Erros:** `400` campo obrigatório ausente · `401` sem token · `403` sem a permissão · `404` material ou unidade de medida não encontrados · `409` código já usado por outro material

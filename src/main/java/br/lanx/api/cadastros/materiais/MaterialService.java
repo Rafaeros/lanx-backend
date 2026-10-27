@@ -57,6 +57,12 @@ public class MaterialService {
                 .orElseThrow(() -> new MaterialNotFoundException(id));
     }
 
+    /** Para quem referencia o material (ex.: ordens de produção). */
+    @Transactional(readOnly = true)
+    public Material findByIdOrThrow(UUID id) {
+        return materialRepository.findById(id).orElseThrow(() -> new MaterialNotFoundException(id));
+    }
+
     @Transactional(readOnly = true)
     public PageResult<MaterialResponse> findAll(MaterialFilter filter, Pageable pageable) {
         var spec = MaterialSpecifications.byFilter(filter);

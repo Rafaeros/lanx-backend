@@ -1,0 +1,31 @@
+info:
+  name: Exportar
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/comercial/relatorios/carteira/exportar?dataInicio=2026-10-01&dataFim=2026-10-31"
+  params:
+    - name: dataInicio
+      value: "2026-10-01"
+      type: query
+    - name: dataFim
+      value: "2026-10-31"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Exportar carteira (.xlsx)**
+
+  - **Rota:** `GET /comercial/relatorios/carteira/exportar`
+  - **Segurança:** token + `comercial.carteira:exportar`
+  - **Query:** as mesmas da consulta. Reaproveita a consulta do mesmo período feita nos últimos 10 min.
+  - **Planilha:** aba "Carteira" (um pedido por linha, previsão vencida em vermelho, total que acompanha o filtro) e aba "Materiais pendentes" (um material por linha, em vermelho se chega depois da entrega ou já venceu), com a logo LANX e impressão A4 paisagem.

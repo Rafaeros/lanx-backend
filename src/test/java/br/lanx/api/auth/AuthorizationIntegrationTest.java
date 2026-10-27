@@ -109,7 +109,7 @@ class AuthorizationIntegrationTest {
 
         // relatórios não têm CRUD: create/update/delete não existem mais para eles
         assertThat(send("POST", "/auth/roles", admin, """
-                {"name":"CRUD_RELATORIO","permissions":["compras.iqf:create"]}""").statusCode()).isEqualTo(400);
+                {"name":"CRUD_RELATORIO","permissions":["qualidade.iqf:create"]}""").statusCode()).isEqualTo(400);
 
         // sem nenhuma permissão de compras, nem a consulta é liberada
         String semCompras = id(send("POST", "/auth/roles", admin, """
@@ -119,11 +119,11 @@ class AuthorizationIntegrationTest {
         String ana = primeiroAcesso("ana", "Senha12345");
 
         assertThat(send("GET", "/compras/relatorios/analise-pedidos", ana, null).statusCode()).isEqualTo(403);
-        assertThat(send("GET", "/compras/relatorios/iqf", ana, null).statusCode()).isEqualTo(403);
+        assertThat(send("GET", "/qualidade/relatorios/iqf", ana, null).statusCode()).isEqualTo(403);
 
         // o IQF é uma funcionalidade à parte: ler a análise de pedidos não libera o IQF
-        assertThat(navigation).contains("\"compras.iqf\"");
-        assertThat(send("GET", "/compras/relatorios/iqf", joao, null).statusCode()).isEqualTo(403);
+        assertThat(navigation).contains("\"qualidade.iqf\"");
+        assertThat(send("GET", "/qualidade/relatorios/iqf", joao, null).statusCode()).isEqualTo(403);
     }
 
     // ---------- helpers ----------

@@ -1,0 +1,40 @@
+info:
+  name: Create
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/rateios"
+  body:
+    type: json
+    data: |-
+      {
+        "nome": "MANUTENCAO"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Cadastrar rateio**
+
+  - **Rota:** `POST /rateios`
+  - **Segurança:** token + `cadastros.rateios:create`
+  - **Body:** `nome` obrigatório (máx. 150, único).
+  - **Resposta 201:**
+
+  ```json
+  {
+    "status": 201,
+    "message": "Rateio cadastrado com sucesso!",
+    "data": { "id": "...", "nome": "MANUTENCAO" }
+  }
+  ```
+
+  - **Erros:** `400` campo inválido ou ausente · `401` sem token · `403` sem a permissão · `409` nome já cadastrado

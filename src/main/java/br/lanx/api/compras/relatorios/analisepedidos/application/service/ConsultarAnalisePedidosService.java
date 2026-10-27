@@ -9,6 +9,7 @@ import br.lanx.api.compras.relatorios.analisepedidos.application.port.in.Consult
 import br.lanx.api.compras.relatorios.analisepedidos.application.port.out.ConsultarAnalisePedidosPort;
 import br.lanx.api.compras.relatorios.analisepedidos.domain.ConsultaAnalisePedidos;
 import br.lanx.api.compras.relatorios.analisepedidos.domain.ItemAnalisePedido;
+import br.lanx.api.compras.relatorios.analisepedidos.domain.RateioFiltro;
 import br.lanx.api.compras.relatorios.analisepedidos.domain.ResumoAnalisePedidos;
 import br.lanx.api.shared.pagination.PageQuery;
 import br.lanx.api.shared.pagination.PageResult;
@@ -38,5 +39,11 @@ public class ConsultarAnalisePedidosService implements ConsultarAnalisePedidosUs
     @Transactional(readOnly = true)
     public List<ItemAnalisePedido> listarTodos(ConsultaAnalisePedidos consulta) {
         return consultarAnalisePedidosPort.buscarTodos(consulta);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RateioFiltro> listarRateios() {
+        return consultarAnalisePedidosPort.listarRateios();
     }
 }

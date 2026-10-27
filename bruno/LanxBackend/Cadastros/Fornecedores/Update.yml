@@ -1,0 +1,33 @@
+info:
+  name: Update
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/fornecedores/{{fornecedorId}}"
+  body:
+    type: json
+    data: |-
+      {
+        "nome": "FORNECEDOR EXEMPLO LTDA",
+        "paisId": null
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Atualizar fornecedor**
+
+  - **Rota:** `PUT /fornecedores/{id}`
+  - **Segurança:** token + `cadastros.fornecedores:update`
+  - **Variável:** `fornecedorId` (ambiente)
+  - **Body:** mesmo formato do Create; os campos **substituem** os atuais.
+  - **Resposta 200:** o fornecedor atualizado (mesmo formato do Create).
+  - **Erros:** `400` campo inválido ou ausente · `401` sem token · `403` sem a permissão · `404` fornecedor ou país não encontrados · `409` nome já usado por outro fornecedor

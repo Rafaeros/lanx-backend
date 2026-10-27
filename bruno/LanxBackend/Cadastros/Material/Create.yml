@@ -12,7 +12,8 @@ http:
       {
         "codigo": "CNFAT04CZ",
         "descricao": "CONECTOR 4 VIAS",
-        "unidadeMedidaId": "{{unidadeMedidaId}}"
+        "unidadeMedidaId": "{{unidadeMedidaId}}",
+        "tipo": "MATERIA_PRIMA"
       }
   auth:
     type: bearer
@@ -31,7 +32,7 @@ docs: |-
   - **Rota:** `POST /materiais`
   - **Segurança:** token + `cadastros.materiais:create`
   - **Variável:** `unidadeMedidaId` (ambiente)
-  - **Body:** `codigo` (único), `descricao` e `unidadeMedidaId` são obrigatórios.
+  - **Body:** `codigo` (único), `descricao` e `unidadeMedidaId` são obrigatórios; `tipo` opcional (`MATERIA_PRIMA` | `PRODUTO_ACABADO`).
   - **Resposta 201:**
 
   ```json
@@ -42,7 +43,8 @@ docs: |-
       "id": "...",
       "codigo": "CNFAT04CZ",
       "descricao": "CONECTOR 4 VIAS",
-      "unidadeMedida": { "id": "...", "nome": "Quilo", "sigla": "Kg" }
+      "unidadeMedida": { "id": "...", "nome": "Quilo", "sigla": "Kg" },
+      "tipo": "MATERIA_PRIMA"
     }
   }
   ```

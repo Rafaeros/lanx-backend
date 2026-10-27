@@ -1,0 +1,32 @@
+info:
+  name: Update
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/rateios/{{rateioId}}"
+  body:
+    type: json
+    data: |-
+      {
+        "nome": "MANUTENCAO PREDIAL"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Atualizar rateio**
+
+  - **Rota:** `PUT /rateios/{id}`
+  - **Segurança:** token + `cadastros.rateios:update`
+  - **Variável:** `rateioId` (ambiente)
+  - **Body:** mesmo formato do Create; os campos **substituem** os atuais.
+  - **Resposta 200:** o rateio atualizado (mesmo formato do Create).
+  - **Erros:** `400` campo inválido ou ausente · `401` sem token · `403` sem a permissão · `404` rateio não encontrado · `409` nome já usado por outro rateio

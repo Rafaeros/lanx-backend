@@ -1,0 +1,33 @@
+info:
+  name: Update
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/clientes/{{clienteId}}"
+  body:
+    type: json
+    data: |-
+      {
+        "nome": "CLIENTE EXEMPLO S.A.",
+        "cnpj": "11222333000181"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Atualizar cliente**
+
+  - **Rota:** `PUT /clientes/{id}`
+  - **Segurança:** token + `cadastros.clientes:update`
+  - **Variável:** `clienteId` (ambiente)
+  - **Body:** mesmo formato do Create; os campos **substituem** os atuais.
+  - **Resposta 200:** o cliente atualizado (mesmo formato do Create).
+  - **Erros:** `400` campo inválido ou ausente · `401` sem token · `403` sem a permissão · `404` cliente não encontrado · `409` nome ou CNPJ de outro cliente

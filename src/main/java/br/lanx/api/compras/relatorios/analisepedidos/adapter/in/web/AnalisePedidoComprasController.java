@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/compras/relatorios/analise-pedidos")
@@ -50,6 +51,14 @@ public class AnalisePedidoComprasController {
     public ApiResponse<ResumoAnalisePedidosResponse> resumo(ConsultarAnalisePedidosRequest request) {
         return ApiResponse.ok("Resumo calculado",
                 ResumoAnalisePedidosResponse.from(consultarUseCase.resumir(request.toDomain())));
+    }
+
+    /** Rateios presentes nos itens importados (id e nome), para o filtro da tela. */
+    @GetMapping("/rateios")
+    @PreAuthorize("hasAuthority('" + ANALISE_PEDIDOS_READ + "')")
+    public ApiResponse<List<RateioFiltroResponse>> rateios() {
+        return ApiResponse.ok("Rateios",
+                consultarUseCase.listarRateios().stream().map(r -> new RateioFiltroResponse(r.id(), r.nome())).toList());
     }
 
     /** Planilha (.xlsx) com todos os itens que atendem aos filtros, sem paginação. */

@@ -22,6 +22,7 @@ public class CadastrosFeatureContributor implements FeatureCatalogContributor {
                 FeatureDefinition.of(CadastrosPermissions.DEPARTAMENTO, "Departamentos"),
                 FeatureDefinition.of(CadastrosPermissions.OPERADORES, "Operadores"),
                 FeatureDefinition.of(CadastrosPermissions.RATEIOS, "Rateios"),
-                FeatureDefinition.of(CadastrosPermissions.COMPRADORES, "Compradores"));
+                FeatureDefinition.of(CadastrosPermissions.COMPRADORES, "Compradores"),
+                FeatureDefinition.of(CadastrosPermissions.CLIENTES, "Clientes"));
     }
 }

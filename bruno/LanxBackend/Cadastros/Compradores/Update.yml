@@ -1,0 +1,33 @@
+info:
+  name: Update
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/compradores/{{compradorId}}"
+  body:
+    type: json
+    data: |-
+      {
+        "nome": "Rafael Costa",
+        "userId": "{{userId}}"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Atualizar comprador**
+
+  - **Rota:** `PUT /compradores/{id}`
+  - **Segurança:** token + `cadastros.compradores:update`
+  - **Variável:** `compradorId` (ambiente)
+  - **Body:** mesmo formato do Create; os campos **substituem** os atuais.
+  - **Resposta 200:** o comprador atualizado (mesmo formato do Create).
+  - **Erros:** `400` campo inválido ou ausente · `401` sem token · `403` sem a permissão · `404` comprador ou usuário não encontrados · `409` nome já usado por outro comprador

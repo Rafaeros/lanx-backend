@@ -1,0 +1,35 @@
+info:
+  name: Get All
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/producao/operacoes/ordens-de-producao?busca=&page=0&size=20"
+  params:
+    - name: busca
+      value: ""
+      type: query
+      disabled: true
+    - name: page
+      value: "0"
+      type: query
+    - name: size
+      value: "20"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Listar ordens de produção (paginado)**
+
+  - **Rota:** `GET /producao/operacoes/ordens-de-producao`
+  - **Segurança:** token + `producao.ordens-producao:read`
+  - **Query (todas opcionais):** `busca` (código da OP, nome do cliente, código ou descrição do material), `page`, `size` (padrão 20), `sort` (padrão `previsao,codigo`).
+  - **Erros:** `401` sem token · `403` sem a permissão

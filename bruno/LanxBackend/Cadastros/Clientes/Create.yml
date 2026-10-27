@@ -1,0 +1,41 @@
+info:
+  name: Create
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/clientes"
+  body:
+    type: json
+    data: |-
+      {
+        "nome": "CLIENTE EXEMPLO LTDA",
+        "cnpj": "11222333000181"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Cadastrar cliente**
+
+  - **Rota:** `POST /clientes`
+  - **Segurança:** token + `cadastros.clientes:create`
+  - **Body:** `nome` obrigatório; `cnpj` opcional, com ou sem máscara (salvo só com os dígitos), mas se informado precisa ser um CNPJ válido.
+  - **Resposta 201:**
+
+  ```json
+  {
+    "status": 201,
+    "message": "Cliente cadastrado com sucesso!",
+    "data": { "id": "...", "nome": "CLIENTE EXEMPLO LTDA", "cnpj": "11222333000181" }
+  }
+  ```
+
+  - **Erros:** `400` campo inválido ou ausente · `401` sem token · `403` sem a permissão · `409` nome ou CNPJ já cadastrado

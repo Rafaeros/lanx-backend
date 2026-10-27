@@ -16,7 +16,8 @@ public class AnalisePedidoResponseMapper {
                 item.dataEmissaoRc(),
                 item.dataPrevisaoEntregaRc(),
                 item.pedidoDeCompra(),
-                item.comprador(),
+                item.compradorId() == null ? null
+                        : new AnalisePedidoResponse.CompradorResumo(item.compradorId(), item.comprador()),
                 item.dataEmissaoPc(),
                 item.dataPrevisaoEntregaPc(),
                 item.dataEntregaPc(),
@@ -41,7 +42,8 @@ public class AnalisePedidoResponseMapper {
                 item.recebimento(),
                 item.notaFiscal(),
                 item.quantidadeRecebimentos(),
-                item.rateio(),
+                item.rateioId() == null ? null
+                        : new AnalisePedidoResponse.RateioResumo(item.rateioId(), item.rateio()),
                 item.referencia(),
                 item.invoice(),
                 item.responsavelCompras(),

@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import br.lanx.api.cadastros.rateios.Rateio;
 import br.lanx.api.compras.relatorios.analisepedidos.domain.IndicadoresItem;
 
 public interface AnalisePedidoRepository extends JpaRepository<AnalisePedidoEntity, UUID> {
@@ -59,19 +60,22 @@ public interface AnalisePedidoRepository extends JpaRepository<AnalisePedidoEnti
                                 or (:situacao = 'PENDENTE' and coalesce(e.quantidadeAtendida, 0) <= 0)
                                 or (:situacao = 'PARCIAL' and coalesce(e.quantidadeAtendida, 0) > 0 and coalesce(e.saldo, 0) > 0)
                                 or (:situacao = 'ATENDIDO' and coalesce(e.quantidadeAtendida, 0) > 0 and coalesce(e.saldo, 0) <= 0))
+                           and (:todosRateios = true or r.id in :rateios)
                         """;
 
         @Query(value = "select e from AnalisePedidoEntity e" + JOINS_FETCH + FILTRO
                         + " order by e.dataEmissaoPc, e.pedidoDeCompra, m.codigo, e.id", countQuery = "select count(e) from AnalisePedidoEntity e"
                                         + JOINS + FILTRO)
         Page<AnalisePedidoEntity> consultar(@Param("inicio") LocalDate inicio, @Param("fim") LocalDate fim,
-                        @Param("busca") String busca, @Param("situacao") String situacao, Pageable pageable);
+                        @Param("busca") String busca, @Param("situacao") String situacao,
+                        @Param("todosRateios") boolean todosRateios, @Param("rateios") Collection<UUID> rateios, Pageable pageable);
 
         @Query("select new br.lanx.api.compras.relatorios.analisepedidos.domain.IndicadoresItem("
                         + "e.valorTotal, e.quantidadeAtendida, e.saldo, e.dataEmissaoPc, e.dataEntregaPc) "
                         + "from AnalisePedidoEntity e" + JOINS + FILTRO)
         List<IndicadoresItem> indicadores(@Param("inicio") LocalDate inicio, @Param("fim") LocalDate fim,
-                        @Param("busca") String busca, @Param("situacao") String situacao);
+                        @Param("busca") String busca, @Param("situacao") String situacao,
+                        @Param("todosRateios") boolean todosRateios, @Param("rateios") Collection<UUID> rateios);
 
         @Query("""
                         select e
@@ -90,21 +94,22 @@ public interface AnalisePedidoRepository extends JpaRepository<AnalisePedidoEnti
                         left join fetch e.fornecedor f
                         join e.rateio r
                         where e.dataPrevisaoEntregaPc between :inicio and :fim
-                          and r.nome in :rateios
+                          and r.id in :rateios
                         order by e.dataPrevisaoEntregaPc, e.id
                         """)
         List<AnalisePedidoEntity> buscarEntregasParaIqfPorRateio(
                         @Param("inicio") LocalDate inicio,
                         @Param("fim") LocalDate fim,
-                        @Param("rateios") Collection<String> rateios);
+                        @Param("rateios") Collection<UUID> rateios);
 
+        /** Rateios referenciados por algum item importado (para os filtros da análise e do IQF). */
         @Query("""
-                        select distinct r.nome
+                        select distinct r
                         from AnalisePedidoEntity e
                         join e.rateio r
                         order by r.nome
                         """)
-        List<String> listarRateios();
+        List<Rateio> listarRateios();
 
         boolean existsByCompradorId(UUID compradorId);
 
@@ -114,7 +119,8 @@ public interface AnalisePedidoRepository extends JpaRepository<AnalisePedidoEnti
         @Query("select e from AnalisePedidoEntity e" + JOINS_FETCH + FILTRO
                         + " order by e.dataEmissaoPc, e.pedidoDeCompra, m.codigo, e.id")
         List<AnalisePedidoEntity> listar(@Param("inicio") LocalDate inicio, @Param("fim") LocalDate fim,
-                        @Param("busca") String busca, @Param("situacao") String situacao);
+                        @Param("busca") String busca, @Param("situacao") String situacao,
+                        @Param("todosRateios") boolean todosRateios, @Param("rateios") Collection<UUID> rateios);
 
         // Delete físico: os itens são reimportados do ERP, não faz sentido acumular
         // soft-deletes

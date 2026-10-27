@@ -8,7 +8,6 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import br.lanx.api.auth.user.User;
 import br.lanx.api.cadastros.departamentos.Departamento;
 import br.lanx.api.shared.domain.Ids;
 import jakarta.persistence.Column;

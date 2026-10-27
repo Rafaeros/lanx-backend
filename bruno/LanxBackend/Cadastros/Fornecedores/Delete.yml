@@ -1,0 +1,25 @@
+info:
+  name: Delete
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/fornecedores/{{fornecedorId}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Excluir fornecedor**
+
+  - **Rota:** `DELETE /fornecedores/{id}`
+  - **Segurança:** token + `cadastros.fornecedores:delete`
+  - **Variável:** `fornecedorId` (ambiente)
+  - **Resposta 200:** `data` nulo.
+  - **Erros:** `401` sem token · `403` sem a permissão · `404` fornecedor não encontrado

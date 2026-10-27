@@ -2,6 +2,7 @@ package br.lanx.api.shared.web.planilha;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -10,14 +11,21 @@ import java.util.List;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.util.Units;
+import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
+import org.apache.poi.xssf.usermodel.XSSFPicture;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.ContentDisposition;
@@ -28,7 +36,7 @@ import org.springframework.http.ResponseEntity;
 /**
  * Pequeno construtor de planilhas .xlsx (Apache POI) com os estilos dos
  * relatórios: cabeçalho destacado, datas dd/MM/yyyy, moeda, percentual,
- * filtro automático e cabeçalho congelado.
+ * filtro automático, cabeçalho congelado e a logo LANX.
  */
 public final class Planilha implements AutoCloseable {
 
@@ -43,9 +51,17 @@ public final class Planilha implements AutoCloseable {
     private final CellStyle destaque;
     private final CellStyle data;
     private final CellStyle numero;
+    private final CellStyle codigo;
     private final CellStyle decimal;
     private final CellStyle moeda;
     private final CellStyle percentual;
+    private final CellStyle dataAlerta;
+    private final CellStyle moedaTotal;
+
+    private static final float ALTURA_LOGO_PT = 34f;
+
+    /** public/brand/logo.png do frontend, copiada para src/main/resources/brand. */
+    private static final byte[] LOGO = carregarLogo();
 
     public Planilha() {
         var format = workbook.createDataFormat();
@@ -79,18 +95,40 @@ public final class Planilha implements AutoCloseable {
         cabecalho.setWrapText(true);
 
         texto = workbook.createCellStyle();
+        texto.setVerticalAlignment(VerticalAlignment.CENTER);
         destaque = workbook.createCellStyle();
         destaque.setFont(negrito);
+        destaque.setVerticalAlignment(VerticalAlignment.CENTER);
         data = estilo(format.getFormat("dd/mm/yyyy"));
         numero = estilo(format.getFormat("#,##0"));
+        codigo = estilo(format.getFormat("0"));
         decimal = estilo(format.getFormat("#,##0.00##"));
         moeda = estilo(format.getFormat("\"R$\" #,##0.00"));
         percentual = estilo(format.getFormat("0.00\"%\""));
+
+        Font fonteAlerta = workbook.createFont();
+        fonteAlerta.setBold(true);
+        fonteAlerta.setColor(IndexedColors.RED.getIndex());
+        dataAlerta = estilo(format.getFormat("dd/mm/yyyy"));
+        dataAlerta.setFont(fonteAlerta);
+
+        moedaTotal = estilo(format.getFormat("\"R$\" #,##0.00"));
+        moedaTotal.setFont(negrito);
+        moedaTotal.setBorderTop(BorderStyle.THIN);
+    }
+
+    private static byte[] carregarLogo() {
+        try (InputStream in = Planilha.class.getResourceAsStream("/brand/logo.png")) {
+            return in == null ? null : in.readAllBytes();
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     private CellStyle estilo(short dataFormat) {
         CellStyle style = workbook.createCellStyle();
         style.setDataFormat(dataFormat);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         return style;
     }
 
@@ -128,6 +166,45 @@ public final class Planilha implements AutoCloseable {
         }
     }
 
+    /**
+     * Logo LANX na linha do título (que fica mais alta para caber), a partir da
+     * coluna informada. Chame depois de {@link #larguras}: a largura da imagem
+     * é distribuída pelas colunas.
+     */
+    public void logo(XSSFSheet sheet, int coluna) {
+        if (LOGO == null) {
+            return;
+        }
+        Row titulo = sheet.getRow(0) != null ? sheet.getRow(0) : sheet.createRow(0);
+        titulo.setHeightInPoints(ALTURA_LOGO_PT);
+
+        int imagem = workbook.addPicture(LOGO, Workbook.PICTURE_TYPE_PNG);
+        XSSFClientAnchor anchor = workbook.getCreationHelper().createClientAnchor();
+        anchor.setCol1(coluna);
+        anchor.setRow1(0);
+        anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_DONT_RESIZE);
+        XSSFPicture logo = sheet.createDrawingPatriarch().createPicture(anchor, imagem);
+
+        // o resize do POI acerta a largura, mas não a altura de imagens menores que
+        // a linha: a altura é fixada à mão, ocupando a linha do título inteira
+        double alturaPx = ALTURA_LOGO_PT * Units.PIXEL_DPI / Units.POINT_DPI;
+        logo.resize(alturaPx / logo.getImageDimension().getHeight());
+        int alturaEmu = (int) (ALTURA_LOGO_PT * Units.EMU_PER_POINT);
+        anchor.setRow2(0);
+        anchor.setDy2(alturaEmu);
+        logo.getCTPicture().getSpPr().getXfrm().getExt().setCy(alturaEmu);
+    }
+
+    /** Impressão em A4 paisagem, ajustada à largura, repetindo a linha de cabeçalho em cada página. */
+    public void paisagem(Sheet sheet, int linhaCabecalho) {
+        sheet.getPrintSetup().setLandscape(true);
+        sheet.getPrintSetup().setPaperSize(PrintSetup.A4_PAPERSIZE);
+        sheet.setFitToPage(true);
+        sheet.getPrintSetup().setFitWidth((short) 1);
+        sheet.getPrintSetup().setFitHeight((short) 0);
+        sheet.setRepeatingRows(new CellRangeAddress(linhaCabecalho, linhaCabecalho, -1, -1));
+    }
+
     public void larguras(Sheet sheet, int... caracteres) {
         for (int i = 0; i < caracteres.length; i++) {
             sheet.setColumnWidth(i, Math.min(255, caracteres[i]) * 256);
@@ -156,6 +233,24 @@ public final class Planilha implements AutoCloseable {
         }
     }
 
+    /** Data em vermelho e negrito (ex.: previsão vencida). */
+    public void data(Row row, int col, LocalDate value, boolean alerta) {
+        if (value != null) {
+            Cell cell = row.createCell(col);
+            cell.setCellValue(value);
+            cell.setCellStyle(alerta ? dataAlerta : data);
+        }
+    }
+
+    /** Número que é identificador (ex.: negociação 5335): sem separador de milhar. */
+    public void codigo(Row row, int col, Number value) {
+        if (value != null) {
+            Cell cell = row.createCell(col);
+            cell.setCellValue(value.doubleValue());
+            cell.setCellStyle(codigo);
+        }
+    }
+
     public void inteiro(Row row, int col, Number value) {
         if (value != null) {
             Cell cell = row.createCell(col);
@@ -178,6 +273,13 @@ public final class Planilha implements AutoCloseable {
             cell.setCellValue(value.doubleValue());
             cell.setCellStyle(moeda);
         }
+    }
+
+    /** Total em moeda por fórmula (ex.: SUBTOTAL, que respeita o filtro automático). */
+    public void moedaTotal(Row row, int col, String formula) {
+        Cell cell = row.createCell(col);
+        cell.setCellFormula(formula);
+        cell.setCellStyle(moedaTotal);
     }
 
     /** Percentual já em base 100 (ex.: 84.5 → "84,50%"). */

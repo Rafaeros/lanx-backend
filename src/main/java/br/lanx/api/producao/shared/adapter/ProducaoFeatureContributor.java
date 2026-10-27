@@ -11,7 +11,8 @@ import br.lanx.api.shared.authorization.FeatureDefinition;
 /**
  * O módulo "Producao" e suas funcionalidades (chaves em
  * {@link ProducaoPermissions}).
- * Os relatórios não têm CRUD: só visualizar, exportar e (na análise) importar.
+ * O comunizado não tem CRUD (só consultar e gerar a planilha);
+ * as ordens de produção, sim.
  */
 @Component
 public class ProducaoFeatureContributor implements FeatureCatalogContributor {
@@ -21,6 +22,7 @@ public class ProducaoFeatureContributor implements FeatureCatalogContributor {
                 return List.of(
                                 FeatureDefinition.of(ProducaoPermissions.PRODUCAO, "Produção"),
                                 FeatureDefinition.report(ProducaoPermissions.COMUNIZADO, "Comunizado",
-                                                ProducaoPermissions.IMPORTAR));
+                                                ProducaoPermissions.IMPORTAR),
+                                FeatureDefinition.of(ProducaoPermissions.ORDENS_PRODUCAO, "Ordens de produção"));
         }
 }

@@ -1,0 +1,24 @@
+info:
+  name: Delete
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/producao/operacoes/ordens-de-producao/{{ordemDeProducaoId}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Excluir ordem de produção**
+
+  - **Rota:** `DELETE /producao/operacoes/ordens-de-producao/{id}`
+  - **Segurança:** token + `producao.ordens-producao:delete`
+  - **Resposta 200:** `data` nulo. Exclusão lógica: o código fica livre para uma nova OP.
+  - **Erros:** `401` sem token · `403` sem a permissão · `404` OP não encontrada

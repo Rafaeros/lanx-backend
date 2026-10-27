@@ -1,0 +1,41 @@
+info:
+  name: Create
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/fornecedores"
+  body:
+    type: json
+    data: |-
+      {
+        "nome": "FORNECEDOR EXEMPLO LTDA",
+        "paisId": null
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Cadastrar fornecedor**
+
+  - **Rota:** `POST /fornecedores`
+  - **Segurança:** token + `cadastros.fornecedores:create`
+  - **Body:** `nome` obrigatório (máx. 255, único); `paisId` opcional (ver `GET /paises`).
+  - **Resposta 201:**
+
+  ```json
+  {
+    "status": 201,
+    "message": "Fornecedor cadastrado com sucesso!",
+    "data": { "id": "...", "nome": "FORNECEDOR EXEMPLO LTDA", "pais": { "id": "...", "nome": "Brasil", "codigoIso2": "BR" } }
+  }
+  ```
+
+  - **Erros:** `400` campo inválido ou ausente · `401` sem token · `403` sem a permissão · `404` país não encontrado · `409` nome já cadastrado

@@ -1,0 +1,41 @@
+info:
+  name: Create
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/compradores"
+  body:
+    type: json
+    data: |-
+      {
+        "nome": "Rafael Costa",
+        "userId": null
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Cadastrar comprador**
+
+  - **Rota:** `POST /compradores`
+  - **Segurança:** token + `cadastros.compradores:create`
+  - **Body:** `nome` obrigatório (máx. 150, único); `userId` opcional — vincula o comprador a um usuário do LANX (nulo = sem usuário).
+  - **Resposta 201:**
+
+  ```json
+  {
+    "status": 201,
+    "message": "Comprador cadastrado com sucesso!",
+    "data": { "id": "...", "nome": "Rafael Costa", "usuario": { "id": "...", "username": "rafael" } }
+  }
+  ```
+
+  - **Erros:** `400` campo inválido ou ausente · `401` sem token · `403` sem a permissão · `404` usuário não encontrado · `409` nome já cadastrado

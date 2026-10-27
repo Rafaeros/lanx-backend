@@ -18,6 +18,21 @@ variables:
   - name: unidadeMedidaId
     value: 01a13a8e-f6c6-7bc8-8d41-e20291df8bc2
     description: Id de uma unidade de medida (devolvido por POST /unidade-medida)
+  - name: fornecedorId
+    value: ""
+    description: Id de um fornecedor (devolvido por POST /fornecedores)
+  - name: compradorId
+    value: ""
+    description: Id de um comprador (devolvido por POST /compradores)
+  - name: rateioId
+    value: ""
+    description: Id de um rateio (devolvido por POST /rateios)
+  - name: clienteId
+    value: ""
+    description: Id de um cliente (devolvido por POST /clientes)
+  - name: ordemDeProducaoId
+    value: ""
+    description: Id de uma ordem de produção (devolvido por POST /producao/operacoes/ordens-de-producao)
   - secret: true
     name: adminPassword
     description: Senha (Preencha na aba "Secrets" do Bruno!)

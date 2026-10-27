@@ -1,0 +1,25 @@
+info:
+  name: Get By Id
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{baseUrl}}/clientes/{{clienteId}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Buscar cliente por id**
+
+  - **Rota:** `GET /clientes/{id}`
+  - **Segurança:** token + `cadastros.clientes:read`
+  - **Variável:** `clienteId` (ambiente)
+  - **Resposta 200:** o cliente (mesmo formato do Create).
+  - **Erros:** `401` sem token · `403` sem a permissão · `404` cliente não encontrado

@@ -1,0 +1,25 @@
+info:
+  name: Delete
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/clientes/{{clienteId}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Excluir cliente**
+
+  - **Rota:** `DELETE /clientes/{id}`
+  - **Segurança:** token + `cadastros.clientes:delete`
+  - **Variável:** `clienteId` (ambiente)
+  - **Resposta 200:** `data` nulo.
+  - **Erros:** `401` sem token · `403` sem a permissão · `404` cliente não encontrado · `409` cliente em uso por ordens de produção

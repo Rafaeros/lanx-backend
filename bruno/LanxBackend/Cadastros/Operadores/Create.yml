@@ -11,7 +11,8 @@ http:
     data: |-
       {
         "nome": "Rafael Costa",
-        "departamentoId": null
+        "departamentoId": null,
+        "userId": null
       }
   auth: inherit
 
@@ -21,3 +22,12 @@ settings:
   followRedirects: true
   maxRedirects: 5
   forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Cadastrar operador**
+
+  - **Rota:** `POST /operadores`
+  - **Segurança:** token + `cadastros.operadores:create`
+  - **Body:** `nome` obrigatório (máx. 100, único); `departamentoId` opcional; `userId` opcional — vincula o operador a um usuário do LANX (1 usuário = no máximo 1 operador; nulo deixa o operador sem usuário).
+  - **Resposta 201:** `{ "id", "nome", "departamento": { "id", "nome" } | null, "usuario": { "id", "username" } | null }`
+  - **Erros:** `400` campo inválido ou ausente · `401` sem token · `403` sem a permissão · `404` departamento ou usuário não encontrados · `409` nome já usado ou usuário já vinculado a outro operador

@@ -115,6 +115,20 @@ class AnalisePedidosConsultaIntegrationTest {
     }
 
     @Test
+    void filtraPeloIdDoRateioEListaOsRateiosDosItens() throws Exception {
+        var rateio = rateios.obterOuCriar("AP-RATEIO");
+        persistence.salvar(List.of(item("PC-103", "Valvtech Ltda", "AP-MAT-4", LocalDate.of(2026, 10, 9), null,
+                "1", "0", "1", "50").withRateioId(rateio)));
+
+        var filtrado = get(BASE + "?" + OUTUBRO + "&rateios=" + rateio);
+        assertThat(filtrado).contains("\"totalElements\":1").contains("PC-103")
+                .contains("\"rateio\":{\"id\":\"" + rateio + "\",\"nome\":\"AP-RATEIO\"}");
+        assertThat(get(BASE + "/resumo?" + OUTUBRO + "&rateios=" + rateio)).contains("\"totalItens\":1");
+        assertThat(get(BASE + "?" + OUTUBRO)).as("sem filtro, todos").contains("\"totalElements\":4");
+        assertThat(get(BASE + "/rateios")).contains("{\"id\":\"" + rateio + "\",\"nome\":\"AP-RATEIO\"}");
+    }
+
+    @Test
     void periodoInvertidoOuSituacaoInvalidaDa400() throws Exception {
         assertThat(send(BASE + "?dataInicio=2026-10-31&dataFim=2026-10-01").statusCode()).isEqualTo(400);
         assertThat(send(BASE + "?" + OUTUBRO + "&situacao=QUALQUER").statusCode()).isEqualTo(400);

@@ -1,0 +1,25 @@
+info:
+  name: Delete
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/compradores/{{compradorId}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Excluir comprador**
+
+  - **Rota:** `DELETE /compradores/{id}`
+  - **Segurança:** token + `cadastros.compradores:delete`
+  - **Variável:** `compradorId` (ambiente)
+  - **Resposta 200:** `data` nulo.
+  - **Erros:** `401` sem token · `403` sem a permissão · `404` comprador não encontrado · `409` comprador em uso por itens importados da Análise de Pedidos

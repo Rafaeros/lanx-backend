@@ -1,0 +1,24 @@
+info:
+  name: Get All
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/paises"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Listar países**
+
+  - **Rota:** `GET /paises`
+  - **Segurança:** token + `cadastros.pais:read`
+  - **Resposta 200:** `data` é a lista completa (sem paginação) de países: `id`, `nome`, `codigoIso2`, `codigoIso3`. Use o `id` como `paisId` no cadastro de fornecedores.
+  - **Erros:** `401` sem token · `403` sem a permissão
