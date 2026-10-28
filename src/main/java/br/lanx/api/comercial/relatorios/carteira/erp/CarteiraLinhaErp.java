@@ -15,26 +15,32 @@ import tools.jackson.databind.annotation.JsonNaming;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CarteiraLinhaErp(
-        Integer negociacao,
-        String pedidoCliente,
-        String ordem,
-        String tipoServico,
-        String cliente,
-        String codigo,
-        String descricao,
-        LocalDate previsao,
-        BigDecimal pendente,
-        BigDecimal valorTotal,
-        String etapaAtual,
-        List<MaterialPendenteErp> materiaisPendentes) {
+                Integer negociacao,
+                String pedidoCliente,
+                String ordem,
+                String tipoServico,
+                String cliente,
+                String codigo,
+                String descricao,
+                LocalDate previsao,
+                BigDecimal pendente,
+                BigDecimal valorTotal,
+                String etapaAtual,
+                List<MaterialPendenteErp> materiaisPendentes) {
 
-    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public record MaterialPendenteErp(
-            String codigo,
-            String descricao,
-            BigDecimal quantidadePendente,
-            String unidadeMedida,
-            LocalDate previsao) {
-    }
+        public CarteiraLinhaErp {
+                if (etapaAtual == null || etapaAtual.isBlank()) {
+                        etapaAtual = "A FATURAR";
+                }
+        }
+
+        @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        public record MaterialPendenteErp(
+                        String codigo,
+                        String descricao,
+                        BigDecimal quantidadePendente,
+                        String unidadeMedida,
+                        LocalDate previsao) {
+        }
 }
