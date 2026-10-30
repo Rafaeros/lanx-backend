@@ -8,5 +8,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record UpdateUserRequest(
                 @NotEmpty Set<@NotNull UUID> roleIds,
-                boolean active) {
+                boolean active,
+                /** Nulo tira o usuário do departamento. */
+                UUID departamentoId) {
 }

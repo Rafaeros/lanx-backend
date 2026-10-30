@@ -1,5 +1,6 @@
 package br.lanx.api.auth.user;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -13,7 +14,7 @@ import org.springframework.data.repository.query.Param;
 public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Override
-    @EntityGraph(attributePaths = "roles")
+    @EntityGraph(attributePaths = { "roles", "departamento" })
     Optional<User> findById(UUID id);
 
     @EntityGraph(attributePaths = "roles")
@@ -23,8 +24,11 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     boolean existsByDepartamentoId(UUID departamentoId);
 
-    /** Todos os usuários para o painel de administração, já com roles e permissões carregadas. */
-    @EntityGraph(attributePaths = { "roles", "roles.permissions" })
+    /**
+     * Todos os usuários para o painel de administração, já com roles e permissões
+     * carregadas.
+     */
+    @EntityGraph(attributePaths = { "roles", "roles.permissions", "departamento" })
     List<User> findAllByOrderByUsernameAsc();
 
     /**
@@ -37,4 +41,10 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             where u.id = :userId and u.active = true
             """)
     Set<String> findAuthorityCodes(@Param("userId") UUID userId);
+
+    @Query("""
+            select u.id from User u
+            where u.active = true and lower(u.departamento.nome) in :nomes
+            """)
+    List<UUID> findActiveIdsByDepartamentoNomes(@Param("nomes") Collection<String> nomes);
 }

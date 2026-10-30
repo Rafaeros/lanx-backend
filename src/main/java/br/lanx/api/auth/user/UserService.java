@@ -1,6 +1,8 @@
 package br.lanx.api.auth.user;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -20,6 +22,8 @@ import br.lanx.api.auth.user.exception.InvalidCredentialException;
 import br.lanx.api.auth.user.exception.InvalidUserException;
 import br.lanx.api.auth.user.exception.UserNotFoundException;
 import br.lanx.api.auth.user.exception.UsernameAlreadyExistsException;
+import br.lanx.api.cadastros.departamentos.Departamento;
+import br.lanx.api.cadastros.departamentos.DepartamentoService;
 import br.lanx.api.shared.authorization.AuthorizationChanged;
 
 @Service
@@ -29,13 +33,15 @@ public class UserService {
     private final RoleService roles;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher events;
+    private final DepartamentoService departamentos;
 
     UserService(UserRepository users, RoleService roles, PasswordEncoder passwordEncoder,
-            ApplicationEventPublisher events) {
+            ApplicationEventPublisher events, DepartamentoService departamentos) {
         this.users = users;
         this.roles = roles;
         this.passwordEncoder = passwordEncoder;
         this.events = events;
+        this.departamentos = departamentos;
     }
 
     @Transactional(readOnly = true)
@@ -62,16 +68,27 @@ public class UserService {
                 roles.requireAll(request.roleIds()));
         // a senha do cadastro é provisória: o usuário define a dele no primeiro login
         user.requireFirstAccess();
+        user.assignDepartamento(departamentoOuNulo(request.departamentoId()));
         return users.save(user).getId();
+    }
+
+    @Transactional(readOnly = true)
+    public List<UUID> findActiveIdsByDepartamentos(Collection<String> nomes) {
+        return users.findActiveIdsByDepartamentoNomes(nomes.stream().map(n -> n.toLowerCase(Locale.ROOT)).toList());
     }
 
     @Transactional
     public void update(UUID id, UpdateUserRequest request) {
         User user = users.findById(id).orElseThrow(() -> new UserNotFoundException(id.toString()));
         user.update(roles.requireAll(request.roleIds()), request.active());
+        user.assignDepartamento(departamentoOuNulo(request.departamentoId()));
 
         // vale na hora: o próximo request do usuário já recalcula as authorities
         events.publishEvent(AuthorizationChanged.ofUser(id));
+    }
+
+    private Departamento departamentoOuNulo(UUID departamentoId) {
+        return departamentoId == null ? null : departamentos.findByIdOrThrow(departamentoId);
     }
 
     /**
