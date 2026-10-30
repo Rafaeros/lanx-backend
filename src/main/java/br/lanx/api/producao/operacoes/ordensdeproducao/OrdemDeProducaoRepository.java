@@ -1,5 +1,7 @@
 package br.lanx.api.producao.operacoes.ordensdeproducao;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -33,6 +35,9 @@ public interface OrdemDeProducaoRepository extends JpaRepository<OrdemDeProducao
              left join o.material m
             """ + FILTRO)
     Page<OrdemDeProducao> buscar(@Param("busca") String busca, Pageable pageable);
+
+    /** Importação: as OPs já cadastradas entre os códigos da planilha, numa consulta só. */
+    List<OrdemDeProducao> findByCodigoIn(Collection<String> codigos);
 
     boolean existsByCodigoIgnoreCase(String codigo);
 

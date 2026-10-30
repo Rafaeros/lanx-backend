@@ -23,6 +23,7 @@ public class ProducaoFeatureContributor implements FeatureCatalogContributor {
                                 FeatureDefinition.of(ProducaoPermissions.PRODUCAO, "Produção"),
                                 FeatureDefinition.report(ProducaoPermissions.COMUNIZADO, "Comunizado",
                                                 ProducaoPermissions.IMPORTAR),
-                                FeatureDefinition.of(ProducaoPermissions.ORDENS_PRODUCAO, "Ordens de produção"));
+                                FeatureDefinition.of(ProducaoPermissions.ORDENS_PRODUCAO, "Ordens de produção",
+                                                ProducaoPermissions.IMPORTAR));
         }
 }

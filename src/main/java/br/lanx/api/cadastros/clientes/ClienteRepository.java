@@ -1,5 +1,6 @@
 package br.lanx.api.cadastros.clientes;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -7,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
+
+    Optional<Cliente> findByNomeIgnoreCase(String nome);
 
     boolean existsByNomeIgnoreCase(String nome);
 

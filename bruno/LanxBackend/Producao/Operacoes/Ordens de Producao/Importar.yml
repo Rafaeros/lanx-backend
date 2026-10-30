@@ -1,0 +1,24 @@
+info:
+  name: Importar
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{baseUrl}}/producao/operacoes/ordens-de-producao/importar?incluirFinalizadas=false"
+  body:
+    type: multipart-form
+    data:
+      - name: arquivo
+        type: file
+        value:
+          - /home/rafaeros/Downloads/ordens_29_10_2026.xlsx
+        contentType: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

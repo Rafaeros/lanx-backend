@@ -44,6 +44,23 @@ public class ClienteService {
         return ClienteResponse.fromEntity(clienteRepository.save(cliente));
     }
 
+    /** {@code created} diz se o cliente acabou de ser criado ou já existia. */
+    public record FindOrCreateResult(Cliente cliente, boolean created) {
+    }
+
+    /** Usado em importações (ex.: OPs do ERP): busca pelo nome (sem diferenciar maiúsculas) ou cria sem CNPJ. */
+    @Transactional
+    public FindOrCreateResult findByNomeOrCreate(String nome) {
+        String limpo = nome.trim();
+        return clienteRepository.findByNomeIgnoreCase(limpo)
+                .map(existente -> new FindOrCreateResult(existente, false))
+                .orElseGet(() -> {
+                    Cliente cliente = new Cliente();
+                    cliente.setNome(limpo);
+                    return new FindOrCreateResult(clienteRepository.save(cliente), true);
+                });
+    }
+
     /** busca vazia = todos; senão, nome contendo o texto ou CNPJ contendo os dígitos. */
     @Transactional(readOnly = true)
     public PageResult<ClienteResponse> findAll(String busca, Pageable pageable) {
