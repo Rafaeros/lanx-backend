@@ -6,9 +6,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -52,6 +55,24 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     ApiResponse<Void> accessDenied() {
         return ApiResponse.error(HttpStatus.FORBIDDEN, "Sem permissão para este recurso");
+    }
+
+    /** Upload acima de spring.servlet.multipart.max-file-size / max-request-size. */
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    ApiResponse<Void> uploadTooLarge() {
+        return ApiResponse.error(HttpStatus.CONTENT_TOO_LARGE, "Arquivo(s) acima do tamanho permitido");
+    }
+
+    /** Multipart sem uma parte obrigatória (ex.: "request"). */
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    ApiResponse<Void> missingPart(MissingServletRequestPartException ex) {
+        return ApiResponse.error(HttpStatus.BAD_REQUEST, "Parte obrigatória ausente: " + ex.getRequestPartName());
+    }
+
+    /** Ex.: parte JSON do multipart enviada sem Content-Type application/json. */
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    ApiResponse<Void> unsupportedMediaType(HttpMediaTypeNotSupportedException ex) {
+        return ApiResponse.error(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Content-Type não suportado: " + ex.getContentType());
     }
 
     /**
