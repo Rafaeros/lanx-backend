@@ -1,0 +1,27 @@
+info:
+  name: Update
+  type: http
+  seq: 5
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/teste-inspecao/operacoes/nao-conformidade/00000000-0000-0000-0000-000000000000"
+  body:
+    type: json
+    data: |-
+      {
+        "tipoNaoConformidadeId": "00000000-0000-0000-0000-000000000000",
+        "departamentoId": "00000000-0000-0000-0000-000000000000",
+        "ordemDeProducaoId": "00000000-0000-0000-0000-000000000000",
+        "operadorId": null,
+        "quantidadeNaoConforme": 10,
+        "dataNaoConformidade": "2026-10-29"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
