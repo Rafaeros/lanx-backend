@@ -35,3 +35,6 @@ build/
 # Sensitive
 .env
 bruno/environments/*.bru
+
+# Data
+data/

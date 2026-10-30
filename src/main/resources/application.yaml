@@ -28,6 +28,20 @@ spring:
     hikari:
       maximum-pool-size: ${DB_POOL_SIZE:10}
 
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:lanx}
+    password: ${RABBITMQ_PASSWORD:lanx}
+    virtual-host: ${RABBITMQ_VHOST:/}
+    listener:
+      simple:
+        acknowledge-mode: auto # Spring da ack se o metodo terminar sem exceção
+        retry:
+          enabled: true
+          max-retries: 3
+          initial-interval: 1s
+
   jpa:
     open-in-view: false
     hibernate:
@@ -51,11 +65,17 @@ spring:
     default-property-inclusion: non_null
     time-zone: America/Sao_Paulo
 
+  servlet:
+    multipart:
+      max-file-size: ${UPLOAD_MAX_FILE:20MB}
+      max-request-size: ${UPLOAD_MAX_REQUEST:25MB}
+
 app:
   bootstrap:
     admin:
       username: ${ADMIN_USERNAME:admin}
       password: ${ADMIN_PASSWORD:} # vazio = não cria o administrador
+
   security:
     token:
       secret: ${JWT_SECRET} # Base64, mínimo 32 bytes: openssl rand -base64 32
@@ -63,12 +83,26 @@ app:
       expiration: 8h
     cors:
       allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:3000,http://localhost:8080,http://localhost:8090,http://localhost,http://127.0.0.1:5173}
+
   cg-api-url: ${CG_API_URL:http://localhost:8000/api/v1}
   # a carteira consolida 3 relatórios do ERP: um ano leva ~1,5 min
   cg-carteira-timeout: ${CG_CARTEIRA_TIMEOUT:5m}
 
+  storage:
+    tipo: ${ANEXOS_STORAGE_TIPO:local}
+    base-dir: ${ANEXOS_DIRETORIO:./data/anexos}
+
+  rabbitmq:
+    exchange: lanx.events
+    queues:
+      notificacoes-nao-conformidade: lanx.notificacoes.nao-conformidade-criada
+    routing-keys:
+      nao-conformidade-criada: teste-inspecao.nao-conformidade.criada
+
+  notificacoes:
+    nao-conformidade-criada:
+      departmentos: [Qualidade, Teste]
+
 seeder:
   paises:
     path: classpath:db/seeders/paises.csv
-
-

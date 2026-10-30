@@ -1,9 +1,28 @@
 services:
   postgres:
-    image: 'postgres:latest'
+    image: "postgres:latest"
+    restart: unless-stopped
     environment:
-      - 'POSTGRES_DB=lanx'
-      - 'POSTGRES_PASSWORD=lanx'
-      - 'POSTGRES_USER=lanx'
+      POSTGRES_DB: ${POSTGRES_DB:-lanx}
+      POSTGRES_USER: ${POSTGRES_USER:-lanx}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lanx}
     ports:
-      - '5432'
+      - "5432"
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: lanx-rabbitmq
+    hostname: rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-lanx}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-lanx}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST:-/}
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+volumes:
+  rabbitmq_data:
