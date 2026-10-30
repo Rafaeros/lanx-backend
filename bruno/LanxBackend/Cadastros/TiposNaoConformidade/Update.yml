@@ -1,0 +1,22 @@
+info:
+  name: Update
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/tipos-nao-conformidade/00000000-0000-0000-0000-000000000000"
+  body:
+    type: json
+    data: |-
+      {
+        "nome": "Inversão de fios"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
