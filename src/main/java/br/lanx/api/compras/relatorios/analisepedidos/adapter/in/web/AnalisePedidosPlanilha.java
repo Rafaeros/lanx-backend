@@ -11,7 +11,10 @@ import br.lanx.api.compras.relatorios.analisepedidos.domain.ItemAnalisePedido;
 import br.lanx.api.compras.relatorios.analisepedidos.domain.Situacao;
 import br.lanx.api.shared.web.planilha.Planilha;
 
-/** Planilha da análise de pedidos: uma linha por item, com as mesmas colunas do ERP. */
+/**
+ * Planilha da análise de pedidos: uma linha por item, com as mesmas colunas do
+ * ERP.
+ */
 final class AnalisePedidosPlanilha {
 
     private static final DateTimeFormatter BR = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -88,7 +91,10 @@ final class AnalisePedidosPlanilha {
         }
     }
 
-    /** Os nomes dos rateios filtrados saem dos próprios itens (todos pertencem a um deles). */
+    /**
+     * Os nomes dos rateios filtrados saem dos próprios itens (todos pertencem a um
+     * deles).
+     */
     private static String filtros(ConsultaAnalisePedidos consulta, List<ItemAnalisePedido> itens) {
         var sb = new StringBuilder();
         if (consulta.temBusca()) {
@@ -98,8 +104,9 @@ final class AnalisePedidosPlanilha {
             sb.append(" · situação ").append(rotulo(consulta.situacao()).toLowerCase());
         }
         if (consulta.filtraRateios()) {
-            sb.append(" · rateios: ").append(String.join(", ", itens.stream().map(ItemAnalisePedido::rateio)
-                    .filter(Objects::nonNull).distinct().sorted().toList()));
+            sb.append(" · rateios: ")
+                    .append(String.join(", ", itens.stream().map(i -> i.rateio()).filter(Objects::nonNull)
+                            .filter(Objects::nonNull).distinct().sorted().toList()));
         }
         return sb.toString();
     }

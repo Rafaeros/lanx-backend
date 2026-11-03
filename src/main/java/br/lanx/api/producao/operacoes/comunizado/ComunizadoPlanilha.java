@@ -20,6 +20,7 @@ import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.PageMargin;
 import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -42,7 +43,8 @@ import br.lanx.api.producao.operacoes.comunizado.domain.ItemCorte;
 /**
  * Comunizado no layout do modelo "ORN105 ... .xlsx" (docs/): bloco de cabeçalho
  * (realizado em, doc. referência, produto, início, quantidade, fim, OP) e a
- * tabela PROD. | OPERADOR | CIRC | [GRAVAÇÃO] | COMP | TIPO | TERMINAL A | DESP. A |
+ * tabela PROD. | OPERADOR | CIRC | [GRAVAÇÃO] | COMP | TIPO | TERMINAL A |
+ * DESP. A |
  * TERMINAL B | DESP. B. GRAVAÇÃO só aparece quando a IT a tem.
  * <p>
  * Cores (cores-cabos.csv): o texto da linha é a cor do cabo; em cabos bicolores
@@ -57,19 +59,30 @@ public class ComunizadoPlanilha {
     private static final String FONTE = "Calibri";
     private static final String LOGO = "/producao/comunizado/logo.png";
 
-    /** Itens que cabem numa página A4 com o cabeçalho (o mesmo limite das abas da IT). */
+    /**
+     * Itens que cabem numa página A4 com o cabeçalho (o mesmo limite das abas da
+     * IT).
+     */
     static final int ITENS_POR_PAGINA = 22;
 
     private static final int LINHA_CABECALHO_TABELA = 9; // linha 10 no Excel
 
-    /** Quanto as cores do gradiente são clareadas para o texto continuar legível. */
+    /**
+     * Quanto as cores do gradiente são clareadas para o texto continuar legível.
+     */
     private static final double CLAREAR_GRADIENTE = 0.35;
 
-    /** Uma coluna da tabela: título, largura (caracteres, como no modelo) e valor de cada linha. */
+    /**
+     * Uma coluna da tabela: título, largura (caracteres, como no modelo) e valor de
+     * cada linha.
+     */
     private record Coluna(String titulo, double largura, Function<Linha, Object> valor) {
     }
 
-    /** Uma linha da tabela já resolvida: item, cabo decodificado e defaults do cabeçalho. */
+    /**
+     * Uma linha da tabela já resolvida: item, cabo decodificado e defaults do
+     * cabeçalho.
+     */
     private record Linha(ItemCorte item, Optional<CodigoCabo> cabo, String produto, String operador) {
     }
 
@@ -170,7 +183,10 @@ public class ComunizadoPlanilha {
         mesclar(sheet, linha, coluna + 1, coluna + 3, valor, e.valor);
     }
 
-    /** Logo LANX Cables centralizada em A1:C1 (resources/producao/comunizado/logo.png). */
+    /**
+     * Logo LANX Cables centralizada em A1:C1
+     * (resources/producao/comunizado/logo.png).
+     */
     private void inserirLogo(Sheet sheet) {
         try (InputStream in = ComunizadoPlanilha.class.getResourceAsStream(LOGO)) {
             if (in == null) {
@@ -179,7 +195,8 @@ public class ComunizadoPlanilha {
             Workbook wb = sheet.getWorkbook();
             int imagem = wb.addPicture(in.readAllBytes(), Workbook.PICTURE_TYPE_PNG);
             // logo 314x112 px (2,8:1) com 66 px de altura → 185 px de largura, centralizada
-            // em A:C (~442 px): começa a 128 px dentro de A (151 px) e termina a 162 px dentro de B
+            // em A:C (~442 px): começa a 128 px dentro de A (151 px) e termina a 162 px
+            // dentro de B
             ClientAnchor anchor = wb.getCreationHelper().createClientAnchor();
             anchor.setCol1(0);
             anchor.setRow1(0);
@@ -225,7 +242,8 @@ public class ComunizadoPlanilha {
                 celula(sheet, linha, coluna, definicao.valor().apply(dados), estiloCelula);
             }
 
-            // quebra de página a cada ITENS_POR_PAGINA itens (o cabeçalho se repete na próxima)
+            // quebra de página a cada ITENS_POR_PAGINA itens (o cabeçalho se repete na
+            // próxima)
             if ((i + 1) % ITENS_POR_PAGINA == 0 && i + 1 < itens.size()) {
                 sheet.setRowBreak(linha);
             }
@@ -239,24 +257,25 @@ public class ComunizadoPlanilha {
         sheet.setDisplayGridlines(false);
         sheet.setZoom(70);
         sheet.setFitToPage(true);
-        sheet.setMargin(Sheet.LeftMargin, 0.24);
-        sheet.setMargin(Sheet.RightMargin, 0.24);
-        sheet.setMargin(Sheet.TopMargin, 0.16);
-        sheet.setMargin(Sheet.BottomMargin, 0.16);
+        sheet.setMargin(PageMargin.LEFT, 0.24);
+        sheet.setMargin(PageMargin.RIGHT, 0.24);
+        sheet.setMargin(PageMargin.TOP, 0.16);
+        sheet.setMargin(PageMargin.BOTTOM, 0.16);
         PrintSetup print = sheet.getPrintSetup();
         print.setLandscape(true);
         print.setPaperSize(PrintSetup.A4_PAPERSIZE);
-        // uma página de largura e exatamente uma página por bloco de ITENS_POR_PAGINA itens
+        // uma página de largura e exatamente uma página por bloco de ITENS_POR_PAGINA
+        // itens
         print.setFitWidth((short) 1);
         print.setFitHeight((short) paginas);
-        // o cabeçalho do comunizado (logo, campos e títulos da tabela) se repete em cada página
+        // o cabeçalho do comunizado (logo, campos e títulos da tabela) se repete em
+        // cada página
         sheet.setRepeatingRows(new CellRangeAddress(0, LINHA_CABECALHO_TABELA, -1, -1));
         sheet.getFooter().setRight("Pág. &P / &N");
         workbook.setPrintArea(0, 0, ultimaColuna, 0, ultimaLinha);
     }
 
     // ---------- valores ----------
-
 
     private static String texto(String valor) {
         return valor == null ? "" : valor.trim();
@@ -297,7 +316,8 @@ public class ComunizadoPlanilha {
         RegionUtil.setBorderRight(BorderStyle.THIN, regiao, sheet);
     }
 
-    // ---------- estilos (fonte Calibri, bordas finas, centralizado, como no modelo) ----------
+    // ---------- estilos (fonte Calibri, bordas finas, centralizado, como no
+    // modelo) ----------
 
     private static final class Estilos {
 
@@ -322,7 +342,10 @@ public class ComunizadoPlanilha {
             linhaPadrao = base(wb, fonte(wb, 18, false, null), false);
         }
 
-        /** Estilo da linha pela cor do cabo (uma instância por cor: o Excel limita estilos). */
+        /**
+         * Estilo da linha pela cor do cabo (uma instância por cor: o Excel limita
+         * estilos).
+         */
         CellStyle linha(CorCabo cor) {
             if (cor == null) {
                 return linhaPadrao;
@@ -343,7 +366,8 @@ public class ComunizadoPlanilha {
 
         /**
          * Célula TIPO: cabo bicolor ganha gradiente cor → faixa (clareado para o texto
-         * aparecer) com o texto em preto negrito; cabo de uma cor usa o estilo da linha.
+         * aparecer) com o texto em preto negrito; cabo de uma cor usa o estilo da
+         * linha.
          */
         CellStyle tipo(Optional<CodigoCabo> cabo, CellStyle estiloDaLinha) {
             if (cabo.isEmpty() || cabo.get().faixa() == null) {
@@ -360,7 +384,10 @@ public class ComunizadoPlanilha {
             });
         }
 
-        /** Cor "real" do cabo para o gradiente: a de faixa (branco vira cinza claro, amarelo forte). */
+        /**
+         * Cor "real" do cabo para o gradiente: a de faixa (branco vira cinza claro,
+         * amarelo forte).
+         */
         private static String corDoCabo(CorCabo cor) {
             return cor.faixa();
         }

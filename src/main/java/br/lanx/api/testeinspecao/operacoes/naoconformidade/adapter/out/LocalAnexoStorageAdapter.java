@@ -7,7 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -19,8 +18,8 @@ public class LocalAnexoStorageAdapter implements AnexoStoragePort {
 
     private final Path diretorio;
 
-    public LocalAnexoStorageAdapter(@Value("${app.storage.base-dir}") String diretorio) {
-        this.diretorio = Path.of(diretorio).toAbsolutePath().normalize();
+    public LocalAnexoStorageAdapter(StorageProperties storage) {
+        this.diretorio = Path.of(storage.baseDir()).toAbsolutePath().normalize();
     }
 
     @Override

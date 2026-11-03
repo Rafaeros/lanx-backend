@@ -22,7 +22,7 @@ public class PaisLookUpService {
 
     @Transactional(readOnly = true)
     public List<PaisResponse> findAll() {
-        return paisRepository.findAll(Sort.by("nome")).stream().map(PaisResponse::fromEntity).toList();
+        return paisRepository.findAll(Sort.by(Pais::getNome)).stream().map(PaisResponse::fromEntity).toList();
     }
 
     public Optional<Pais> findOptionalByNome(String nome) {

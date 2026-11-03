@@ -36,9 +36,9 @@ public class CarteiraService {
     }
 
     private static final Comparator<CarteiraResponse.Item> POR_PREVISAO = Comparator
-            .comparing(CarteiraResponse.Item::previsao, Comparator.nullsLast(Comparator.naturalOrder()))
-            .thenComparing(CarteiraResponse.Item::negociacao, Comparator.nullsLast(Comparator.naturalOrder()))
-            .thenComparing(CarteiraResponse.Item::ordem, Comparator.nullsLast(Comparator.naturalOrder()));
+            .comparing((CarteiraResponse.Item c) -> c.previsao(), Comparator.nullsLast(Comparator.naturalOrder()))
+            .thenComparing((CarteiraResponse.Item c) -> c.negociacao(), Comparator.nullsLast(Comparator.naturalOrder()))
+            .thenComparing((CarteiraResponse.Item c) -> c.ordem(), Comparator.nullsLast(Comparator.naturalOrder()));
 
     private final CarteiraErpClient erp;
     private final Clock clock;
@@ -83,10 +83,10 @@ public class CarteiraService {
 
         var resumo = new CarteiraResponse.Resumo(
                 itens.size(),
-                itens.stream().map(CarteiraResponse.Item::valorTotal).filter(Objects::nonNull)
+                itens.stream().map((CarteiraResponse.Item i) -> i.valorTotal()).filter(Objects::nonNull)
                         .reduce(BigDecimal.ZERO, BigDecimal::add),
-                (int) itens.stream().filter(CarteiraResponse.Item::atrasado).count(),
-                (int) itens.stream().filter(i -> !i.materiaisPendentes().isEmpty()).count());
+                (int) itens.stream().filter((CarteiraResponse.Item i) -> i.atrasado()).count(),
+                (int) itens.stream().filter((CarteiraResponse.Item i) -> !i.materiaisPendentes().isEmpty()).count());
 
         return new CarteiraResponse(periodo.inicio(), periodo.fim(), consulta.em(), resumo, itens);
     }

@@ -20,7 +20,10 @@ public record CodigoCabo(String modelo, int bitola, CorCabo cor, CorCabo faixa, 
 
     private static final Pattern FORMATO = Pattern.compile("^([A-Z]{3})(\\d{4})([A-Z]*)$");
 
-    /** Ordem do comunizado: modelo, bitola (menor primeiro), cor e faixa na ordem do mapeamento. */
+    /**
+     * Ordem do comunizado: modelo, bitola (menor primeiro), cor e faixa na ordem do
+     * mapeamento.
+     */
     public static final Comparator<CodigoCabo> ORDEM = Comparator
             .comparing(CodigoCabo::modelo)
             .thenComparingInt(CodigoCabo::bitola)
@@ -50,7 +53,10 @@ public record CodigoCabo(String modelo, int bitola, CorCabo cor, CorCabo faixa, 
         return Optional.of(new CodigoCabo(m.group(1), Integer.parseInt(m.group(2)), cor.get(), faixa, resto));
     }
 
-    /** "CFR0035AZPR" → "CFR0035AZ": tudo antes da sigla da faixa (para colorir a faixa à parte). */
+    /**
+     * "CFR0035AZPR" → "CFR0035AZ": tudo antes da sigla da faixa (para colorir a
+     * faixa à parte).
+     */
     public int inicioDaFaixa() {
         return 3 + 4 + cor.codigo().length();
     }

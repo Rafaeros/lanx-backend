@@ -49,7 +49,10 @@ public class OperadorService {
         return toResponse(operadorRepository.save(newOperador));
     }
 
-    /** busca vazia = todos; senão, nome contendo o texto (sem diferenciar maiúsculas). */
+    /**
+     * busca vazia = todos; senão, nome contendo o texto (sem diferenciar
+     * maiúsculas).
+     */
     @Transactional(readOnly = true)
     public PageResult<OperadorResponse> findAll(String busca, Pageable pageable) {
         var page = busca == null || busca.isBlank()
@@ -57,7 +60,7 @@ public class OperadorService {
                 : operadorRepository.findByNomeContainingIgnoreCase(busca.trim(), pageable);
         // usernames da página numa consulta só
         Map<UUID, String> usernames = usuarioLookup.usernames(
-                page.getContent().stream().map(Operador::getUserId).filter(Objects::nonNull).toList());
+                page.getContent().stream().map(o -> o.getUserId()).filter(Objects::nonNull).toList());
         return PageResult.from(page.map(o -> OperadorResponse.of(o, username(usernames, o.getUserId()))));
     }
 
@@ -93,7 +96,10 @@ public class OperadorService {
         operadorRepository.delete(operador);
     }
 
-    /** Usuário existente e ainda sem operador (o índice uk_operadores_user garante o mesmo no banco). */
+    /**
+     * Usuário existente e ainda sem operador (o índice uk_operadores_user garante o
+     * mesmo no banco).
+     */
     private UUID usuarioValido(UUID userId, UUID operadorId) {
         if (userId == null) {
             return null;

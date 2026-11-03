@@ -29,7 +29,7 @@ class UnidadeMedidaPersistenceAdapter implements UnidadeMedidaRepository {
 
     @Override
     public PageResult<UnidadeMedida> search(String filtro, PageQuery query) {
-        PageRequest pageRequest = PageRequest.of(query.page(), query.size(), Sort.by("nome"));
+        PageRequest pageRequest = PageRequest.of(query.page(), query.size(), Sort.by(UnidadeMedidaEntity::getNome));
         Page<UnidadeMedidaEntity> page = jpa.search(filtro, pageRequest);
 
         return PageResult.from(page, UnidadeMedidaMapper::toDomain);

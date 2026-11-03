@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResourceAccessException;
@@ -15,10 +14,11 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
 
 import br.lanx.api.comercial.relatorios.carteira.exceptions.CarteiraErpIndisponivelException;
+import br.lanx.api.shared.erp.CgApiProperties;
 
 /**
  * O cg-scraper monta a carteira na hora, cruzando três relatórios do ERP: um
- * ano leva ~1,5 min. Por isso o tempo de leitura é longo (app.cg-carteira-timeout)
+ * ano leva ~1,5 min. Por isso o tempo de leitura é longo (app.cg.carteira-timeout)
  * e só a conexão falha rápido (scraper fora do ar).
  */
 @Component
@@ -28,13 +28,12 @@ class CarteiraRestClient implements CarteiraErpClient {
 
     private final RestClient restClient;
 
-    CarteiraRestClient(@Value("${app.cg-api-url}") String baseUrl,
-            @Value("${app.cg-carteira-timeout}") Duration timeout) {
+    CarteiraRestClient(CgApiProperties cg) {
         var http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
         var requestFactory = new JdkClientHttpRequestFactory(http);
-        requestFactory.setReadTimeout(timeout);
+        requestFactory.setReadTimeout(cg.carteiraTimeout());
         this.restClient = RestClient.builder()
-                .baseUrl(baseUrl)
+                .baseUrl(cg.apiUrl())
                 .requestFactory(requestFactory)
                 .build();
     }

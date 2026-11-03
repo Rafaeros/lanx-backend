@@ -45,7 +45,10 @@ public class CompradorService {
         return toResponse(compradorRepository.save(comprador));
     }
 
-    /** busca vazia = todos; senão, nome contendo o texto (sem diferenciar maiúsculas). */
+    /**
+     * busca vazia = todos; senão, nome contendo o texto (sem diferenciar
+     * maiúsculas).
+     */
     @Transactional(readOnly = true)
     public PageResult<CompradorResponse> findAll(String busca, Pageable pageable) {
         var page = busca == null || busca.isBlank()
@@ -53,7 +56,7 @@ public class CompradorService {
                 : compradorRepository.findByNomeContainingIgnoreCase(busca.trim(), pageable);
         // usernames da página numa consulta só
         Map<UUID, String> usernames = usuarioLookup.usernames(
-                page.getContent().stream().map(Comprador::getUserId).filter(Objects::nonNull).toList());
+                page.getContent().stream().map(c -> c.getUserId()).filter(Objects::nonNull).toList());
         return PageResult.from(page.map(c -> CompradorResponse.of(c, username(usernames, c.getUserId()))));
     }
 
@@ -80,7 +83,10 @@ public class CompradorService {
         return toResponse(compradorRepository.save(comprador));
     }
 
-    /** Exclusão lógica; vetada enquanto houver itens importados apontando para o comprador. */
+    /**
+     * Exclusão lógica; vetada enquanto houver itens importados apontando para o
+     * comprador.
+     */
     @Transactional
     public void delete(UUID id) {
         Comprador comprador = findByIdOrThrow(id);
@@ -90,7 +96,10 @@ public class CompradorService {
         compradorRepository.delete(comprador);
     }
 
-    /** Usado na importação do ERP: busca pelo nome (sem diferenciar maiúsculas) ou cria sem usuário. */
+    /**
+     * Usado na importação do ERP: busca pelo nome (sem diferenciar maiúsculas) ou
+     * cria sem usuário.
+     */
     @Transactional
     public Comprador findByNomeOrCreate(String nome) {
         String limpo = nome.trim();
@@ -108,7 +117,10 @@ public class CompradorService {
         return userId;
     }
 
-    /** Comprador sem vínculo não consulta o mapa (alguns Map, como Map.of(), recusam chave nula). */
+    /**
+     * Comprador sem vínculo não consulta o mapa (alguns Map, como Map.of(), recusam
+     * chave nula).
+     */
     private static String username(Map<UUID, String> usernames, UUID userId) {
         return userId == null ? null : usernames.get(userId);
     }

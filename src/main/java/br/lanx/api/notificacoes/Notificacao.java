@@ -116,7 +116,7 @@ public class Notificacao {
         return createdAt;
     }
 
-    public void setLink(String linl) {
+    public void setLink(String link) {
         this.link = link;
     }
 

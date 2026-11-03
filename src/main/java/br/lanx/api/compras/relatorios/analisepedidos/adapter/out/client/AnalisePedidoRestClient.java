@@ -1,9 +1,10 @@
 package br.lanx.api.compras.relatorios.analisepedidos.adapter.out.client;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+
+import br.lanx.api.shared.erp.CgApiProperties;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,9 +14,9 @@ public class AnalisePedidoRestClient implements AnalisePedidoClient {
 
     private final RestClient restClient;
 
-    public AnalisePedidoRestClient(@Value("${app.cg-api-url}") String baseUrl) {
+    public AnalisePedidoRestClient(CgApiProperties cg) {
         this.restClient = RestClient.builder()
-                .baseUrl(baseUrl)
+                .baseUrl(cg.apiUrl())
                 .build();
     }
 

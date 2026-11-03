@@ -43,7 +43,10 @@ public class ComunizadoService {
     /** Nomes de coluna das ITs mais antigas → nome usado aqui ("CIR" = "CIRC"). */
     private static final Map<String, String> SINONIMOS = Map.of("CIR", "CIRC");
 
-    /** Além destas, a tabela precisa de CIRC (ou CIR) ou GRAVAÇÃO (que traz o circuito no fim: "XP1:5 / 13"). */
+    /**
+     * Além destas, a tabela precisa de CIRC (ou CIR) ou GRAVAÇÃO (que traz o
+     * circuito no fim: "XP1:5 / 13").
+     */
     private static final List<String> COLUNAS_OBRIGATORIAS = List.of(
             "COMP",
             "TIPO",
@@ -55,7 +58,9 @@ public class ComunizadoService {
     private final CoresCabos cores = CoresCabos.padrao();
     private final ComunizadoPlanilha comunicadoPlanilha = new ComunizadoPlanilha(cores);
 
-    /** Planilha gerada e o nome do arquivo ("KHN321 000 000 dia 20-10-2026.xlsx"). */
+    /**
+     * Planilha gerada e o nome do arquivo ("KHN321 000 000 dia 20-10-2026.xlsx").
+     */
     public record Resultado(String nomeArquivo, byte[] conteudo) {
     }
 
@@ -78,8 +83,10 @@ public class ComunizadoService {
                     .getCreationHelper()
                     .createFormulaEvaluator();
 
-            // A lista de corte pode continuar em outras abas ("IT CABOS", "IT CABOS (2)"...):
-            // lê toda aba que tenha a tabela de cabos, na ordem das abas. "IT TUBOS" não tem
+            // A lista de corte pode continuar em outras abas ("IT CABOS", "IT CABOS
+            // (2)"...):
+            // lê toda aba que tenha a tabela de cabos, na ordem das abas. "IT TUBOS" não
+            // tem
             // as colunas de terminal e fica de fora.
             itens = new ArrayList<>();
             dadosIt = null;
@@ -135,7 +142,10 @@ public class ComunizadoService {
         return new Resultado(nome, comunicadoPlanilha.gerar(cabecalho, itens));
     }
 
-    /** O que a IT traz no bloco acima da tabela: código do produto e data da revisão. */
+    /**
+     * O que a IT traz no bloco acima da tabela: código do produto e data da
+     * revisão.
+     */
     private record DadosIt(String produto, LocalDate docReferencia) {
     }
 
@@ -192,7 +202,10 @@ public class ComunizadoService {
         return null;
     }
 
-    /** Requisição > IT; sem produto em nenhum dos dois não há como identificar o comunizado. */
+    /**
+     * Requisição > IT; sem produto em nenhum dos dois não há como identificar o
+     * comunizado.
+     */
     private CabecalhoComunizado montarCabecalho(DadosIt it, ComunizadoRequest request) {
         String produto = textoOu(request.produto(), it.produto());
         if (produto.isBlank()) {
@@ -379,7 +392,9 @@ public class ComunizadoService {
         return itens;
     }
 
-    /** "31MP1-XP1:1 / 01" → "01": o número do circuito vem depois da última barra. */
+    /**
+     * "31MP1-XP1:1 / 01" → "01": o número do circuito vem depois da última barra.
+     */
     static String circuitoDaGravacao(String gravacao) {
         if (gravacao == null || gravacao.isBlank()) {
             return "";
@@ -393,10 +408,13 @@ public class ComunizadoService {
             "NOTA", "LEGENDA", "OBS", "LOCALIZACAO", "TOLERANCIA");
 
     /**
-     * Rodapé da IT: linha mesclada ocupando boa parte da largura (ex.: "NOTA 1: ..."
+     * Rodapé da IT: linha mesclada ocupando boa parte da largura (ex.: "NOTA 1:
+     * ..."
      * em A32:L32) ou texto começando por NOTA/LEGENDA/LOCALIZAÇÃO/TOLERÂNCIA em
-     * qualquer célula fora da coluna OBS. Só o rodapé encerra a tabela: a quantidade
-     * de linhas preenchidas por aba (22 nas ITs atuais) não é usada, para não perder
+     * qualquer célula fora da coluna OBS. Só o rodapé encerra a tabela: a
+     * quantidade
+     * de linhas preenchidas por aba (22 nas ITs atuais) não é usada, para não
+     * perder
      * circuitos. Linha incompleta antes do rodapé vira erro, não é descartada.
      */
     private boolean inicioDoRodape(
@@ -440,15 +458,16 @@ public class ComunizadoService {
         };
         return Comparator
                 .comparing((ItemCorte item) -> CodigoCabo.ler(item.tipo(), cores), porCabo)
-                .thenComparing(ItemCorte::tipo, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER))
-                .thenComparing(ItemCorte::comprimento, Comparator.nullsLast(Comparator.<BigDecimal>reverseOrder()))
-                .thenComparing(ItemCorte::terminalA, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER))
-                .thenComparing(ItemCorte::terminalB, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER))
-                .thenComparing(ItemCorte::circuito, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+                .thenComparing(i -> i.tipo(), Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER))
+                .thenComparing(i -> i.comprimento(), Comparator.nullsLast(Comparator.<BigDecimal>reverseOrder()))
+                .thenComparing(i -> i.terminalA(), Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER))
+                .thenComparing(i -> i.terminalB(), Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER))
+                .thenComparing(i -> i.circuito(), Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
     }
 
     /**
-     * Células mescladas na vertical dentro da tabela (ex.: COMP em B7:B8, compartilhado
+     * Células mescladas na vertical dentro da tabela (ex.: COMP em B7:B8,
+     * compartilhado
      * pelo par trançado -AM/-VD): cada célula "escondida" aponta para a do canto
      * superior esquerdo, que é a única com valor.
      */
@@ -468,7 +487,10 @@ public class ComunizadoService {
         return mapa;
     }
 
-    /** Célula da coluna nesta linha; se ela fizer parte de uma mesclagem, a célula com o valor. */
+    /**
+     * Célula da coluna nesta linha; se ela fizer parte de uma mesclagem, a célula
+     * com o valor.
+     */
     private Cell celula(Sheet sheet, Map<CellAddress, CellAddress> mesclagens, Row row, Integer coluna) {
         if (coluna == null) {
             return null;
@@ -492,7 +514,10 @@ public class ComunizadoService {
         return lerTexto(celula(sheet, mesclagens, row, colunas.get(coluna)), formatter, evaluator).trim();
     }
 
-    /** Número ("6.0") ou texto com uma ou duas medidas ("40.0/6.0"), normalizado por {@link Desponte}. */
+    /**
+     * Número ("6.0") ou texto com uma ou duas medidas ("40.0/6.0"), normalizado por
+     * {@link Desponte}.
+     */
     private String lerDesponte(
             Cell cell,
             String campo,
@@ -502,8 +527,10 @@ public class ComunizadoService {
         if (cell == null || cell.getCellType() == CellType.BLANK) {
             return null;
         }
-        CellType tipo = cell.getCellType() == CellType.FORMULA ? evaluator.evaluateFormulaCell(cell) : cell.getCellType();
-        // Numérico pelo valor (o formato de exibição pode esconder casas); texto como veio
+        CellType tipo = cell.getCellType() == CellType.FORMULA ? evaluator.evaluateFormulaCell(cell)
+                : cell.getCellType();
+        // Numérico pelo valor (o formato de exibição pode esconder casas); texto como
+        // veio
         String bruto = tipo == CellType.NUMERIC
                 ? BigDecimal.valueOf(cell.getNumericCellValue()).toPlainString()
                 : lerTexto(cell, formatter, evaluator);
