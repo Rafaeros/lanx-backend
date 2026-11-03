@@ -32,14 +32,14 @@ public class NotificacaoSseRegistry {
         emitter.onCompletion(remove);
         emitter.onTimeout(remove);
         emitter.onError(e -> remove.run());
-        send(emitter, SseEmitter.event().name("conectado").data("ok"));
+        send(userId, emitter, SseEmitter.event().name("conectado").data("ok"));
         return emitter;
     }
 
     public void send(UUID userId, NotificacaoResponse notificacao) {
         conexoes.getOrDefault(userId, List.of())
                 .forEach(
-                        emitter -> send(emitter, SseEmitter.event()
+                        emitter -> send(userId, emitter, SseEmitter.event()
                                 .id(notificacao.id().toString())
                                 .name("notificacao")
                                 .data(notificacao)));
@@ -47,15 +47,18 @@ public class NotificacaoSseRegistry {
 
     @Scheduled(fixedRate = 25_000)
     void heartbeat() {
-        conexoes.values().forEach(list -> list.forEach(
-                emitter -> send(emitter, SseEmitter.event().comment("ping"))));
+        conexoes.forEach((userId, list) -> list.forEach(
+                emitter -> send(userId, emitter, SseEmitter.event().comment("ping"))));
     }
 
-    private void send(SseEmitter emitter, SseEmitter.SseEventBuilder event) {
+    private void send(UUID userId, SseEmitter emitter, SseEmitter.SseEventBuilder event) {
         try {
             emitter.send(event);
         } catch (IOException | IllegalStateException e) {
-            log.error("Erro ao enviar evento SSE", e);
+            // cliente foi embora (aba fechada, reload, rede): não é erro do servidor
+            log.debug("Conexão SSE do usuário {} encerrada: {}", userId, e.getMessage());
+            remove(userId, emitter);
+            emitter.complete();
         }
     }
 
