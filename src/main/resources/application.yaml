@@ -84,6 +84,12 @@ app:
     cors:
       allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:3000,http://localhost:8080,http://localhost:8090,http://localhost,http://127.0.0.1:5173}
 
+  compras:
+    analse-pedidos:
+      importacao-agendada:
+        cron: ${ANALISE_PEDIDOS_CRON:0 0 7,13 * * MON-FRI} # 7h e 13h de segunda a sexta-feira
+        janela: 60d
+
   cg:
     api-url: ${CG_API_URL:http://localhost:8000/api/v1}
     # a carteira consolida 3 relatórios do ERP: um ano leva ~1,5 min
