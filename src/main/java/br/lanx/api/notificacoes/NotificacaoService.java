@@ -5,12 +5,17 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.lanx.api.auth.user.UserService;
+import br.lanx.api.notificacoes.dtos.ContagemNaoLidasResponse;
 import br.lanx.api.notificacoes.dtos.NotificacaoResponse;
+import br.lanx.api.notificacoes.exceptions.NotificacaoNotFoundException;
+import br.lanx.api.shared.pagination.PageResult;
 import br.lanx.api.testeinspecao.operacoes.naoconformidade.events.NaoConformidadeCriadaEvent;
-import jakarta.transaction.Transactional;
 
 @Service
 public class NotificacaoService {
@@ -50,6 +55,32 @@ public class NotificacaoService {
         return notificacaoRepository.saveAllAndFlush(novas).stream()
                 .map(NotificacaoResponse::fromEntity)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public PageResult<NotificacaoResponse> findAll(UUID userId, boolean somenteNaoLidas, Pageable pageable) {
+        Page<Notificacao> page = somenteNaoLidas
+                ? notificacaoRepository.findByUserIdAndLidaEmIsNullOrderByCreatedAtDesc(userId, pageable)
+                : notificacaoRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
+        return PageResult.from(page, NotificacaoResponse::fromEntity);
+    }
+
+    @Transactional(readOnly = true)
+    public ContagemNaoLidasResponse count(UUID userId) {
+        return new ContagemNaoLidasResponse(notificacaoRepository.countByUserIdAndLidaEmIsNull(userId));
+    }
+
+    @Transactional
+    public void marcarComoLida(UUID userId, UUID id) {
+        notificacaoRepository.findByIdAndUserId(id, userId)
+                .orElseThrow(
+                        () -> new NotificacaoNotFoundException("Notificação não encontrada"))
+                .marcarComoLida();
+    }
+
+    @Transactional
+    public void marcarTodasComoLidas(UUID userId) {
+        notificacaoRepository.marcarTodasComoLidas(userId);
     }
 
 }

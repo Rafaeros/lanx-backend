@@ -101,7 +101,7 @@ app:
 
   notificacoes:
     nao-conformidade-criada:
-      departmentos: [Qualidade, Teste]
+      departamentos: [Qualidade, Teste]
 
 seeder:
   paises:

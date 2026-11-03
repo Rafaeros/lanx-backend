@@ -18,6 +18,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import jakarta.servlet.DispatcherType;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -51,6 +53,7 @@ public class SecurityConfig {
                                                                 "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
                                                                                 + "object-src 'none'; frame-ancestors 'none'")))
                                 .authorizeHttpRequests(auth -> auth
+                                                .dispatcherTypeMatchers(DispatcherType.ASYNC, DispatcherType.ERROR).permitAll()
                                                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                                                 .anyRequest().authenticated())
                                 .oauth2ResourceServer(oauth -> oauth
