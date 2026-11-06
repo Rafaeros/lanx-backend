@@ -103,8 +103,13 @@ app:
     exchange: lanx.events
     queues:
       notificacoes-nao-conformidade: lanx.notificacoes.nao-conformidade-criada
+      # desenhos: o worker Python consome desenho-jobs e publica em desenho-resultados
+      desenho-jobs: lanx.engenharia.desenho-jobs
+      desenho-resultados: lanx.engenharia.desenho-resultados
     routing-keys:
       nao-conformidade-criada: teste-inspecao.nao-conformidade.criada
+      desenho-solicitado: engenharia.desenho.solicitado
+      desenho-resultado: engenharia.desenho.resultado
 
   notificacoes:
     nao-conformidade-criada:

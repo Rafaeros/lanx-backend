@@ -1,0 +1,15 @@
+info:
+  name: Desenhos
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit
+
+docs: |-
+  Desenhos de chicote (IT001 A4 e painel 1:1) gerados pelo worker Python (lanx-desenhos-worker).
+
+  Fluxo: Solicitar (status PENDENTE) → o worker avisa PROCESSANDO → CONCLUIDO (com o zip) ou ERRO.
+  Acompanhe pelo Get até o status final e baixe o zip pelo DownloadArquivo.
+
+  Permissões: engenharia.desenhos:read (ver e baixar), :create (solicitar), :reprocessar.

@@ -1,0 +1,24 @@
+info:
+  name: Reprocessar
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{baseUrl}}/engenharia/operacoes/desenhos/{{desenhoJobId}}/reprocessar"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  **🔹 Reprocessar desenho**
+
+  - **Rota:** `POST /engenharia/operacoes/desenhos/{id}/reprocessar`
+  - **Segurança:** token + `engenharia.desenhos:reprocessar`
+  - **Comportamento:** volta para a fila com o mesmo id e os mesmos arquivos; o zip novo substitui o antigo.
+  - **Erros:** `422` se o desenho ainda está na fila ou processando · `404` não encontrado

@@ -1,0 +1,58 @@
+info:
+  name: Analisar lista de corte
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/engenharia/operacoes/desenhos/analise"
+  body:
+    type: multipart-form
+    data:
+      - name: listaCorte
+        type: file
+        value: []
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  ### **Engenharia / Desenhos**
+
+  **🔹 Analisar lista de corte**
+
+  Confere as vias/cavidades dos conectores **sem criar job**. A tela chama ao escolher o arquivo; o
+  `POST` de solicitar repete a mesma conferência e recusa a lista com erro.
+
+  - **Rota:** `POST /engenharia/operacoes/desenhos/analise` (multipart/form-data)
+  - **Segurança:** token + `engenharia.desenhos:create`
+  - **Partes:** `listaCorte`: o IT002 (`.xlsx`). Escolha o arquivo na aba Body.
+  - **Regras** (por referência do conector, C1, C2...):
+    - Só confere conector com código no padrão `CN` + `F`/`M` + letras + **2 dígitos de vias**
+      (`CNFAT04CZ` = 4 vias, `CNFDTE06PRCE` = 6). Fora do padrão (diodo, resistor, ponta livre) não é conferido.
+    - `ERRO`: cavidade numérica que não existe no conector (cavidade 5 num de 4 vias).
+    - `ERRO`: a mesma cavidade em mais de um cabo (`2` e `02` contam como a mesma).
+    - `AVISO`: a mesma referência com códigos diferentes. Não bloqueia.
+  - **Resposta 200:**
+
+  ```json
+  {
+    "status": 200,
+    "message": "Lista de corte com erros nos conectores",
+    "data": {
+      "cabos": 42,
+      "conectores": 20,
+      "conectoresConferidos": 14,
+      "problemas": [
+        { "nivel": "ERRO", "conector": "C1", "mensagem": "Conector C1 (CNFAT04CZ): cavidade 2 duplicada, usada por 2 cabos — W01 (IT CABOS linha 6), W02 (IT CABOS linha 7)." }
+      ]
+    }
+  }
+  ```
+
+  - **Erros:** `400` arquivo que não é `.xlsx`, ilegível ou sem a aba de cabos · `401` sem token · `403` sem a permissão

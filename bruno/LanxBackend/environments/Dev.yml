@@ -33,6 +33,12 @@ variables:
   - name: ordemDeProducaoId
     value: ""
     description: Id de uma ordem de produção (devolvido por POST /producao/operacoes/ordens-de-producao)
+  - name: desenhoJobId
+    value: ""
+    description: Id de um desenho (devolvido por POST /engenharia/operacoes/desenhos)
+  - name: desenhoArquivoId
+    value: ""
+    description: Id de um arquivo do desenho (o Get preenche com o zip)
   - secret: true
     name: adminPassword
     description: Senha (Preencha na aba "Secrets" do Bruno!)

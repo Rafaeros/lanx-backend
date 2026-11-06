@@ -1,0 +1,63 @@
+info:
+  name: Solicitar
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/engenharia/operacoes/desenhos"
+  body:
+    type: multipart-form
+    data:
+      - name: request
+        type: text
+        value: |-
+          {
+            "projeto": "KHN830",
+            "formatos": ["a4", "painel"],
+            "acabamento": null,
+            "vistas": true,
+            "biblioteca": true,
+            "dwg": true,
+            "projectOverride": {
+              "title_block": { "drawn_by": "RAFAEL" }
+            }
+          }
+        contentType: application/json
+      - name: listaCorte
+        type: file
+        value: []
+      - name: desenhoCliente
+        type: file
+        value: []
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  ### **Engenharia / Desenhos**
+
+  **🔹 Solicitar desenho**
+
+  - **Rota:** `POST /engenharia/operacoes/desenhos` (multipart/form-data)
+  - **Segurança:** token + `engenharia.desenhos:create`
+  - **Partes:**
+    - `request` (application/json): `projeto` (obrigatório; letras, números, espaço, ".", "-", "_"),
+      `formatos` (`"a4"` e/ou `"painel"`; vazio = `"a4"`), `acabamento` (A–J, L, M ou `null` = aba IT TUBOS),
+      `vistas`, `biblioteca`, `dwg` (padrão `true`) e `projectOverride` (opcional, mesclado no project.json)
+    - `listaCorte`: o IT002 (`.xlsx`), obrigatório. Escolha o arquivo na aba Body.
+    - `desenhoCliente`: PDF do cliente, opcional.
+  - **Resposta 201:** copie o `id` para a variável `desenhoJobId` do ambiente. O job nasce `PENDENTE`.
+
+  ```json
+  { "status": 201, "message": "Desenho enviado para geração", "data": { "id": "01a1b1e9-75c4-7372-a786-1ab292a3e6cb" } }
+  ```
+
+  - **Erros:** `400` projeto inválido, lista que não é `.xlsx`/ilegível ou **com erro nos conectores** (mesma
+    conferência da rota Analisar: a mensagem lista cada cavidade duplicada/inexistente) · `401` sem token ·
+    `403` sem a permissão
