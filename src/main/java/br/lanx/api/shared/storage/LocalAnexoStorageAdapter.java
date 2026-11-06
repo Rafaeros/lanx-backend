@@ -1,4 +1,4 @@
-package br.lanx.api.testeinspecao.operacoes.naoconformidade.adapter.out;
+package br.lanx.api.shared.storage;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,8 +9,6 @@ import java.nio.file.StandardCopyOption;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-
-import br.lanx.api.testeinspecao.operacoes.naoconformidade.application.port.out.AnexoStoragePort;
 
 @Component
 @ConditionalOnProperty(name = "app.storage.tipo", havingValue = "local", matchIfMissing = true)

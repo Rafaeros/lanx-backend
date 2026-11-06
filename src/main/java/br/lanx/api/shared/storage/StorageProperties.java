@@ -1,4 +1,4 @@
-package br.lanx.api.testeinspecao.operacoes.naoconformidade.adapter.out;
+package br.lanx.api.shared.storage;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;

@@ -1,4 +1,4 @@
-package br.lanx.api.testeinspecao.operacoes.naoconformidade.application.port.out;
+package br.lanx.api.shared.storage;
 
 import java.io.InputStream;
 

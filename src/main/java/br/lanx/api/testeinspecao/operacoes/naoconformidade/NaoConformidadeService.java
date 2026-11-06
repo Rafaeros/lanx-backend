@@ -27,7 +27,6 @@ import br.lanx.api.cadastros.departamentos.DepartamentoService;
 import br.lanx.api.cadastros.operadores.OperadorService;
 import br.lanx.api.cadastros.tiponaoconformidade.TipoNaoConformidadeService;
 import br.lanx.api.producao.operacoes.ordensdeproducao.OrdemDeProducaoService;
-import br.lanx.api.testeinspecao.operacoes.naoconformidade.application.port.out.AnexoStoragePort;
 import br.lanx.api.testeinspecao.operacoes.naoconformidade.dtos.AnexoDownload;
 import br.lanx.api.testeinspecao.operacoes.naoconformidade.dtos.AnexoResponse;
 import br.lanx.api.testeinspecao.operacoes.naoconformidade.dtos.CreateNaoConformidadeRequest;
@@ -40,6 +39,7 @@ import br.lanx.api.testeinspecao.operacoes.naoconformidade.exceptions.AnexoInval
 import br.lanx.api.testeinspecao.operacoes.naoconformidade.exceptions.NaoConformidadeNotFoundException;
 import br.lanx.api.shared.domain.Ids;
 import br.lanx.api.shared.pagination.PageResult;
+import br.lanx.api.shared.storage.AnexoStoragePort;
 
 @Service
 public class NaoConformidadeService {
