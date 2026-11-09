@@ -1,7 +1,8 @@
 package br.lanx.api.engenharia.shared;
 
 /**
- * Chaves e authorities do módulo engenharia. Constantes de compilação: servem em
+ * Chaves e authorities do módulo engenharia. Constantes de compilação: servem
+ * em
  * {@code @PreAuthorize("hasAuthority('" + DESENHOS_READ + "')")}.
  */
 public final class EngenhariaPermissions {
@@ -17,6 +18,7 @@ public final class EngenhariaPermissions {
     /** Enviar uma lista de corte para gerar os desenhos. */
     public static final String DESENHOS_CREATE = DESENHOS + ":create";
     public static final String DESENHOS_REPROCESSAR = DESENHOS + ":" + REPROCESSAR;
+    public static final String DESENHOS_DELETE = DESENHOS + ":delete";
 
     private EngenhariaPermissions() {
     }

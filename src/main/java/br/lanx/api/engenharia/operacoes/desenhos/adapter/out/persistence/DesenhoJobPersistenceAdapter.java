@@ -31,7 +31,8 @@ class DesenhoJobPersistenceAdapter implements DesenhoJobRepository {
         }
 
         DesenhoJobEntity e = existente.get(); // ---- UPDATE ----
-        // o @Version protege dois UPDATEs ao mesmo tempo; este if cobre o job lido em outra transação
+        // o @Version protege dois UPDATEs ao mesmo tempo; este if cobre o job lido em
+        // outra transação
         if (!Objects.equals(e.getVersion(), job.getVersion()))
             throw new ObjectOptimisticLockingFailureException(DesenhoJobEntity.class, job.getId());
 
@@ -45,5 +46,10 @@ class DesenhoJobPersistenceAdapter implements DesenhoJobRepository {
     @Override
     public Optional<DesenhoJob> findById(UUID id) {
         return jpa.findById(id).map(mapper::toDomain);
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        jpa.deleteById(id);
     }
 }

@@ -11,4 +11,6 @@ public interface DesenhoJobRepository {
     DesenhoJob save(DesenhoJob job);
 
     Optional<DesenhoJob> findById(UUID id);
+
+    void deleteById(UUID id);
 }

@@ -13,20 +13,30 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 import br.lanx.api.engenharia.operacoes.desenhos.domain.exceptions.DesenhoInvalidoException;
+import br.lanx.api.engenharia.operacoes.desenhos.domain.exceptions.DesenhoNaoPodeSerDeletadoException;
 import br.lanx.api.engenharia.operacoes.desenhos.domain.exceptions.TransicaoDesenhoInvalidaException;
 import br.lanx.api.shared.domain.Ids;
 
 /**
- * Pedido de geração dos desenhos de um chicote (IT001 A4 e/ou painel 1:1) e o seu ciclo de vida.
+ * Pedido de geração dos desenhos de um chicote (IT001 A4 e/ou painel 1:1) e o
+ * seu ciclo de vida.
  *
- * <p>O job nasce {@link StatusDesenho#PENDENTE}; o worker avisa {@code PROCESSANDO} e depois
- * {@code CONCLUIDO} (com o zip e as pendências) ou {@code ERRO}. O RabbitMQ pode entregar a mesma mensagem
- * mais de uma vez (ex.: o worker reiniciou no meio do job), por isso {@link #iniciar}, {@link #concluir} e
- * {@link #falhar} são idempotentes: repetir o mesmo evento não muda nada nem lança exceção.
+ * <p>
+ * O job nasce {@link StatusDesenho#PENDENTE}; o worker avisa
+ * {@code PROCESSANDO} e depois
+ * {@code CONCLUIDO} (com o zip e as pendências) ou {@code ERRO}. O RabbitMQ
+ * pode entregar a mesma mensagem
+ * mais de uma vez (ex.: o worker reiniciou no meio do job), por isso
+ * {@link #iniciar}, {@link #concluir} e
+ * {@link #falhar} são idempotentes: repetir o mesmo evento não muda nada nem
+ * lança exceção.
  */
 public final class DesenhoJob {
 
-    /** Mesma regra do worker: o projeto vira nome de pasta, então não aceita "/" nem "..". */
+    /**
+     * Mesma regra do worker: o projeto vira nome de pasta, então não aceita "/" nem
+     * "..".
+     */
     private static final Pattern PROJETO = Pattern.compile("^[\\w.\\- ]{1,100}$");
     public static final int PRIMEIRA_TENTATIVA = 1;
 
@@ -46,10 +56,12 @@ public final class DesenhoJob {
     private final long version;
 
     /**
-     * Cria o pedido com os arquivos enviados pelo usuário. A chave de cada arquivo já sai pronta: o service
+     * Cria o pedido com os arquivos enviados pelo usuário. A chave de cada arquivo
+     * já sai pronta: o service
      * grava os bytes no storage com {@code arquivo.chaveArmazenamento()}.
      *
-     * @param override campos do project.json revisados no front (carimbo, topologia); pode ser {@code null}
+     * @param override       campos do project.json revisados no front (carimbo,
+     *                       topologia); pode ser {@code null}
      * @param desenhoCliente PDF do cliente, opcional
      */
     public static DesenhoJob solicitar(UUID solicitanteId, String projeto, DesenhoOpcoes opcoes,
@@ -79,7 +91,10 @@ public final class DesenhoJob {
             throw new DesenhoInvalidoException(mensagem);
     }
 
-    /** Reconstrói um job já salvo (usado pelo mapper da persistência); não valida transições. */
+    /**
+     * Reconstrói um job já salvo (usado pelo mapper da persistência); não valida
+     * transições.
+     */
     public DesenhoJob(UUID id, UUID solicitanteId, String projeto, DesenhoOpcoes opcoes,
             Map<String, Object> projectOverride, StatusDesenho status, List<String> pendencias, String erro,
             int tentativas, List<DesenhoJobArquivo> arquivos, Instant createdAt, Instant startedAt,
@@ -111,7 +126,9 @@ public final class DesenhoJob {
         startedAt = agora;
     }
 
-    /** O worker gerou o zip; substitui o zip de uma tentativa anterior, se houver. */
+    /**
+     * O worker gerou o zip; substitui o zip de uma tentativa anterior, se houver.
+     */
     public void concluir(DesenhoJobArquivo zip, List<String> pendencias, Instant agora) {
         if (status == StatusDesenho.CONCLUIDO)
             return; // reentrega
@@ -134,7 +151,10 @@ public final class DesenhoJob {
         completedAt = agora;
     }
 
-    /** Volta para a fila com o mesmo id (os mesmos arquivos de entrada); o zip anterior fica até o novo chegar. */
+    /**
+     * Volta para a fila com o mesmo id (os mesmos arquivos de entrada); o zip
+     * anterior fica até o novo chegar.
+     */
     public void reprocessar() {
         transicionarPara(StatusDesenho.PENDENTE);
         tentativas++;
@@ -142,6 +162,12 @@ public final class DesenhoJob {
         pendencias = List.of();
         startedAt = null;
         completedAt = null;
+    }
+
+    public void garantirPodeExcluir() {
+        if (!status.isFinal())
+            throw new DesenhoNaoPodeSerDeletadoException(
+                    "Não é possível excluir um desenho com status \"" + status.rotulo() + "\"");
     }
 
     private void transicionarPara(StatusDesenho destino) {
@@ -194,7 +220,10 @@ public final class DesenhoJob {
         return tentativas;
     }
 
-    /** Cópia: alterar a lista devolvida não altera o job (só os métodos acima mudam o estado). */
+    /**
+     * Cópia: alterar a lista devolvida não altera o job (só os métodos acima mudam
+     * o estado).
+     */
     public List<DesenhoJobArquivo> getArquivos() {
         return List.copyOf(arquivos);
     }

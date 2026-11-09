@@ -1,0 +1,16 @@
+info:
+  name: Deletar
+  type: http
+  seq: 7
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/engenharia/operacoes/desenhos/01a1b209-d310-7567-a454-ac0c08e1d77d"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

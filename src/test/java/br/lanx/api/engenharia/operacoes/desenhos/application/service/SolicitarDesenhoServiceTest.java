@@ -41,6 +41,9 @@ class SolicitarDesenhoServiceTest {
         public Optional<DesenhoJob> findById(UUID id) {
             return Optional.empty();
         }
+
+        public void deleteById(UUID id){
+        }
     };
 
     private final AnexoStoragePort storage = new AnexoStoragePort() {

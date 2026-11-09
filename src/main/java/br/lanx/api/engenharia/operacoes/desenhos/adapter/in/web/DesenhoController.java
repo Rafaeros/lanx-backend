@@ -1,6 +1,7 @@
 package br.lanx.api.engenharia.operacoes.desenhos.adapter.in.web;
 
 import static br.lanx.api.engenharia.shared.EngenhariaPermissions.DESENHOS_CREATE;
+import static br.lanx.api.engenharia.shared.EngenhariaPermissions.DESENHOS_DELETE;
 import static br.lanx.api.engenharia.shared.EngenhariaPermissions.DESENHOS_READ;
 import static br.lanx.api.engenharia.shared.EngenhariaPermissions.DESENHOS_REPROCESSAR;
 
@@ -17,6 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +35,7 @@ import br.lanx.api.engenharia.operacoes.desenhos.application.dto.DesenhoResumo;
 import br.lanx.api.engenharia.operacoes.desenhos.application.port.in.AnalisarListaCorteUseCase;
 import br.lanx.api.engenharia.operacoes.desenhos.application.port.in.ConsultarDesenhoUseCase;
 import br.lanx.api.engenharia.operacoes.desenhos.application.port.in.ConsultarDesenhoUseCase.ListarDesenhosQuery;
+import br.lanx.api.engenharia.operacoes.desenhos.application.port.in.DeleteDesenhoUseCase;
 import br.lanx.api.engenharia.operacoes.desenhos.application.port.in.ReprocessarDesenhoUseCase;
 import br.lanx.api.engenharia.operacoes.desenhos.application.port.in.SolicitarDesenhoUseCase;
 import br.lanx.api.engenharia.operacoes.desenhos.application.port.in.SolicitarDesenhoUseCase.SolicitarDesenhoCommand;
@@ -48,7 +51,10 @@ import br.lanx.api.shared.security.CurrentUser;
 import br.lanx.api.shared.web.ApiResponse;
 import jakarta.validation.Valid;
 
-/** Desenhos de chicote: envia a lista de corte, acompanha o status e baixa o zip gerado pelo worker. */
+/**
+ * Desenhos de chicote: envia a lista de corte, acompanha o status e baixa o zip
+ * gerado pelo worker.
+ */
 @RestController
 @RequestMapping("/engenharia/operacoes/desenhos")
 public class DesenhoController {
@@ -57,18 +63,24 @@ public class DesenhoController {
     private final ConsultarDesenhoUseCase consultar;
     private final ReprocessarDesenhoUseCase reprocessar;
     private final AnalisarListaCorteUseCase analisar;
+    private final DeleteDesenhoUseCase deletar;
     private final CurrentUser currentUser;
 
-    DesenhoController(SolicitarDesenhoUseCase solicitar, ConsultarDesenhoUseCase consultar,
-            ReprocessarDesenhoUseCase reprocessar, AnalisarListaCorteUseCase analisar, CurrentUser currentUser) {
+    public DesenhoController(SolicitarDesenhoUseCase solicitar, ConsultarDesenhoUseCase consultar,
+            ReprocessarDesenhoUseCase reprocessar, AnalisarListaCorteUseCase analisar, DeleteDesenhoUseCase deletar,
+            CurrentUser currentUser) {
         this.solicitar = solicitar;
-        this.analisar = analisar;
         this.consultar = consultar;
         this.reprocessar = reprocessar;
+        this.analisar = analisar;
+        this.deletar = deletar;
         this.currentUser = currentUser;
     }
 
-    /** Multipart: "request" (JSON, Content-Type application/json), "listaCorte" (.xlsx) e "desenhoCliente" (.pdf, opcional). */
+    /**
+     * Multipart: "request" (JSON, Content-Type application/json), "listaCorte"
+     * (.xlsx) e "desenhoCliente" (.pdf, opcional).
+     */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAuthority('" + DESENHOS_CREATE + "')")
     public ApiResponse<CreatedResult> solicitar(
@@ -81,8 +93,10 @@ public class DesenhoController {
     }
 
     /**
-     * Confere a lista de corte sem criar job (a tela chama ao escolher o arquivo). Conector no padrão de vias
-     * (ex.: CNFAT04CZ = 4 vias) com cavidade inexistente ou duplicada vem como ERRO, e o POST de solicitar
+     * Confere a lista de corte sem criar job (a tela chama ao escolher o arquivo).
+     * Conector no padrão de vias
+     * (ex.: CNFAT04CZ = 4 vias) com cavidade inexistente ou duplicada vem como
+     * ERRO, e o POST de solicitar
      * recusa a mesma lista com 400.
      */
     @PostMapping(path = "/analise", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -93,7 +107,10 @@ public class DesenhoController {
                 : "Lista de corte conferida", analise);
     }
 
-    /** Histórico, mais recentes primeiro. {@code meus=true} mostra só os pedidos de quem está logado. */
+    /**
+     * Histórico, mais recentes primeiro. {@code meus=true} mostra só os pedidos de
+     * quem está logado.
+     */
     @GetMapping
     @PreAuthorize("hasAuthority('" + DESENHOS_READ + "')")
     public ApiResponse<PageResult<DesenhoResumo>> listar(
@@ -113,7 +130,10 @@ public class DesenhoController {
         return ApiResponse.ok("Desenho encontrado", consultar.buscar(id));
     }
 
-    /** Baixa um arquivo do job: a lista de corte, o PDF do cliente ou o zip com os desenhos. */
+    /**
+     * Baixa um arquivo do job: a lista de corte, o PDF do cliente ou o zip com os
+     * desenhos.
+     */
     @GetMapping("/{id}/arquivos/{arquivoId}")
     @PreAuthorize("hasAuthority('" + DESENHOS_READ + "')")
     public ResponseEntity<InputStreamResource> baixar(@PathVariable UUID id, @PathVariable UUID arquivoId) {
@@ -134,7 +154,15 @@ public class DesenhoController {
         return ApiResponse.ok("Desenho enviado para gerar de novo", (Void) null);
     }
 
-    // ---- request → tipos da application (o adapter traduz; o domínio não conhece JSON nem multipart) ----
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('" + DESENHOS_DELETE + "')")
+    public ApiResponse<Void> delete(@PathVariable UUID id) {
+        deletar.deleteById(id);
+        return ApiResponse.ok("Deletado com sucesso!", (Void) null);
+    }
+
+    // ---- request → tipos da application (o adapter traduz; o domínio não conhece
+    // JSON nem multipart) ----
 
     private static DesenhoOpcoes opcoes(SolicitarDesenhoRequest r) {
         List<String> formatos = r.formatos() == null ? List.of() : r.formatos();
