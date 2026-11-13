@@ -2,6 +2,7 @@ package br.lanx.api.engenharia.operacoes.desenhos.adapter.out.planilha;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,8 @@ class ListaCortePoiReader implements LeitorListaCortePort {
 
     private static final List<String> CABECALHO = List.of("CIRC", "COMP", "TIPO", "TERMINALA", "CONECTA",
             "CONECTB");
+    /** Outro nome para a mesma coluna: algumas listas chamam o CIRC de GRAVAÇÃO (já sem acento). */
+    private static final Map<String, String> SINONIMOS = Map.of("GRAVACAO", "CIRC");
     /** Linhas lidas, no máximo, procurando o cabeçalho (o formulário tem ~6 linhas de título). */
     private static final int LINHAS_CABECALHO = 30;
 
@@ -96,6 +99,11 @@ class ListaCortePoiReader implements LeitorListaCortePort {
                     if (!nome.isEmpty())
                         col.putIfAbsent(nome, c);
                 }
+                // GRAVAÇÃO vale como CIRC só se a linha não tiver CIRC (com as duas, vale CIRC)
+                SINONIMOS.forEach((sinonimo, oficial) -> {
+                    if (col.containsKey(sinonimo))
+                        col.putIfAbsent(oficial, col.get(sinonimo));
+                });
                 if (col.keySet().containsAll(CABECALHO)) {
                     col.put("_LINHA", r);
                     return col;
@@ -152,7 +160,9 @@ class ListaCortePoiReader implements LeitorListaCortePort {
     }
 
     /** "TERMINAL A" → "TERMINALA", "CAV. A" → "CAVA" (igual ao _norm do worker). */
+    /** Sem espaço, ponto, dois-pontos nem acento, em maiúsculas: "Gravação" → "GRAVACAO". */
     static String normalizar(String s) {
-        return s.replaceAll("[\\s.:]", "").toUpperCase();
+        String semAcento = Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("\\p{M}", "");
+        return semAcento.replaceAll("[\\s.:]", "").toUpperCase();
     }
 }

@@ -62,6 +62,21 @@ class ListaCortePoiReaderTest {
     }
 
     @Test
+    void coluna_gravacao_vale_como_circ() throws IOException {
+        for (String nome : new String[] { "GRAVAÇÃO", "Gravacao" }) {
+            try (var wb = new XSSFWorkbook(); var out = new ByteArrayOutputStream()) {
+                XSSFSheet s = wb.createSheet("IT CABOS");
+                linha(s, 0, nome, "COMP", "TIPO", "TERMINAL A", "CAV. A", "CONECT. A", "TERMINAL B", "CAV B",
+                        "CONECT. B");
+                linha(s, 1, "W01", 500, "CFR0050PR", "T1", 1, "CNFAT04CZ (C1)", "T2", 3, "CNMAT06CZ (C2)");
+                wb.write(out);
+                assertThat(leitor.lerCabos(new ByteArrayInputStream(out.toByteArray())))
+                        .extracting("circ").as(nome).containsExactly("W01");
+            }
+        }
+    }
+
+    @Test
     void arquivo_que_nao_e_xlsx() {
         assertThatThrownBy(() -> leitor.lerCabos(new ByteArrayInputStream("não é planilha".getBytes())))
                 .isInstanceOf(DesenhoInvalidoException.class);
