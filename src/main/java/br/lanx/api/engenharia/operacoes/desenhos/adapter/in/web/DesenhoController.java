@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -149,8 +150,11 @@ public class DesenhoController {
     /** Gera de novo (mesmo id): só para desenhos concluídos ou com erro. */
     @PostMapping("/{id}/reprocessar")
     @PreAuthorize("hasAuthority('" + DESENHOS_REPROCESSAR + "')")
-    public ApiResponse<Void> reprocessar(@PathVariable UUID id) {
-        reprocessar.reprocessar(id);
+    public ApiResponse<Void> reprocessar(@PathVariable UUID id,
+            @Valid @RequestBody(required = false) ReprocessarDesenhoRequest request) {
+        reprocessar.reprocessar(id, request == null ? null
+                : opcoes(request.formatos(), request.acabamento(), request.vistas(), request.biblioteca(),
+                        request.dwg(), request.insumos()));
         return ApiResponse.ok("Desenho enviado para gerar de novo", (Void) null);
     }
 
@@ -165,13 +169,20 @@ public class DesenhoController {
     // JSON nem multipart) ----
 
     private static DesenhoOpcoes opcoes(SolicitarDesenhoRequest r) {
-        List<String> formatos = r.formatos() == null ? List.of() : r.formatos();
+        return opcoes(r.formatos(), r.acabamento(), r.vistas(), r.biblioteca(), r.dwg(), r.insumos());
+    }
+
+    /** Campos do request → opções do domínio; nulo = padrão (tudo ligado; formatos vazio = todos). */
+    private static DesenhoOpcoes opcoes(List<String> formatos, String acabamento, Boolean vistas,
+            Boolean biblioteca, Boolean dwg, Boolean insumos) {
         return new DesenhoOpcoes(
-                formatos.stream().map(FormatoDesenho::deFlag).collect(Collectors.toSet()),
-                r.acabamento() == null || r.acabamento().isBlank() ? null : Acabamento.valueOf(r.acabamento()),
-                r.vistas() == null || r.vistas(),
-                r.biblioteca() == null || r.biblioteca(),
-                r.dwg() == null || r.dwg());
+                (formatos == null ? List.<String>of() : formatos).stream().map(FormatoDesenho::deFlag)
+                        .collect(Collectors.toSet()),
+                acabamento == null || acabamento.isBlank() ? null : Acabamento.valueOf(acabamento),
+                vistas == null || vistas,
+                biblioteca == null || biblioteca,
+                dwg == null || dwg,
+                insumos == null || insumos);
     }
 
     private static Upload upload(MultipartFile file) {

@@ -18,7 +18,8 @@ record DesenhoSolicitadoMessage(
     record ArquivoRef(String chave, String nomeOriginal) {
     }
 
-    /** {@code formatos}: "a4"/"painel"; {@code acabamento}: a letra ou {@code null}. */
-    record Opcoes(List<String> formatos, String acabamento, boolean vistas, boolean biblioteca, boolean dwg) {
+    /** {@code formatos}: "a4"/"painel"/"esquema"; {@code acabamento}: a letra ou {@code null}. */
+    record Opcoes(List<String> formatos, String acabamento, boolean vistas, boolean biblioteca, boolean dwg,
+            boolean insumos) {
     }
 }

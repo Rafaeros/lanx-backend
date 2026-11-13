@@ -6,7 +6,7 @@ import br.lanx.api.engenharia.operacoes.desenhos.domain.exceptions.DesenhoInvali
 
 /** Formato de saída do desenho; {@link #flag()} é o texto usado pelo worker, pelo front e no JSONB. */
 public enum FormatoDesenho {
-    A4("a4"), PAINEL("painel");
+    A4("a4"), PAINEL("painel"), ESQUEMA("esquema");
 
     private final String flag;
 

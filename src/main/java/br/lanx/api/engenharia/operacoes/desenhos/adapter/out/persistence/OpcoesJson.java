@@ -4,10 +4,12 @@ import java.util.List;
 
 /**
  * Formato da coluna JSONB {@code opcoes}:
- * {@code {"formatos":["a4","painel"],"acabamento":"F","vistas":true,"biblioteca":true,"dwg":true}}.
+ * {@code {"formatos":["a4","painel"],"acabamento":"F","vistas":true,"biblioteca":true,"dwg":true,"insumos":true}}.
  *
  * <p>Separado de {@code DesenhoOpcoes} de propósito: renomear algo no domínio não pode mudar o JSON já
- * gravado nas linhas antigas. Só tipos simples (String/boolean), convertidos pelo mapper.
+ * gravado nas linhas antigas. Só tipos simples (String/boolean), convertidos pelo mapper. {@code insumos} é
+ * {@code Boolean}: as linhas gravadas antes dele não têm o campo (nulo = gerar, como era).
  */
-public record OpcoesJson(List<String> formatos, String acabamento, boolean vistas, boolean biblioteca, boolean dwg) {
+public record OpcoesJson(List<String> formatos, String acabamento, boolean vistas, boolean biblioteca, boolean dwg,
+        Boolean insumos) {
 }

@@ -18,7 +18,7 @@ import br.lanx.api.engenharia.operacoes.desenhos.domain.exceptions.TransicaoDese
 import br.lanx.api.shared.domain.Ids;
 
 /**
- * Pedido de geração dos desenhos de um chicote (IT001 A4 e/ou painel 1:1) e o
+ * Pedido de geração dos desenhos de um chicote (IT001 A4, painel 1:1 e/ou esquema elétrico) e o
  * seu ciclo de vida.
  *
  * <p>
@@ -43,7 +43,7 @@ public final class DesenhoJob {
     private final UUID id;
     private final UUID solicitanteId;
     private final String projeto;
-    private final DesenhoOpcoes opcoes;
+    private DesenhoOpcoes opcoes;
     private final Map<String, Object> projectOverride;
     private StatusDesenho status;
     private List<String> pendencias;
@@ -156,7 +156,17 @@ public final class DesenhoJob {
      * anterior fica até o novo chegar.
      */
     public void reprocessar() {
+        reprocessar(null);
+    }
+
+    /**
+     * Como {@link #reprocessar()}, trocando as opções (formatos, insumos...) marcadas na tela do desenho;
+     * {@code null} mantém as do pedido.
+     */
+    public void reprocessar(DesenhoOpcoes novasOpcoes) {
         transicionarPara(StatusDesenho.PENDENTE);
+        if (novasOpcoes != null)
+            opcoes = novasOpcoes;
         tentativas++;
         erro = null;
         pendencias = List.of();

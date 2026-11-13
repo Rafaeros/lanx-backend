@@ -10,6 +10,7 @@ import br.lanx.api.engenharia.operacoes.desenhos.application.event.DesenhoSolici
 import br.lanx.api.engenharia.operacoes.desenhos.application.port.in.ReprocessarDesenhoUseCase;
 import br.lanx.api.engenharia.operacoes.desenhos.application.port.out.DesenhoJobRepository;
 import br.lanx.api.engenharia.operacoes.desenhos.domain.DesenhoJob;
+import br.lanx.api.engenharia.operacoes.desenhos.domain.DesenhoOpcoes;
 import br.lanx.api.engenharia.operacoes.desenhos.domain.exceptions.DesenhoJobNotFoundException;
 
 @Service
@@ -25,9 +26,9 @@ class ReprocessarDesenhoService implements ReprocessarDesenhoUseCase {
 
     @Override
     @Transactional
-    public void reprocessar(UUID jobId) {
+    public void reprocessar(UUID jobId, DesenhoOpcoes opcoes) {
         DesenhoJob job = jobs.findById(jobId).orElseThrow(() -> new DesenhoJobNotFoundException(jobId));
-        job.reprocessar(); // só a partir de CONCLUIDO ou ERRO: a regra está no domínio
+        job.reprocessar(opcoes); // só a partir de CONCLUIDO ou ERRO: a regra está no domínio
         jobs.save(job);
         eventos.publishEvent(new DesenhoSolicitadoEvent(job)); // mesmo jobId: o worker sobrescreve o zip
     }

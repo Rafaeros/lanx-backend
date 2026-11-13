@@ -50,7 +50,7 @@ class DesenhoRabbitPublisher {
                 new DesenhoSolicitadoMessage.Opcoes(
                         o.formatos().stream().map(FormatoDesenho::flag).sorted().toList(),
                         o.acabamento() == null ? null : o.acabamento().name(),
-                        o.vistas(), o.biblioteca(), o.dwg()),
+                        o.vistas(), o.biblioteca(), o.dwg(), o.insumos()),
                 job.getProjectOverride());
     }
 

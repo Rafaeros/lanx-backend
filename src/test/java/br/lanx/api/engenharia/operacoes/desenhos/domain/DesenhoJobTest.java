@@ -113,6 +113,21 @@ class DesenhoJobTest {
     }
 
     @Test
+    @DisplayName("reprocessar com outras opções troca as opções; sem opções mantém as do pedido")
+    void reprocessarComOpcoes() {
+        DesenhoJob job = novoJob();
+        job.concluir(zip(job), List.of(), CLOCK.instant());
+        var opcoes = new DesenhoOpcoes(Set.of(FormatoDesenho.ESQUEMA), null, false, true, false, false);
+
+        job.reprocessar(opcoes);
+
+        assertThat(job.getOpcoes()).isEqualTo(opcoes);
+        job.concluir(zip(job), List.of(), CLOCK.instant());
+        job.reprocessar();
+        assertThat(job.getOpcoes()).as("sem opções novas, mantém as últimas").isEqualTo(opcoes);
+    }
+
+    @Test
     @DisplayName("transição fora do ciclo lança TransicaoDesenhoInvalidaException")
     void transicaoInvalida() {
         DesenhoJob job = novoJob();
@@ -142,11 +157,14 @@ class DesenhoJobTest {
     }
 
     @Test
-    @DisplayName("opções: sem formato vira A4 e sem biblioteca não há vistas")
+    @DisplayName("opções: sem formato vira todos (A4, painel e esquema) e sem biblioteca não há vistas")
     void opcoes() {
-        var o = new DesenhoOpcoes(Set.of(), Acabamento.L, true, false, true);
+        var o = new DesenhoOpcoes(Set.of(), Acabamento.L, true, false, true, false);
 
-        assertThat(o.formatos()).containsExactly(FormatoDesenho.A4);
+        assertThat(o.formatos())
+                .containsExactlyInAnyOrder(FormatoDesenho.A4, FormatoDesenho.PAINEL, FormatoDesenho.ESQUEMA);
         assertThat(o.vistas()).isFalse();
+        assertThat(o.insumos()).isFalse();
+        assertThat(DesenhoOpcoes.padrao().insumos()).isTrue();
     }
 }

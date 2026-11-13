@@ -56,11 +56,12 @@ class DesenhoJobMapper {
     }
 
     /**
-     * UPDATE: copia para a Entity já carregada só o que muda no ciclo de vida (projeto, opções e solicitante
-     * são {@code updatable = false}). Remove os arquivos que saíram do domínio, mas NÃO adiciona os novos:
+     * UPDATE: copia para a Entity já carregada só o que muda no ciclo de vida, inclusive as opções (trocadas ao
+     * reprocessar); projeto e solicitante são {@code updatable = false}. Remove os arquivos que saíram do domínio, mas NÃO adiciona os novos:
      * o adapter dá um flush entre as duas coisas (ver {@link #addNewFiles}).
      */
     void copyState(DesenhoJob d, DesenhoJobEntity e) {
+        e.setOpcoes(toJson(d.getOpcoes()));
         e.setStatus(d.getStatus());
         e.setPendencias(d.getPendencias());
         e.setErro(d.getErro());
@@ -145,7 +146,8 @@ class DesenhoJobMapper {
         Set<FormatoDesenho> formatos = j.formatos() == null ? Set.of()
                 : j.formatos().stream().map(FormatoDesenho::deFlag).collect(Collectors.toSet());
         Acabamento acabamento = j.acabamento() == null ? null : Acabamento.valueOf(j.acabamento());
-        return new DesenhoOpcoes(formatos, acabamento, j.vistas(), j.biblioteca(), j.dwg());
+        return new DesenhoOpcoes(formatos, acabamento, j.vistas(), j.biblioteca(), j.dwg(),
+                j.insumos() == null || j.insumos());
     }
 
     /** Opções do domínio → JSON do banco (mesmo formato do worker: {@code "a4"}, {@code "F"}). */
@@ -155,6 +157,7 @@ class DesenhoJobMapper {
                 o.acabamento() == null ? null : o.acabamento().name(),
                 o.vistas(),
                 o.biblioteca(),
-                o.dwg());
+                o.dwg(),
+                o.insumos());
     }
 }

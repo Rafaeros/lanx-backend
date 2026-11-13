@@ -52,7 +52,7 @@ public class DesenhoJobEntity {
 
     /** JSONB ⇄ record, convertido pelo Hibernate com Jackson. */
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "opcoes", nullable = false, updatable = false)
+    @Column(name = "opcoes", nullable = false) // muda ao reprocessar com outras opções
     private OpcoesJson opcoes;
 
     @JdbcTypeCode(SqlTypes.JSON)
@@ -152,6 +152,10 @@ public class DesenhoJobEntity {
 
     public OpcoesJson getOpcoes() {
         return opcoes;
+    }
+
+    void setOpcoes(OpcoesJson opcoes) {
+        this.opcoes = opcoes;
     }
 
     public Map<String, Object> getProjectOverride() {

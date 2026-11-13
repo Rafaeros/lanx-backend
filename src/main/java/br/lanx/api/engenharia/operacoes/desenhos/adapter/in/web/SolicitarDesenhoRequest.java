@@ -9,8 +9,9 @@ import jakarta.validation.constraints.Pattern;
 /**
  * Parte "request" (JSON) do POST multipart. Os arquivos vêm nas partes "listaCorte" e "desenhoCliente".
  *
- * @param formatos        "a4" e/ou "painel"; vazio = só "a4"
+ * @param formatos        "a4", "painel" e/ou "esquema"; vazio = todos
  * @param acabamento      letra da legenda (A–J, L, M) ou {@code null} para usar a aba IT TUBOS
+ * @param insumos         planilha de insumos e validações no .zip; {@code null} = sim
  * @param projectOverride campos do project.json revisados (carimbo, topologia); opcional
  */
 public record SolicitarDesenhoRequest(
@@ -22,5 +23,6 @@ public record SolicitarDesenhoRequest(
         Boolean vistas,
         Boolean biblioteca,
         Boolean dwg,
+        Boolean insumos,
         Map<String, Object> projectOverride) {
 }
