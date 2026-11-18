@@ -112,8 +112,20 @@ class ListaCortePoiReader implements LeitorListaCortePort {
             return null;
         }
 
-        List<CaboListaCorte> cabos(Map<String, Integer> col) {
+        /**
+         * A CAV desta linha continua uma célula mesclada que começou numa linha de cima: a engenharia juntou as
+         * ligações no MESMO pino (ex.: malha soldada com o terra). A ponta conta uma vez só, na 1ª linha.
+         */
+        boolean mesmoPino(int r, int c) {
+            if (c < 0)
+                return false;
+            CellRangeAddress m = mesclas.get(chave(r, c));
+            return m != null && m.getFirstRow() < r;
+        }
+
+                List<CaboListaCorte> cabos(Map<String, Integer> col) {
             List<CaboListaCorte> out = new ArrayList<>();
+            Map<String, String> pinoDoCabo = new HashMap<>(); // "CN1|6" → cabo-base que já usa o pino
             for (int r = col.get("_LINHA") + 1; r <= sheet.getLastRowNum(); r++) {
                 String primeira = texto(r, 0);
                 String circ = texto(r, col.get("CIRC"));
@@ -123,9 +135,14 @@ class ListaCortePoiReader implements LeitorListaCortePort {
                     break; // rodapé do formulário
                 if (circ.isEmpty())
                     continue;
-                out.add(new CaboListaCorte(circ, sheet.getSheetName(), r + 1,
-                        ponta(texto(r, col.get("CONECTA")), texto(r, col.getOrDefault("CAVA", -1))),
-                        ponta(texto(r, col.get("CONECTB")), texto(r, col.getOrDefault("CAVB", -1)))));
+                String tipo = texto(r, col.getOrDefault("TIPO", -1)).trim().toUpperCase();
+                PontaConector a = mesmoPino(r, col.getOrDefault("CAVA", -1)) ? null
+                        : ponta(texto(r, col.get("CONECTA")), texto(r, col.getOrDefault("CAVA", -1)));
+                PontaConector b = mesmoPino(r, col.getOrDefault("CAVB", -1)) ? null
+                        : ponta(texto(r, col.get("CONECTB")), texto(r, col.getOrDefault("CAVB", -1)));
+                a = malhaNoPinoDoCabo(a, tipo, pinoDoCabo);
+                b = malhaNoPinoDoCabo(b, tipo, pinoDoCabo);
+                out.add(new CaboListaCorte(circ, sheet.getSheetName(), r + 1, a, b));
             }
             return out;
         }
@@ -160,6 +177,27 @@ class ListaCortePoiReader implements LeitorListaCortePort {
     }
 
     /** "TERMINAL A" → "TERMINALA", "CAV. A" → "CAVA" (igual ao _norm do worker). */
+    /** Cabo manga multivias: "CBM6V26AWG24AWG01-VD" → "CBM6V26AWG24AWG01" (a via/cor vem depois do hífen). */
+    static String caboBase(String tipo) {
+        int i = tipo.lastIndexOf('-');
+        return i > 0 ? tipo.substring(0, i) : tipo;
+    }
+
+    /**
+     * Malha ("-MLH") do cabo manga soldada no mesmo pino de uma via do MESMO cabo (junto com o terra): é o
+     * mesmo pino, não cavidade duplicada. Registra o pino de cada ponta para as linhas seguintes.
+     */
+    static PontaConector malhaNoPinoDoCabo(PontaConector p, String tipo, Map<String, String> pinoDoCabo) {
+        if (p == null)
+            return null;
+        String pino = p.ref() + "|" + p.cavidade().replaceFirst("^0+(?=\\d)", "");
+        String base = caboBase(tipo);
+        if (tipo.endsWith("-MLH") && base.equals(pinoDoCabo.get(pino)))
+            return null;
+        pinoDoCabo.putIfAbsent(pino, base);
+        return p;
+    }
+
     /** Sem espaço, ponto, dois-pontos nem acento, em maiúsculas: "Gravação" → "GRAVACAO". */
     static String normalizar(String s) {
         String semAcento = Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("\\p{M}", "");

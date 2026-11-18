@@ -77,6 +77,30 @@ class ListaCortePoiReaderTest {
     }
 
     @Test
+    void malha_do_cabo_manga_no_mesmo_pino_nao_conta_de_novo() throws IOException {
+        try (var wb = new XSSFWorkbook(); var out = new ByteArrayOutputStream()) {
+            XSSFSheet s = wb.createSheet("IT CABOS");
+            linha(s, 0, "CIRC", "COMP", "TIPO", "TERMINAL A", "CAV. A", "CONECT. A", "TERMINAL B", "CAV B",
+                    "CONECT. B");
+            linha(s, 1, "CAV05", 7000, "CBM6V26AWG24AWG01-LR", "SOLDA", 5, "CNFMMK06PR (CN1)", "SOLDA", 5,
+                    "CNMMMK06PR (CN2)");
+            linha(s, 2, "CAV06", 7000, "CBM6V26AWG24AWG01-PR", "SOLDA", 6, "CNFMMK06PR (CN1)", "SOLDA", 6,
+                    "CNMMMK06PR (CN2)");
+            linha(s, 3, "CAV07", 7000, "CBM6V26AWG24AWG01-MLH");
+            for (int c : new int[] { 3, 4, 5, 6, 7, 8 }) // como na lista: malha mesclada com o fio PR
+                s.addMergedRegion(new CellRangeAddress(2, 3, c, c));
+            linha(s, 4, "CAV08", 7000, "CBM6V26AWG24AWG01-MLH", "SOLDA", 5, "CNFMMK06PR (CN1)", "SOLDA", 5,
+                    "CNMMMK06PR (CN2)"); // malha no pino da via LR do mesmo cabo, sem mescla
+            wb.write(out);
+            var cabos = leitor.lerCabos(new ByteArrayInputStream(out.toByteArray()));
+            assertThat(cabos).extracting("circ").containsExactly("CAV05", "CAV06", "CAV07", "CAV08");
+            assertThat(cabos.get(2).a()).as("mesma CAV mesclada: mesmo pino").isNull();
+            assertThat(cabos.get(3).a()).as("malha do mesmo cabo no pino da via").isNull();
+            assertThat(cabos.get(1).a()).isEqualTo(new PontaConector("CNFMMK06PR", "CN1", "6"));
+        }
+    }
+
+    @Test
     void arquivo_que_nao_e_xlsx() {
         assertThatThrownBy(() -> leitor.lerCabos(new ByteArrayInputStream("não é planilha".getBytes())))
                 .isInstanceOf(DesenhoInvalidoException.class);
