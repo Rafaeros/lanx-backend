@@ -77,6 +77,9 @@ app:
       password: ${ADMIN_PASSWORD:} # vazio = não cria o administrador
 
   security:
+    crypto:
+      aes-key: ${AES_ENCRYPTION_KEY}
+      hmac-key: ${CPF_HMAC_KEY}
     token:
       secret: ${JWT_SECRET} # Base64, mínimo 32 bytes: openssl rand -base64 32
       issuer: lanx-backend
@@ -114,7 +117,3 @@ app:
   notificacoes:
     nao-conformidade-criada:
       departamentos: [Qualidade, Teste]
-
-  seeder:
-    paises:
-      path: classpath:db/seeders/paises.csv
