@@ -17,7 +17,9 @@ public final class CadastrosPermissions {
     public static final String COMPRADORES = "cadastros.compradores";
     public static final String CLIENTES = "cadastros.clientes";
     public static final String TIPOS_NAO_CONFORMIDADE = "cadastros.tipos-nao-conformidade";
-
+    public static final String ESTADOS = "cadastros.estados";
+    public static final String CIDADES = "cadastros.cidades";
+    
     public static final String UNIDADE_MEDIDA_READ = UNIDADE_MEDIDA + ":read";
     public static final String UNIDADE_MEDIDA_CREATE = UNIDADE_MEDIDA + ":create";
     public static final String UNIDADE_MEDIDA_UPDATE = UNIDADE_MEDIDA + ":update";
@@ -64,6 +66,9 @@ public final class CadastrosPermissions {
     public static final String TIPOS_NAO_CONFORMIDADE_CREATE = TIPOS_NAO_CONFORMIDADE + ":create";
     public static final String TIPOS_NAO_CONFORMIDADE_UPDATE = TIPOS_NAO_CONFORMIDADE + ":update";
     public static final String TIPOS_NAO_CONFORMIDADE_DELETE = TIPOS_NAO_CONFORMIDADE + ":delete";
+
+    public static final String ESTADOS_READ = ESTADOS + ":read";
+    public static final String CIDADES_READ = CIDADES + ":read"; 
 
     private CadastrosPermissions() {
     }

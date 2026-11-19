@@ -1,0 +1,20 @@
+info:
+  name: Buscar
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/estados?filtro=PR"
+  params:
+    - name: filtro
+      value: PR
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
